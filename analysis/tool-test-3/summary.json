@@ -1,0 +1,61 @@
+{
+  "source": "C:\\Users\\xz153\\Desktop\\3.json",
+  "saveRecordCount": 1,
+  "items": [
+    {
+      "index": 1,
+      "createdAt": "2026-06-21T16:43:59.362Z",
+      "page": {
+        "href": "https://www.dianxiaomi.com/web/smtlocalProduct/edit?id=167487781997719279&task",
+        "pathname": "/web/smtlocalProduct/edit",
+        "title": "店小秘--编辑速卖通海外托管产品",
+        "readyState": "complete"
+      },
+      "op": "2",
+      "file": {
+        "fileName": "blob",
+        "type": "application/zip",
+        "size": 3035,
+        "capturedBytes": 3035,
+        "truncated": false
+      },
+      "payloadKeys": [
+        "shopId",
+        "categoryId",
+        "subject",
+        "sourceUrl",
+        "fullCid",
+        "productPropertyListJson",
+        "mainImageListJson",
+        "imgUrl",
+        "marketImage2",
+        "marketImage1",
+        "videoListJson",
+        "optionValues",
+        "productUnit",
+        "packageType",
+        "lotNum",
+        "supportCountrySupplyPrice",
+        "variationListStr",
+        "sizeChartId",
+        "detailMobile",
+        "detailWeb",
+        "sizeChartIdListJson",
+        "deliveryTime",
+        "postageId",
+        "aeopQualificationStructListJson",
+        "manufactureId",
+        "msrEuId",
+        "msrTrId",
+        "op",
+        "id",
+        "currencyCode",
+        "dxmState",
+        "productId"
+      ],
+      "zipNames": [
+        "choiceSave.txt"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "runId": "20260622-090805-167487781999454415",
+  "category": "bumpers-200291142",
+  "productId": "167487781999454415",
+  "asin": "B0F1NJXBPT-1",
+  "stage": "single-product",
+  "pluginVersion": "1.1.7",
+  "taskConfig": {
+    "stock": "15",
+    "exchangeRate": "7",
+    "priceMultiplier": "1.55",
+    "defaultWeightKg": "0.1"
+  },
+  "valueSources": {
+    "sourcePriceUsd": "task_override",
+    "supplyPriceCny": "task_formula",
+    "stock": "task_config",
+    "skuCode": "amazon_asin",
+    "weight": "default_missing_amazon_weight",
+    "dimensions": "amazon_inches_converted_to_cm",
+    "taskFormula": {
+      "exchangeRate": "7",
+      "multiplier": "1.55"
+    }
+  },
+  "dryRun": {
+    "pass": true,
+    "riskCount": 0,
+    "warningCount": 10
+  },
+  "op1": {
+    "called": false,
+    "persisted": false
+  },
+  "op2": {
+    "called": false,
+    "responseCode": null
+  },
+  "result": "pending",
+  "failureReason": ""
+}

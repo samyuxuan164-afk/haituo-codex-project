@@ -1,0 +1,238 @@
+{
+  "ok": true,
+  "product": {
+    "asin": "B0FRMQQKTH",
+    "known_title": "8 Pack Large Clear Plastic Drawer Organizer Bins, Acrylic Bathroom Drawer Organizer Trays, Heavy Duty Kitchen Drawer Dividers for Utensils, Non-Slip Storage Bins for Makeup, Bedroom, Office Desk",
+    "known_category": "Drawer Organizers",
+    "material": "Plastic",
+    "color": "Clear",
+    "price_usd": 17.99,
+    "store": "Halo Home Store",
+    "freight_template": "111"
+  },
+  "api": {
+    "status": 200,
+    "model": "deepseek-v4-flash",
+    "usage": {
+      "prompt_tokens": 351,
+      "completion_tokens": 1078,
+      "total_tokens": 1429,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      },
+      "completion_tokens_details": {
+        "reasoning_tokens": 595
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 351
+    },
+    "content": "{\n  \"schemaVersion\": \"product-understanding-v1\",\n  \"asin\": \"B0FRMQQKTH\",\n  \"productType\": \"DrawerOrganizer\",\n  \"primaryUse\": \"Organizing and storing small items such as utensils, makeup, office supplies\",\n  \"recommendedCategory\": {\n    \"name\": \"Drawer Organizers\",\n    \"path\": \"Home & Kitchen > Storage & Organization > Drawer Organizers\",\n    \"searchTerms\": [\n      \"drawer organizer bins\",\n      \"plastic storage bins\",\n      \"clear organizer trays\",\n      \"kitchen drawer dividers\",\n      \"makeup organizer\",\n      \"office desk storage\"\n    ],\n    \"confidence\": 0.95,\n    \"evidence\": [\n      \"Product title explicitly states 'Drawer Organizer Bins'\",\n      \"Known category is 'Drawer Organizers'\"\n    ]\n  },\n  \"attributes\": [\n    {\n      \"name\": \"material\",\n      \"value\": \"Plastic\",\n      \"source\": \"Product data\",\n      \"confidence\": 0.95\n    },\n    {\n      \"name\": \"color\",\n      \"value\": \"Clear\",\n      \"source\": \"Product data\",\n      \"confidence\": 0.95\n    },\n    {\n      \"name\": \"packSize\",\n      \"value\": \"8\",\n      \"source\": \"Product title\",\n      \"confidence\": 0.95\n    },\n    {\n      \"name\": \"features\",\n      \"value\": \"Non-slip\",\n      \"source\": \"Product title\",\n      \"confidence\": 0.9\n    },\n    {\n      \"name\": \"intendedUse\",\n      \"value\": \"Bathroom, Kitchen, Bedroom, Office Desk\",\n      \"source\": \"Product title\",\n      \"confidence\": 0.9\n    }\n  ],\n  \"risks\": [\n    {\n      \"type\": \"Template\",\n      \"level\": \"low\",\n      \"message\": \"Freight template 111 needs verification for large set of 8 bins.\"\n    }\n  ],\n  \"confidence\": 0.92,\n  \"ruleEngine\": {\n    \"passed\": true,\n    \"blockedBy\": [],\n    \"allowedForEditPage\": true,\n    \"notes\": \"Product matches typical drawer organizer listing requirements.\"\n  }\n}"
+  },
+  "raw": {
+    "schemaVersion": "product-understanding-v1",
+    "asin": "B0FRMQQKTH",
+    "productType": "DrawerOrganizer",
+    "primaryUse": "Organizing and storing small items such as utensils, makeup, office supplies",
+    "recommendedCategory": {
+      "name": "Drawer Organizers",
+      "path": "Home & Kitchen > Storage & Organization > Drawer Organizers",
+      "searchTerms": [
+        "drawer organizer bins",
+        "plastic storage bins",
+        "clear organizer trays",
+        "kitchen drawer dividers",
+        "makeup organizer",
+        "office desk storage"
+      ],
+      "confidence": 0.95,
+      "evidence": [
+        "Product title explicitly states 'Drawer Organizer Bins'",
+        "Known category is 'Drawer Organizers'"
+      ]
+    },
+    "attributes": [
+      {
+        "name": "material",
+        "value": "Plastic",
+        "source": "Product data",
+        "confidence": 0.95
+      },
+      {
+        "name": "color",
+        "value": "Clear",
+        "source": "Product data",
+        "confidence": 0.95
+      },
+      {
+        "name": "packSize",
+        "value": "8",
+        "source": "Product title",
+        "confidence": 0.95
+      },
+      {
+        "name": "features",
+        "value": "Non-slip",
+        "source": "Product title",
+        "confidence": 0.9
+      },
+      {
+        "name": "intendedUse",
+        "value": "Bathroom, Kitchen, Bedroom, Office Desk",
+        "source": "Product title",
+        "confidence": 0.9
+      }
+    ],
+    "risks": [
+      {
+        "type": "Template",
+        "level": "low",
+        "message": "Freight template 111 needs verification for large set of 8 bins."
+      }
+    ],
+    "confidence": 0.92,
+    "ruleEngine": {
+      "passed": true,
+      "blockedBy": [],
+      "allowedForEditPage": true,
+      "notes": "Product matches typical drawer organizer listing requirements."
+    }
+  },
+  "adapted": {
+    "schemaVersion": "product-understanding-v1",
+    "asin": "B0FRMQQKTH",
+    "productType": "DrawerOrganizer",
+    "primaryUse": "Organizing and storing small items such as utensils, makeup, office supplies",
+    "recommendedCategory": {
+      "name": "Drawer Organizers",
+      "path": "Home & Kitchen > Storage & Organization > Drawer Organizers",
+      "searchTerms": [
+        "drawer organizer bins",
+        "plastic storage bins",
+        "clear organizer trays",
+        "kitchen drawer dividers",
+        "makeup organizer",
+        "office desk storage"
+      ],
+      "confidence": 0.95,
+      "evidence": [
+        "Product title explicitly states 'Drawer Organizer Bins'",
+        "Known category is 'Drawer Organizers'"
+      ]
+    },
+    "attributes": [
+      {
+        "name": "material",
+        "value": "Plastic",
+        "source": "Product data",
+        "confidence": 0.95
+      },
+      {
+        "name": "color",
+        "value": "Clear",
+        "source": "Product data",
+        "confidence": 0.95
+      },
+      {
+        "name": "packSize",
+        "value": "8",
+        "source": "Product title",
+        "confidence": 0.95
+      },
+      {
+        "name": "features",
+        "value": "Non-slip",
+        "source": "Product title",
+        "confidence": 0.9
+      },
+      {
+        "name": "intendedUse",
+        "value": "Bathroom, Kitchen, Bedroom, Office Desk",
+        "source": "Product title",
+        "confidence": 0.9
+      }
+    ],
+    "risks": [
+      {
+        "type": "Template",
+        "level": "low",
+        "message": "Freight template 111 needs verification for large set of 8 bins."
+      }
+    ],
+    "confidence": 0.92,
+    "ruleEngine": {
+      "passed": true,
+      "blockedBy": [],
+      "allowedForEditPage": true,
+      "notes": "Adapter output only; local Rule Engine is authoritative before edit-page use."
+    }
+  },
+  "ruleEngine": {
+    "passed": true,
+    "errors": [],
+    "warnings": [],
+    "allowedForEditPage": true,
+    "normalized": {
+      "asin": "B0FRMQQKTH",
+      "productType": "DrawerOrganizer",
+      "primaryUse": "Organizing and storing small items such as utensils, makeup, office supplies",
+      "recommendedCategory": {
+        "name": "Drawer Organizers",
+        "path": "Home & Kitchen > Storage & Organization > Drawer Organizers",
+        "searchTerms": [
+          "drawer organizer bins",
+          "plastic storage bins",
+          "clear organizer trays",
+          "kitchen drawer dividers",
+          "makeup organizer",
+          "office desk storage"
+        ],
+        "confidence": 0.95,
+        "evidence": [
+          "Product title explicitly states 'Drawer Organizer Bins'",
+          "Known category is 'Drawer Organizers'"
+        ]
+      },
+      "attributes": [
+        {
+          "name": "material",
+          "value": "Plastic",
+          "source": "Product data",
+          "confidence": 0.95
+        },
+        {
+          "name": "color",
+          "value": "Clear",
+          "source": "Product data",
+          "confidence": 0.95
+        },
+        {
+          "name": "packSize",
+          "value": "8",
+          "source": "Product title",
+          "confidence": 0.95
+        },
+        {
+          "name": "features",
+          "value": "Non-slip",
+          "source": "Product title",
+          "confidence": 0.9
+        },
+        {
+          "name": "intendedUse",
+          "value": "Bathroom, Kitchen, Bedroom, Office Desk",
+          "source": "Product title",
+          "confidence": 0.9
+        }
+      ],
+      "risks": [
+        {
+          "type": "Template",
+          "level": "low",
+          "message": "Freight template 111 needs verification for large set of 8 bins."
+        }
+      ],
+      "confidence": 0.92,
+      "allowedForEditPage": true
+    }
+  }
+}

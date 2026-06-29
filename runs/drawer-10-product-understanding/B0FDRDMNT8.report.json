@@ -1,0 +1,268 @@
+{
+  "ok": true,
+  "product": {
+    "asin": "B0FDRDMNT8",
+    "known_title": "6 PCS Clear Plastic Drawer Organizer Set, 2 Sizes Acrylic Drawer Storage Trays Non Slip Storage Bins for Makeup, Jewelry, Gadgets for Kitchen, Bedroom, Bathroom, Office",
+    "known_category": "Drawer Organizers",
+    "material": "Acrylic, Plastic",
+    "color": "Clear",
+    "price_usd": 7.9,
+    "store": "Halo Home Store",
+    "freight_template": "111"
+  },
+  "api": {
+    "status": 200,
+    "model": "deepseek-v4-flash",
+    "usage": {
+      "prompt_tokens": 351,
+      "completion_tokens": 857,
+      "total_tokens": 1208,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      },
+      "completion_tokens_details": {
+        "reasoning_tokens": 271
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 351
+    },
+    "content": "{\n  \"schemaVersion\": \"product-understanding-v1\",\n  \"asin\": \"B0FDRDMNT8\",\n  \"productType\": \"Drawer Organizer\",\n  \"primaryUse\": \"Organizing and storing items like makeup, jewelry, gadgets in kitchen, bedroom, bathroom, or office drawers\",\n  \"recommendedCategory\": {\n    \"name\": \"Drawer Organizers\",\n    \"path\": \"Home & Kitchen > Storage & Organization > Drawer Organizers\",\n    \"searchTerms\": [\n      \"clear drawer organizer\",\n      \"acrylic storage tray\",\n      \"non slip drawer bins\",\n      \"makeup organizer\",\n      \"jewelry storage\",\n      \"kitchen drawer storage\",\n      \"bathroom organizer\",\n      \"office desk organizer\"\n    ],\n    \"confidence\": 0.95,\n    \"evidence\": [\n      \"Title explicitly states 'Drawer Organizer Set'\",\n      \"Known category is 'Drawer Organizers'\",\n      \"Product is marketed for multiple room use (kitchen, bedroom, bathroom, office)\",\n      \"Material and features (clear acrylic, non-slip) align with common drawer organizers\"\n    ]\n  },\n  \"attributes\": [\n    {\n      \"name\": \"material\",\n      \"value\": \"Acrylic, Plastic\",\n      \"source\": \"product data\",\n      \"confidence\": 1.0\n    },\n    {\n      \"name\": \"color\",\n      \"value\": \"Clear\",\n      \"source\": \"product data\",\n      \"confidence\": 1.0\n    },\n    {\n      \"name\": \"number_of_pieces\",\n      \"value\": \"6\",\n      \"source\": \"title\",\n      \"confidence\": 1.0\n    },\n    {\n      \"name\": \"size\",\n      \"value\": \"2 sizes\",\n      \"source\": \"title\",\n      \"confidence\": 0.9\n    },\n    {\n      \"name\": \"features\",\n      \"value\": \"Non-slip, clear acrylic plastic\",\n      \"source\": \"title\",\n      \"confidence\": 0.95\n    },\n    {\n      \"name\": \"recommended_use\",\n      \"value\": \"Makeup, jewelry, gadgets, kitchen, bedroom, bathroom, office\",\n      \"source\": \"title\",\n      \"confidence\": 0.95\n    }\n  ],\n  \"risks\": [\n    {\n      \"type\": \"category_compliance\",\n      \"level\": \"low\",\n      \"message\": \"Product is clearly a drawer organizer; no compliance risks identified.\"\n    }\n  ],\n  \"confidence\": 0.95,\n  \"ruleEngine\": {\n    \"passed\": true,\n    \"blockedBy\": [],\n    \"allowedForEditPage\": true,\n    \"notes\": \"Product data is straightforward; no blocking rules triggered.\"\n  }\n}"
+  },
+  "raw": {
+    "schemaVersion": "product-understanding-v1",
+    "asin": "B0FDRDMNT8",
+    "productType": "Drawer Organizer",
+    "primaryUse": "Organizing and storing items like makeup, jewelry, gadgets in kitchen, bedroom, bathroom, or office drawers",
+    "recommendedCategory": {
+      "name": "Drawer Organizers",
+      "path": "Home & Kitchen > Storage & Organization > Drawer Organizers",
+      "searchTerms": [
+        "clear drawer organizer",
+        "acrylic storage tray",
+        "non slip drawer bins",
+        "makeup organizer",
+        "jewelry storage",
+        "kitchen drawer storage",
+        "bathroom organizer",
+        "office desk organizer"
+      ],
+      "confidence": 0.95,
+      "evidence": [
+        "Title explicitly states 'Drawer Organizer Set'",
+        "Known category is 'Drawer Organizers'",
+        "Product is marketed for multiple room use (kitchen, bedroom, bathroom, office)",
+        "Material and features (clear acrylic, non-slip) align with common drawer organizers"
+      ]
+    },
+    "attributes": [
+      {
+        "name": "material",
+        "value": "Acrylic, Plastic",
+        "source": "product data",
+        "confidence": 1.0
+      },
+      {
+        "name": "color",
+        "value": "Clear",
+        "source": "product data",
+        "confidence": 1.0
+      },
+      {
+        "name": "number_of_pieces",
+        "value": "6",
+        "source": "title",
+        "confidence": 1.0
+      },
+      {
+        "name": "size",
+        "value": "2 sizes",
+        "source": "title",
+        "confidence": 0.9
+      },
+      {
+        "name": "features",
+        "value": "Non-slip, clear acrylic plastic",
+        "source": "title",
+        "confidence": 0.95
+      },
+      {
+        "name": "recommended_use",
+        "value": "Makeup, jewelry, gadgets, kitchen, bedroom, bathroom, office",
+        "source": "title",
+        "confidence": 0.95
+      }
+    ],
+    "risks": [
+      {
+        "type": "category_compliance",
+        "level": "low",
+        "message": "Product is clearly a drawer organizer; no compliance risks identified."
+      }
+    ],
+    "confidence": 0.95,
+    "ruleEngine": {
+      "passed": true,
+      "blockedBy": [],
+      "allowedForEditPage": true,
+      "notes": "Product data is straightforward; no blocking rules triggered."
+    }
+  },
+  "adapted": {
+    "schemaVersion": "product-understanding-v1",
+    "asin": "B0FDRDMNT8",
+    "productType": "Drawer Organizer",
+    "primaryUse": "Organizing and storing items like makeup, jewelry, gadgets in kitchen, bedroom, bathroom, or office drawers",
+    "recommendedCategory": {
+      "name": "Drawer Organizers",
+      "path": "Home & Kitchen > Storage & Organization > Drawer Organizers",
+      "searchTerms": [
+        "clear drawer organizer",
+        "acrylic storage tray",
+        "non slip drawer bins",
+        "makeup organizer",
+        "jewelry storage",
+        "kitchen drawer storage",
+        "bathroom organizer",
+        "office desk organizer"
+      ],
+      "confidence": 0.95,
+      "evidence": [
+        "Title explicitly states 'Drawer Organizer Set'",
+        "Known category is 'Drawer Organizers'",
+        "Product is marketed for multiple room use (kitchen, bedroom, bathroom, office)",
+        "Material and features (clear acrylic, non-slip) align with common drawer organizers"
+      ]
+    },
+    "attributes": [
+      {
+        "name": "material",
+        "value": "Acrylic, Plastic",
+        "source": "product data",
+        "confidence": 1.0
+      },
+      {
+        "name": "color",
+        "value": "Clear",
+        "source": "product data",
+        "confidence": 1.0
+      },
+      {
+        "name": "number_of_pieces",
+        "value": "6",
+        "source": "title",
+        "confidence": 1.0
+      },
+      {
+        "name": "size",
+        "value": "2 sizes",
+        "source": "title",
+        "confidence": 0.9
+      },
+      {
+        "name": "features",
+        "value": "Non-slip, clear acrylic plastic",
+        "source": "title",
+        "confidence": 0.95
+      },
+      {
+        "name": "recommended_use",
+        "value": "Makeup, jewelry, gadgets, kitchen, bedroom, bathroom, office",
+        "source": "title",
+        "confidence": 0.95
+      }
+    ],
+    "risks": [
+      {
+        "type": "category_compliance",
+        "level": "low",
+        "message": "Product is clearly a drawer organizer; no compliance risks identified."
+      }
+    ],
+    "confidence": 0.95,
+    "ruleEngine": {
+      "passed": true,
+      "blockedBy": [],
+      "allowedForEditPage": true,
+      "notes": "Adapter output only; local Rule Engine is authoritative before edit-page use."
+    }
+  },
+  "ruleEngine": {
+    "passed": true,
+    "errors": [],
+    "warnings": [],
+    "allowedForEditPage": true,
+    "normalized": {
+      "asin": "B0FDRDMNT8",
+      "productType": "Drawer Organizer",
+      "primaryUse": "Organizing and storing items like makeup, jewelry, gadgets in kitchen, bedroom, bathroom, or office drawers",
+      "recommendedCategory": {
+        "name": "Drawer Organizers",
+        "path": "Home & Kitchen > Storage & Organization > Drawer Organizers",
+        "searchTerms": [
+          "clear drawer organizer",
+          "acrylic storage tray",
+          "non slip drawer bins",
+          "makeup organizer",
+          "jewelry storage",
+          "kitchen drawer storage",
+          "bathroom organizer",
+          "office desk organizer"
+        ],
+        "confidence": 0.95,
+        "evidence": [
+          "Title explicitly states 'Drawer Organizer Set'",
+          "Known category is 'Drawer Organizers'",
+          "Product is marketed for multiple room use (kitchen, bedroom, bathroom, office)",
+          "Material and features (clear acrylic, non-slip) align with common drawer organizers"
+        ]
+      },
+      "attributes": [
+        {
+          "name": "material",
+          "value": "Acrylic, Plastic",
+          "source": "product data",
+          "confidence": 1.0
+        },
+        {
+          "name": "color",
+          "value": "Clear",
+          "source": "product data",
+          "confidence": 1.0
+        },
+        {
+          "name": "number_of_pieces",
+          "value": "6",
+          "source": "title",
+          "confidence": 1.0
+        },
+        {
+          "name": "size",
+          "value": "2 sizes",
+          "source": "title",
+          "confidence": 0.9
+        },
+        {
+          "name": "features",
+          "value": "Non-slip, clear acrylic plastic",
+          "source": "title",
+          "confidence": 0.95
+        },
+        {
+          "name": "recommended_use",
+          "value": "Makeup, jewelry, gadgets, kitchen, bedroom, bathroom, office",
+          "source": "title",
+          "confidence": 0.95
+        }
+      ],
+      "risks": [
+        {
+          "type": "category_compliance",
+          "level": "low",
+          "message": "Product is clearly a drawer organizer; no compliance risks identified."
+        }
+      ],
+      "confidence": 0.95,
+      "allowedForEditPage": true
+    }
+  }
+}

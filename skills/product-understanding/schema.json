@@ -1,0 +1,63 @@
+{
+  "schemaVersion": "product-understanding-v1",
+  "requiredTopLevelKeys": [
+    "schemaVersion",
+    "asin",
+    "productType",
+    "primaryUse",
+    "recommendedCategory",
+    "attributes",
+    "risks",
+    "confidence",
+    "ruleEngine"
+  ],
+  "forbiddenOutputTerms": [
+    "publish",
+    "review and publish",
+    "ready to publish",
+    "go publish",
+    "发布",
+    "上架",
+    "刊登",
+    "一键发布"
+  ],
+  "recommendedCategory": {
+    "requiredKeys": [
+      "name",
+      "path",
+      "searchTerms",
+      "confidence",
+      "evidence"
+    ],
+    "minConfidenceForEditUse": 0.72
+  },
+  "attributeItem": {
+    "requiredKeys": [
+      "name",
+      "value",
+      "source",
+      "confidence"
+    ]
+  },
+  "riskItem": {
+    "requiredKeys": [
+      "type",
+      "level",
+      "message"
+    ],
+    "allowedLevels": [
+      "low",
+      "medium",
+      "high",
+      "blocker"
+    ]
+  },
+  "ruleEngine": {
+    "requiredKeys": [
+      "passed",
+      "blockedBy",
+      "allowedForEditPage",
+      "notes"
+    ]
+  }
+}

@@ -1,0 +1,1266 @@
+{
+  "recordCount": 32,
+  "categoryRecordCount": 19,
+  "categorySearchRecordCount": 6,
+  "categoryAttributeRecordCount": 1,
+  "candidateCategories": [
+    {
+      "path": "data[0]",
+      "categoryId": "201236906",
+      "name": "Handheld Fans",
+      "rawIds": [
+        "201236906",
+        "1675"
+      ],
+      "isNumericPublishId": true,
+      "rawPreview": "{\"id\":1675,\"categoryId\":\"201236906\",\"categoryParentId\":\"201217830\",\"categoryName\":\"Handheld Fans\",\"categoryNameZh\":\"扇子\",\"nodePath\":\"家居用品(Home & Garden)/家居日用品(Household Merchandises)/扇/迷你风扇/配件/冰垫/冰贴(Cooling Products)/扇子(Handheld Fans)\",\"nodePathId\":\"15/200033149/201217830/201236906\",\"level\":4,\"isLeaf\":1,\"isEuContact\":1,\"isSizeChart\":0,\"isNewSize\":0,\"sizeChartType\":null,\"sizeChartSubTypeList\":null,\"features\":\"{}\",\"hasPlugAttribute\":null,\"isUpdate\":1,\"isDelete\":0,\"createTime\":1721923200000,\"updateTime\":1782057600000}"
+    },
+    {
+      "path": "data[0]",
+      "categoryId": "200003937",
+      "name": "Arts,Crafts & Sewing",
+      "rawIds": [
+        "200003937",
+        "2272"
+      ],
+      "isNumericPublishId": true,
+      "rawPreview": "{\"id\":2272,\"categoryId\":\"200003937\",\"categoryParentId\":\"15\",\"categoryName\":\"Arts,Crafts & Sewing\",\"categoryNameZh\":\"手工艺品&缝纫用品（半成品）\",\"nodePath\":null,\"nodePathId\":\"15/200003937\",\"level\":2,\"isLeaf\":0,\"isEuContact\":0,\"isSizeChart\":0,\"isNewSize\":0,\"sizeChartType\":null,\"sizeChartSubTypeList\":null,\"features\":\"{}\",\"hasPlugAttribute\":null,\"isUpdate\":0,\"isDelete\":0,\"createTime\":1721923200000,\"updateTime\":1782057600000}"
+    },
+    {
+      "path": "data[1]",
+      "categoryId": "100001824",
+      "name": "Festive & Party Supplies",
+      "rawIds": [
+        "100001824",
+        "2512"
+      ],
+      "isNumericPublishId": true,
+      "rawPreview": "{\"id\":2512,\"categoryId\":\"100001824\",\"categoryParentId\":\"15\",\"categoryName\":\"Festive & Party Supplies\",\"categoryNameZh\":\"节庆派对用品\",\"nodePath\":null,\"nodePathId\":\"15/100001824\",\"level\":2,\"isLeaf\":0,\"isEuContact\":0,\"isSizeChart\":0,\"isNewSize\":0,\"sizeChartType\":null,\"sizeChartSubTypeList\":null,\"features\":\"{}\",\"hasPlugAttribute\":null,\"isUpdate\":0,\"isDelete\":0,\"createTime\":1721923200000,\"updateTime\":1782057600000}"
+    },
+    {
+      "path": "data[2]",
+      "categoryId": "125",
+      "name": "Garden Supplies",
+      "rawIds": [
+        "125",
+        "1260"
+      ],
+      "isNumericPublishId": true,
+      "rawPreview": "{\"id\":1260,\"categoryId\":\"125\",\"categoryParentId\":\"15\",\"categoryName\":\"Garden Supplies\",\"categoryNameZh\":\"园艺用品\",\"nodePath\":null,\"nodePathId\":\"15/125\",\"level\":2,\"isLeaf\":0,\"isEuContact\":0,\"isSizeChart\":0,\"isNewSize\":0,\"sizeChartType\":null,\"sizeChartSubTypeList\":null,\"features\":\"{}\",\"hasPlugAttribute\":null,\"isUpdate\":0,\"isDelete\":0,\"createTime\":1721923200000,\"updateTime\":1782057600000}"
+    },
+    {
+      "path": "data[3]",
+      "categoryId": "3710",
+      "name": "Home Decor",
+      "rawIds": [
+        "3710",
+        "2161"
+      ],
+      "isNumericPublishId": true,
+      "rawPreview": "{\"id\":2161,\"categoryId\":\"3710\",\"categoryParentId\":\"15\",\"categoryName\":\"Home Decor\",\"categoryNameZh\":\"家庭装饰品\",\"nodePath\":null,\"nodePathId\":\"15/3710\",\"level\":2,\"isLeaf\":0,\"isEuContact\":0,\"isSizeChart\":0,\"isNewSize\":0,\"sizeChartType\":null,\"sizeChartSubTypeList\":null,\"features\":\"{}\",\"hasPlugAttribute\":null,\"isUpdate\":0,\"isDelete\":0,\"createTime\":1721923200000,\"updateTime\":1782057600000}"
+    },
+    {
+      "path": "data[4]",
+      "categoryId": "1541",
+      "name": "Home Storage & Organization",
+      "rawIds": [
+        "1541",
+        "1519"
+      ],
+      "isNumericPublishId": true,
+      "rawPreview": "{\"id\":1519,\"categoryId\":\"1541\",\"categoryParentId\":\"15\",\"categoryName\":\"Home Storage & Organization\",\"categoryNameZh\":\"家用储存收藏用具\",\"nodePath\":null,\"nodePathId\":\"15/1541\",\"level\":2,\"isLeaf\":0,\"isEuContact\":0,\"isSizeChart\":0,\"isNewSize\":0,\"sizeChartType\":null,\"sizeChartSubTypeList\":null,\"features\":\"{}\",\"hasPlugAttribute\":null,\"isUpdate\":0,\"isDelete\":0,\"createTime\":1721923200000,\"updateTime\":1782057600000}"
+    },
+    {
+      "path": "data[5]",
+      "categoryId": "405",
+      "name": "Home Textile",
+      "rawIds": [
+        "405",
+        "1465"
+      ],
+      "isNumericPublishId": true,
+      "rawPreview": "{\"id\":1465,\"categoryId\":\"405\",\"categoryParentId\":\"15\",\"categoryName\":\"Home Textile\",\"categoryNameZh\":\"家纺成品\",\"nodePath\":null,\"nodePathId\":\"15/405\",\"level\":2,\"isLeaf\":0,\"isEuContact\":0,\"isSizeChart\":0,\"isNewSize\":0,\"sizeChartType\":null,\"sizeChartSubTypeList\":null,\"features\":\"{}\",\"hasPlugAttribute\":null,\"isUpdate\":0,\"isDelete\":0,\"createTime\":1721923200000,\"updateTime\":1782057600000}"
+    },
+    {
+      "path": "data[6]",
+      "categoryId": "200033149",
+      "name": "Household Merchandises",
+      "rawIds": [
+        "200033149",
+        "1586"
+      ],
+      "isNumericPublishId": true,
+      "rawPreview": "{\"id\":1586,\"categoryId\":\"200033149\",\"categoryParentId\":\"15\",\"categoryName\":\"Household Merchandises\",\"categoryNameZh\":\"家居日用品\",\"nodePath\":null,\"nodePathId\":\"15/200033149\",\"level\":2,\"isLeaf\":0,\"isEuContact\":0,\"isSizeChart\":0,\"isNewSize\":0,\"sizeChartType\":null,\"sizeChartSubTypeList\":null,\"features\":\"{}\",\"hasPlugAttribute\":null,\"isUpdate\":0,\"isDelete\":0,\"createTime\":1721923200000,\"updateTime\":1782057600000}"
+    },
+    {
+      "path": "data[7]",
+      "categoryId": "200000920",
+      "name": "Kitchen,Dining & Bar",
+      "rawIds": [
+        "200000920",
+        "1790"
+      ],
+      "isNumericPublishId": true,
+      "rawPreview": "{\"id\":1790,\"categoryId\":\"200000920\",\"categoryParentId\":\"15\",\"categoryName\":\"Kitchen,Dining & Bar\",\"categoryNameZh\":\"厨房吧台用品\",\"nodePath\":null,\"nodePathId\":\"15/200000920\",\"level\":2,\"isLeaf\":0,\"isEuContact\":0,\"isSizeChart\":0,\"isNewSize\":0,\"sizeChartType\":null,\"sizeChartSubTypeList\":null,\"features\":\"{}\",\"hasPlugAttribute\":null,\"isUpdate\":0,\"isDelete\":0,\"createTime\":1721923200000,\"updateTime\":1782057600000}"
+    },
+    {
+      "path": "data[8]",
+      "categoryId": "100006664",
+      "name": "Pet Products",
+      "rawIds": [
+        "100006664",
+        "2574"
+      ],
+      "isNumericPublishId": true,
+      "rawPreview": "{\"id\":2574,\"categoryId\":\"100006664\",\"categoryParentId\":\"15\",\"categoryName\":\"Pet Products\",\"categoryNameZh\":\"宠物用品\",\"nodePath\":null,\"nodePathId\":\"15/100006664\",\"level\":2,\"isLeaf\":0,\"isEuContact\":0,\"isSizeChart\":0,\"isNewSize\":0,\"sizeChartType\":null,\"sizeChartSubTypeList\":null,\"features\":\"{}\",\"hasPlugAttribute\":null,\"isUpdate\":0,\"isDelete\":0,\"createTime\":1721923200000,\"updateTime\":1782057600000}"
+    },
+    {
+      "path": "data[0]",
+      "categoryId": "100003467",
+      "name": "Bathroom Products",
+      "rawIds": [
+        "100003467",
+        "1676"
+      ],
+      "isNumericPublishId": true,
+      "rawPreview": "{\"id\":1676,\"categoryId\":\"100003467\",\"categoryParentId\":\"200033149\",\"categoryName\":\"Bathroom Products\",\"categoryNameZh\":\"浴室用品\",\"nodePath\":null,\"nodePathId\":\"15/200033149/100003467\",\"level\":3,\"isLeaf\":0,\"isEuContact\":0,\"isSizeChart\":0,\"isNewSize\":0,\"sizeChartType\":null,\"sizeChartSubTypeList\":null,\"features\":\"{}\",\"hasPlugAttribute\":null,\"isUpdate\":0,\"isDelete\":0,\"createTime\":1721923200000,\"updateTime\":1782057600000}"
+    },
+    {
+      "path": "data[1]",
+      "categoryId": "201217830",
+      "name": "Cooling Products",
+      "rawIds": [
+        "201217830",
+        "1670"
+      ],
+      "isNumericPublishId": true,
+      "rawPreview": "{\"id\":1670,\"categoryId\":\"201217830\",\"categoryParentId\":\"200033149\",\"categoryName\":\"Cooling Products\",\"categoryNameZh\":\"扇/迷你风扇/配件/冰垫/冰贴\",\"nodePath\":null,\"nodePathId\":\"15/200033149/201217830\",\"level\":3,\"isLeaf\":0,\"isEuContact\":0,\"isSizeChart\":0,\"isNewSize\":0,\"sizeChartType\":null,\"sizeChartSubTypeList\":null,\"features\":\"{}\",\"hasPlugAttribute\":null,\"isUpdate\":0,\"isDelete\":0,\"createTime\":1721923200000,\"updateTime\":1782057600000}"
+    },
+    {
+      "path": "data[2]",
+      "categoryId": "202187001",
+      "name": "Deworming Supplies",
+      "rawIds": [
+        "202187001",
+        "1714"
+      ],
+      "isNumericPublishId": true,
+      "rawPreview": "{\"id\":1714,\"categoryId\":\"202187001\",\"categoryParentId\":\"200033149\",\"categoryName\":\"Deworming Supplies\",\"categoryNameZh\":\"驱蚊用品（非带电类）\",\"nodePath\":null,\"nodePathId\":\"15/200033149/202187001\",\"level\":3,\"isLeaf\":0,\"isEuContact\":0,\"isSizeChart\":0,\"isNewSize\":0,\"sizeChartType\":null,\"sizeChartSubTypeList\":null,\"features\":\"{}\",\"hasPlugAttribute\":null,\"isUpdate\":0,\"isDelete\":0,\"createTime\":1721923200000,\"updateTime\":1782057600000}"
+    },
+    {
+      "path": "data[3]",
+      "categoryId": "202176005",
+      "name": "Disposable Household Cleaning Products",
+      "rawIds": [
+        "202176005",
+        "1779"
+      ],
+      "isNumericPublishId": true,
+      "rawPreview": "{\"id\":1779,\"categoryId\":\"202176005\",\"categoryParentId\":\"200033149\",\"categoryName\":\"Disposable Household Cleaning Products\",\"categoryNameZh\":\"一次性家庭清洁用品\",\"nodePath\":null,\"nodePathId\":\"15/200033149/202176005\",\"level\":3,\"isLeaf\":0,\"isEuContact\":0,\"isSizeChart\":0,\"isNewSize\":0,\"sizeChartType\":null,\"sizeChartSubTypeList\":null,\"features\":\"{}\",\"hasPlugAttribute\":null,\"isUpdate\":0,\"isDelete\":0,\"createTime\":1721923200000,\"updateTime\":1782057600000}"
+    },
+    {
+      "path": "data[4]",
+      "categoryId": "200033151",
+      "name": "Dust Covers",
+      "rawIds": [
+        "200033151",
+        "1643"
+      ],
+      "isNumericPublishId": true,
+      "rawPreview": "{\"id\":1643,\"categoryId\":\"200033151\",\"categoryParentId\":\"200033149\",\"categoryName\":\"Dust Covers\",\"categoryNameZh\":\"防尘保护罩\",\"nodePath\":null,\"nodePathId\":\"15/200033149/200033151\",\"level\":3,\"isLeaf\":0,\"isEuContact\":0,\"isSizeChart\":0,\"isNewSize\":0,\"sizeChartType\":null,\"sizeChartSubTypeList\":null,\"features\":\"{}\",\"hasPlugAttribute\":null,\"isUpdate\":0,\"isDelete\":0,\"createTime\":1721923200000,\"updateTime\":1782057600000}"
+    },
+    {
+      "path": "data[5]",
+      "categoryId": "202195411",
+      "name": "Home Thermometers",
+      "rawIds": [
+        "202195411",
+        "9676"
+      ],
+      "isNumericPublishId": true,
+      "rawPreview": "{\"id\":9676,\"categoryId\":\"202195411\",\"categoryParentId\":\"200033149\",\"categoryName\":\"Home Thermometers\",\"categoryNameZh\":\"家用温度计\",\"nodePath\":null,\"nodePathId\":\"15/200033149/202195411\",\"level\":3,\"isLeaf\":0,\"isEuContact\":0,\"isSizeChart\":0,\"isNewSize\":0,\"sizeChartType\":null,\"sizeChartSubTypeList\":null,\"features\":\"{}\",\"hasPlugAttribute\":null,\"isUpdate\":0,\"isDelete\":0,\"createTime\":1725033600000,\"updateTime\":1782057600000}"
+    },
+    {
+      "path": "data[6]",
+      "categoryId": "100003864",
+      "name": "Household Cleaning Chemicals",
+      "rawIds": [
+        "100003864",
+        "1729"
+      ],
+      "isNumericPublishId": true,
+      "rawPreview": "{\"id\":1729,\"categoryId\":\"100003864\",\"categoryParentId\":\"200033149\",\"categoryName\":\"Household Cleaning Chemicals\",\"categoryNameZh\":\"家用清洁剂及洗涤剂\",\"nodePath\":null,\"nodePathId\":\"15/200033149/100003864\",\"level\":3,\"isLeaf\":0,\"isEuContact\":0,\"isSizeChart\":0,\"isNewSize\":0,\"sizeChartType\":null,\"sizeChartSubTypeList\":null,\"features\":\"{}\",\"hasPlugAttribute\":null,\"isUpdate\":0,\"isDelete\":0,\"createTime\":1721923200000,\"updateTime\":1782057600000}"
+    },
+    {
+      "path": "data[7]",
+      "categoryId": "1514",
+      "name": "Household Cleaning Tools & Accessories",
+      "rawIds": [
+        "1514",
+        "1587"
+      ],
+      "isNumericPublishId": true,
+      "rawPreview": "{\"id\":1587,\"categoryId\":\"1514\",\"categoryParentId\":\"200033149\",\"categoryName\":\"Household Cleaning Tools & Accessories\",\"categoryNameZh\":\"家庭清洁用具及附件\",\"nodePath\":null,\"nodePathId\":\"15/200033149/1514\",\"level\":3,\"isLeaf\":0,\"isEuContact\":0,\"isSizeChart\":0,\"isNewSize\":0,\"sizeChartType\":null,\"sizeChartSubTypeList\":null,\"features\":\"{}\",\"hasPlugAttribute\":null,\"isUpdate\":0,\"isDelete\":0,\"createTime\":1721923200000,\"updateTime\":1782057600000}"
+    },
+    {
+      "path": "data[8]",
+      "categoryId": "1516",
+      "name": "Laundry Products",
+      "rawIds": [
+        "1516",
+        "1622"
+      ],
+      "isNumericPublishId": true,
+      "rawPreview": "{\"id\":1622,\"categoryId\":\"1516\",\"categoryParentId\":\"200033149\",\"categoryName\":\"Laundry Products\",\"categoryNameZh\":\"洗衣产品\",\"nodePath\":null,\"nodePathId\":\"15/200033149/1516\",\"level\":3,\"isLeaf\":0,\"isEuContact\":0,\"isSizeChart\":0,\"isNewSize\":0,\"sizeChartType\":null,\"sizeChartSubTypeList\":null,\"features\":\"{}\",\"hasPlugAttribute\":null,\"isUpdate\":0,\"isDelete\":0,\"createTime\":1721923200000,\"updateTime\":1782057600000}"
+    },
+    {
+      "path": "data[9]",
+      "categoryId": "1526",
+      "name": "Lighters & Smoking Accessories",
+      "rawIds": [
+        "1526",
+        "1630"
+      ],
+      "isNumericPublishId": true,
+      "rawPreview": "{\"id\":1630,\"categoryId\":\"1526\",\"categoryParentId\":\"200033149\",\"categoryName\":\"Lighters & Smoking Accessories\",\"categoryNameZh\":\"打火机和烟具\",\"nodePath\":null,\"nodePathId\":\"15/200033149/1526\",\"level\":3,\"isLeaf\":0,\"isEuContact\":0,\"isSizeChart\":0,\"isNewSize\":0,\"sizeChartType\":null,\"sizeChartSubTypeList\":null,\"features\":\"{}\",\"hasPlugAttribute\":null,\"isUpdate\":0,\"isDelete\":0,\"createTime\":1721923200000,\"updateTime\":1782057600000}"
+    },
+    {
+      "path": "data[10]",
+      "categoryId": "200368144",
+      "name": "Moth & Mildew Proofing",
+      "rawIds": [
+        "200368144",
+        "1707"
+      ],
+      "isNumericPublishId": true,
+      "rawPreview": "{\"id\":1707,\"categoryId\":\"200368144\",\"categoryParentId\":\"200033149\",\"categoryName\":\"Moth & Mildew Proofing\",\"categoryNameZh\":\"防霉防蛀\",\"nodePath\":null,\"nodePathId\":\"15/200033149/200368144\",\"level\":3,\"isLeaf\":0,\"isEuContact\":0,\"isSizeChart\":0,\"isNewSize\":0,\"sizeChartType\":null,\"sizeChartSubTypeList\":null,\"features\":\"{}\",\"hasPlugAttribute\":null,\"isUpdate\":0,\"isDelete\":0,\"createTime\":1721923200000,\"updateTime\":1782057600000}"
+    },
+    {
+      "path": "data[11]",
+      "categoryId": "100004789",
+      "name": "Rain Gear",
+      "rawIds": [
+        "100004789",
+        "1766"
+      ],
+      "isNumericPublishId": true,
+      "rawPreview": "{\"id\":1766,\"categoryId\":\"100004789\",\"categoryParentId\":\"200033149\",\"categoryName\":\"Rain Gear\",\"categoryNameZh\":\"雨具\",\"nodePath\":null,\"nodePathId\":\"15/200033149/100004789\",\"level\":3,\"isLeaf\":0,\"isEuContact\":0,\"isSizeChart\":0,\"isNewSize\":0,\"sizeChartType\":null,\"sizeChartSubTypeList\":null,\"features\":\"{}\",\"hasPlugAttribute\":null,\"isUpdate\":0,\"isDelete\":0,\"createTime\":1721923200000,\"updateTime\":1782057600000}"
+    },
+    {
+      "path": "data[12]",
+      "categoryId": "201329617",
+      "name": "Shoe Film Machine",
+      "rawIds": [
+        "201329617",
+        "1642"
+      ],
+      "isNumericPublishId": true,
+      "rawPreview": "{\"id\":1642,\"categoryId\":\"201329617\",\"categoryParentId\":\"200033149\",\"categoryName\":\"Shoe Film Machine\",\"categoryNameZh\":\"套鞋机\",\"nodePath\":\"家居用品(Home & Garden)/家居日用品(Household Merchandises)/套鞋机(Shoe Film Machine)\",\"nodePathId\":\"15/200033149/201329617\",\"level\":3,\"isLeaf\":1,\"isEuContact\":1,\"isSizeChart\":0,\"isNewSize\":0,\"sizeChartType\":null,\"sizeChartSubTypeList\":null,\"features\":\"{\\\"AE_FEATURE_Product_manual_only\\\":\\\"required\\\"}\",\"hasPlugAttribute\":null,\"isUpdate\":1,\"isDelete\":0,\"createTime\":1721923200000,\"updateTime\":1782057600000}"
+    },
+    {
+      "path": "data[13]",
+      "categoryId": "200039143",
+      "name": "Warming Products",
+      "rawIds": [
+        "200039143",
+        "1663"
+      ],
+      "isNumericPublishId": true,
+      "rawPreview": "{\"id\":1663,\"categoryId\":\"200039143\",\"categoryParentId\":\"200033149\",\"categoryName\":\"Warming Products\",\"categoryNameZh\":\"保暖用品\",\"nodePath\":null,\"nodePathId\":\"15/200033149/200039143\",\"level\":3,\"isLeaf\":0,\"isEuContact\":0,\"isSizeChart\":0,\"isNewSize\":0,\"sizeChartType\":null,\"sizeChartSubTypeList\":null,\"features\":\"{}\",\"hasPlugAttribute\":null,\"isUpdate\":0,\"isDelete\":0,\"createTime\":1721923200000,\"updateTime\":1782057600000}"
+    },
+    {
+      "path": "data[0]",
+      "categoryId": "202188009",
+      "name": "Cooling Spray",
+      "rawIds": [
+        "202188009",
+        "1673"
+      ],
+      "isNumericPublishId": true,
+      "rawPreview": "{\"id\":1673,\"categoryId\":\"202188009\",\"categoryParentId\":\"201217830\",\"categoryName\":\"Cooling Spray\",\"categoryNameZh\":\"降温喷雾\",\"nodePath\":\"家居用品(Home & Garden)/家居日用品(Household Merchandises)/扇/迷你风扇/配件/冰垫/冰贴(Cooling Products)/降温喷雾(Cooling Spray)\",\"nodePathId\":\"15/200033149/201217830/202188009\",\"level\":4,\"isLeaf\":1,\"isEuContact\":1,\"isSizeChart\":0,\"isNewSize\":0,\"sizeChartType\":null,\"sizeChartSubTypeList\":null,\"features\":\"{\\\"AE_FEATURE_Product_manual_only\\\":\\\"required\\\"}\",\"hasPlugAttribute\":null,\"isUpdate\":1,\"isDelete\":0,\"createTime\":1721923200000,\"updateTime\":1782057600000}"
+    },
+    {
+      "path": "data[1]",
+      "categoryId": "201236906",
+      "name": "Handheld Fans",
+      "rawIds": [
+        "201236906",
+        "1675"
+      ],
+      "isNumericPublishId": true,
+      "rawPreview": "{\"id\":1675,\"categoryId\":\"201236906\",\"categoryParentId\":\"201217830\",\"categoryName\":\"Handheld Fans\",\"categoryNameZh\":\"扇子\",\"nodePath\":\"家居用品(Home & Garden)/家居日用品(Household Merchandises)/扇/迷你风扇/配件/冰垫/冰贴(Cooling Products)/扇子(Handheld Fans)\",\"nodePathId\":\"15/200033149/201217830/201236906\",\"level\":4,\"isLeaf\":1,\"isEuContact\":1,\"isSizeChart\":0,\"isNewSize\":0,\"sizeChartType\":null,\"sizeChartSubTypeList\":null,\"features\":\"{}\",\"hasPlugAttribute\":null,\"isUpdate\":1,\"isDelete\":0,\"createTime\":1721923200000,\"updateTime\":1782057600000}"
+    },
+    {
+      "path": "data[2]",
+      "categoryId": "201231422",
+      "name": "Ice Pad",
+      "rawIds": [
+        "201231422",
+        "1671"
+      ],
+      "isNumericPublishId": true,
+      "rawPreview": "{\"id\":1671,\"categoryId\":\"201231422\",\"categoryParentId\":\"201217830\",\"categoryName\":\"Ice Pad\",\"categoryNameZh\":\"冰垫\",\"nodePath\":\"家居用品(Home & Garden)/家居日用品(Household Merchandises)/扇/迷你风扇/配件/冰垫/冰贴(Cooling Products)/冰垫(Ice Pad)\",\"nodePathId\":\"15/200033149/201217830/201231422\",\"level\":4,\"isLeaf\":1,\"isEuContact\":1,\"isSizeChart\":0,\"isNewSize\":0,\"sizeChartType\":null,\"sizeChartSubTypeList\":null,\"features\":\"{}\",\"hasPlugAttribute\":null,\"isUpdate\":1,\"isDelete\":0,\"createTime\":1721923200000,\"updateTime\":1782057600000}"
+    },
+    {
+      "path": "data[3]",
+      "categoryId": "201335911",
+      "name": "Ice Pillows",
+      "rawIds": [
+        "201335911",
+        "1672"
+      ],
+      "isNumericPublishId": true,
+      "rawPreview": "{\"id\":1672,\"categoryId\":\"201335911\",\"categoryParentId\":\"201217830\",\"categoryName\":\"Ice Pillows\",\"categoryNameZh\":\"冰枕\",\"nodePath\":\"家居用品(Home & Garden)/家居日用品(Household Merchandises)/扇/迷你风扇/配件/冰垫/冰贴(Cooling Products)/冰枕(Ice Pillows)\",\"nodePathId\":\"15/200033149/201217830/201335911\",\"level\":4,\"isLeaf\":1,\"isEuContact\":1,\"isSizeChart\":0,\"isNewSize\":0,\"sizeChartType\":null,\"sizeChartSubTypeList\":null,\"features\":\"{}\",\"hasPlugAttribute\":null,\"isUpdate\":1,\"isDelete\":0,\"createTime\":1721923200000,\"updateTime\":1782057600000}"
+    },
+    {
+      "path": "data[4]",
+      "categoryId": "201220728",
+      "name": "Ice Stickers",
+      "rawIds": [
+        "201220728",
+        "1674"
+      ],
+      "isNumericPublishId": true,
+      "rawPreview": "{\"id\":1674,\"categoryId\":\"201220728\",\"categoryParentId\":\"201217830\",\"categoryName\":\"Ice Stickers\",\"categoryNameZh\":\"冰贴\",\"nodePath\":\"家居用品(Home & Garden)/家居日用品(Household Merchandises)/扇/迷你风扇/配件/冰垫/冰贴(Cooling Products)/冰贴(Ice Stickers)\",\"nodePathId\":\"15/200033149/201217830/201220728\",\"level\":4,\"isLeaf\":1,\"isEuContact\":1,\"isSizeChart\":0,\"isNewSize\":0,\"sizeChartType\":null,\"sizeChartSubTypeList\":null,\"features\":\"{}\",\"hasPlugAttribute\":null,\"isUpdate\":1,\"isDelete\":0,\"createTime\":1721923200000,\"updateTime\":1782057600000}"
+    },
+    {
+      "path": "data[0]",
+      "categoryId": "201236906",
+      "name": "外包装/标签实拍图-欧盟",
+      "rawIds": [
+        "201236906",
+        "57144"
+      ],
+      "isNumericPublishId": true,
+      "rawPreview": "{\"id\":57144,\"categoryId\":\"201236906\",\"label\":\"外包装/标签实拍图-欧盟\",\"type\":\"image\",\"key\":\"Package_Label_Photo_EU\",\"tips\":\"请上传发往欧盟的商品包装实物图，应包含生产企业信息、欧盟责任人信息和CE标志\",\"required\":0,\"qualificationMd5\":\"3295bb93323b7aa832836557476c3bbb\",\"createTime\":1745856000000,\"updateTime\":1782057600000}"
+    },
+    {
+      "path": "data[1]",
+      "categoryId": "201236906",
+      "name": "产品安全信息/警示语",
+      "rawIds": [
+        "201236906",
+        "78271"
+      ],
+      "isNumericPublishId": true,
+      "rawPreview": "{\"id\":78271,\"categoryId\":\"201236906\",\"label\":\"产品安全信息/警示语\",\"type\":\"text\",\"key\":\"product_safety_info_warning\",\"tips\":\"(选填）如商品具有特殊的安全信息/警示语，请填写。请勿使用特殊符号（如引号、斜杠等），且长度勿超过200字符。\",\"required\":0,\"qualificationMd5\":\"f8e714c3a28f802434444b44fdec6b1c\",\"createTime\":1752163200000,\"updateTime\":1782057600000}"
+    },
+    {
+      "path": "data[2]",
+      "categoryId": "201236906",
+      "name": "外包装/标签实拍图-英国",
+      "rawIds": [
+        "201236906",
+        "92335"
+      ],
+      "isNumericPublishId": true,
+      "rawPreview": "{\"id\":92335,\"categoryId\":\"201236906\",\"label\":\"外包装/标签实拍图-英国\",\"type\":\"image\",\"key\":\"Package_Label_Photo_UK\",\"tips\":null,\"required\":0,\"qualificationMd5\":\"f1a0caf45d0db388dd97d978c2234927\",\"createTime\":1757606400000,\"updateTime\":1782057600000}"
+    },
+    {
+      "path": "data[3]",
+      "categoryId": "201236906",
+      "name": "欧盟GPSR合规标签",
+      "rawIds": [
+        "201236906",
+        "159655"
+      ],
+      "isNumericPublishId": true,
+      "rawPreview": "{\"id\":159655,\"categoryId\":\"201236906\",\"label\":\"欧盟GPSR合规标签\",\"type\":\"image\",\"key\":\"EU_GPSR_label\",\"tips\":\"请提交符合欧盟通用产品安全法规（General Product Safety Regulation，GPSR）的商品外包装标签实拍图或设计稿。与【外包装/标签实拍图-欧盟】二选一，新提交请优先上传【外包装/标签实拍图-欧盟】\",\"required\":0,\"qualificationMd5\":\"f84f02fa6a7510371e64841738a44bd7\",\"createTime\":1776960000000,\"updateTime\":1782057600000}"
+    },
+    {
+      "path": "data[4]",
+      "categoryId": "201236906",
+      "name": "SEC认证",
+      "rawIds": [
+        "201236906",
+        "170781"
+      ],
+      "isNumericPublishId": true,
+      "rawPreview": "{\"id\":170781,\"categoryId\":\"201236906\",\"label\":\"SEC认证\",\"type\":\"image\",\"key\":\"Sec_Certification\",\"tips\":null,\"required\":0,\"qualificationMd5\":\"d2b4c4166e59f09ff09bde83fb7535b0\",\"createTime\":1778774400000,\"updateTime\":1782057600000}"
+    },
+    {
+      "path": "data",
+      "categoryId": "201236906",
+      "name": "Handheld Fans",
+      "rawIds": [
+        "201236906",
+        "1675"
+      ],
+      "isNumericPublishId": true,
+      "rawPreview": "{\"id\":1675,\"categoryId\":\"201236906\",\"categoryParentId\":\"201217830\",\"categoryName\":\"Handheld Fans\",\"categoryNameZh\":\"扇子\",\"nodePath\":\"家居用品(Home & Garden)/家居日用品(Household Merchandises)/扇/迷你风扇/配件/冰垫/冰贴(Cooling Products)/扇子(Handheld Fans)\",\"nodePathId\":\"15/200033149/201217830/201236906\",\"level\":4,\"isLeaf\":1,\"isEuContact\":1,\"isSizeChart\":0,\"isNewSize\":0,\"sizeChartType\":null,\"sizeChartSubTypeList\":null,\"features\":\"{}\",\"hasPlugAttribute\":0,\"isUpdate\":1,\"isDelete\":0,\"createTime\":1721923200000,\"updateTime\":1782057600000}"
+    }
+  ],
+  "attributeSchema": [
+    {
+      "path": "data[0]",
+      "attrId": "57144",
+      "attrName": "外包装/标签实拍图-欧盟",
+      "required": false,
+      "valueCount": 1,
+      "valuesPreview": [
+        {
+          "id": "57144",
+          "name": "外包装/标签实拍图-欧盟"
+        }
+      ],
+      "rawPreview": "{\"id\":57144,\"categoryId\":\"201236906\",\"label\":\"外包装/标签实拍图-欧盟\",\"type\":\"image\",\"key\":\"Package_Label_Photo_EU\",\"tips\":\"请上传发往欧盟的商品包装实物图，应包含生产企业信息、欧盟责任人信息和CE标志\",\"required\":0,\"qualificationMd5\":\"3295bb93323b7aa832836557476c3bbb\",\"createTime\":1745856000000,\"updateTime\":1782057600000}"
+    },
+    {
+      "path": "data[1]",
+      "attrId": "78271",
+      "attrName": "产品安全信息/警示语",
+      "required": false,
+      "valueCount": 1,
+      "valuesPreview": [
+        {
+          "id": "78271",
+          "name": "产品安全信息/警示语"
+        }
+      ],
+      "rawPreview": "{\"id\":78271,\"categoryId\":\"201236906\",\"label\":\"产品安全信息/警示语\",\"type\":\"text\",\"key\":\"product_safety_info_warning\",\"tips\":\"(选填）如商品具有特殊的安全信息/警示语，请填写。请勿使用特殊符号（如引号、斜杠等），且长度勿超过200字符。\",\"required\":0,\"qualificationMd5\":\"f8e714c3a28f802434444b44fdec6b1c\",\"createTime\":1752163200000,\"updateTime\":1782057600000}"
+    },
+    {
+      "path": "data[2]",
+      "attrId": "92335",
+      "attrName": "外包装/标签实拍图-英国",
+      "required": false,
+      "valueCount": 1,
+      "valuesPreview": [
+        {
+          "id": "92335",
+          "name": "外包装/标签实拍图-英国"
+        }
+      ],
+      "rawPreview": "{\"id\":92335,\"categoryId\":\"201236906\",\"label\":\"外包装/标签实拍图-英国\",\"type\":\"image\",\"key\":\"Package_Label_Photo_UK\",\"tips\":null,\"required\":0,\"qualificationMd5\":\"f1a0caf45d0db388dd97d978c2234927\",\"createTime\":1757606400000,\"updateTime\":1782057600000}"
+    },
+    {
+      "path": "data[3]",
+      "attrId": "159655",
+      "attrName": "欧盟GPSR合规标签",
+      "required": false,
+      "valueCount": 1,
+      "valuesPreview": [
+        {
+          "id": "159655",
+          "name": "欧盟GPSR合规标签"
+        }
+      ],
+      "rawPreview": "{\"id\":159655,\"categoryId\":\"201236906\",\"label\":\"欧盟GPSR合规标签\",\"type\":\"image\",\"key\":\"EU_GPSR_label\",\"tips\":\"请提交符合欧盟通用产品安全法规（General Product Safety Regulation，GPSR）的商品外包装标签实拍图或设计稿。与【外包装/标签实拍图-欧盟】二选一，新提交请优先上传【外包装/标签实拍图-欧盟】\",\"required\":0,\"qualificationMd5\":\"f84f02fa6a7510371e64841738a44bd7\",\"createTime\":1776960000000,\"updateTime\":1782057600000}"
+    },
+    {
+      "path": "data[4]",
+      "attrId": "170781",
+      "attrName": "SEC认证",
+      "required": false,
+      "valueCount": 1,
+      "valuesPreview": [
+        {
+          "id": "170781",
+          "name": "SEC认证"
+        }
+      ],
+      "rawPreview": "{\"id\":170781,\"categoryId\":\"201236906\",\"label\":\"SEC认证\",\"type\":\"image\",\"key\":\"Sec_Certification\",\"tips\":null,\"required\":0,\"qualificationMd5\":\"d2b4c4166e59f09ff09bde83fb7535b0\",\"createTime\":1778774400000,\"updateTime\":1782057600000}"
+    }
+  ],
+  "records": [
+    {
+      "createdAt": "2026-06-22T15:51:04.477Z",
+      "type": "category_related",
+      "url": "/api/smtlocalProduct/pageList.json",
+      "method": "POST",
+      "lastAction": {},
+      "requestShape": "{\"fields\":[{\"name\":\"body\",\"value\":\"pageNo=1&pageSize=100&total=0&shopId=-1&searchType=0&searchValue=&sortName=1&sortValue=2&dxmState=draft&productSearchType=1&fullCid=&productState=\"}],\"kind\":\"string\"}",
+      "candidateCount": 0,
+      "attributeCount": 0,
+      "categoryCandidates": [],
+      "attributeSchema": []
+    },
+    {
+      "createdAt": "2026-06-22T15:56:06.163Z",
+      "type": "category_related",
+      "url": "/api/smtlocalProduct/pageList.json",
+      "method": "POST",
+      "lastAction": {},
+      "requestShape": "{\"fields\":[{\"name\":\"body\",\"value\":\"pageNo=1&pageSize=100&total=0&shopId=-1&searchType=0&searchValue=&sortName=1&sortValue=2&dxmState=draft&productSearchType=1&fullCid=&productState=\"}],\"kind\":\"string\"}",
+      "candidateCount": 0,
+      "attributeCount": 0,
+      "categoryCandidates": [],
+      "attributeSchema": []
+    },
+    {
+      "createdAt": "2026-06-22T15:57:20.688Z",
+      "type": "category_related",
+      "url": "/api/smtlocalProduct/pageList.json",
+      "method": "POST",
+      "lastAction": {},
+      "requestShape": "{\"fields\":[{\"name\":\"body\",\"value\":\"pageNo=1&pageSize=100&total=0&shopId=-1&searchType=0&searchValue=&sortName=1&sortValue=2&dxmState=draft&productSearchType=1&fullCid=&productState=\"}],\"kind\":\"string\"}",
+      "candidateCount": 0,
+      "attributeCount": 0,
+      "categoryCandidates": [],
+      "attributeSchema": []
+    },
+    {
+      "createdAt": "2026-06-22T16:03:09.029Z",
+      "type": "category_related",
+      "url": "/api/smtlocalProduct/pageList.json",
+      "method": "POST",
+      "lastAction": {},
+      "requestShape": "{\"fields\":[{\"name\":\"body\",\"value\":\"pageNo=1&pageSize=100&total=0&shopId=-1&searchType=0&searchValue=&sortName=1&sortValue=2&dxmState=draft&productSearchType=1&fullCid=&productState=\"}],\"kind\":\"string\"}",
+      "candidateCount": 0,
+      "attributeCount": 0,
+      "categoryCandidates": [],
+      "attributeSchema": []
+    },
+    {
+      "createdAt": "2026-06-22T16:03:10.902Z",
+      "type": "category_related",
+      "url": "/api/smtlocalProduct/pageList.json",
+      "method": "POST",
+      "lastAction": {
+        "at": "2026-06-22T16:03:10.840Z",
+        "tag": "BUTTON",
+        "text": "读取当前第1条",
+        "page": {
+          "href": "https://www.dianxiaomi.com/web/smtlocalProduct/draft",
+          "title": "店小秘--产品管理",
+          "readyState": "complete"
+        }
+      },
+      "requestShape": "{\"fields\":[{\"name\":\"body\",\"value\":\"pageNo=1&pageSize=1&total=0&shopId=-1&searchType=0&searchValue=&sortName=1&sortValue=2&dxmState=draft&dxmOfflineState=&productSearchType=1&fullCid=&productState=\"}],\"kind\":\"object\"}",
+      "candidateCount": 0,
+      "attributeCount": 0,
+      "categoryCandidates": [],
+      "attributeSchema": []
+    },
+    {
+      "createdAt": "2026-06-22T16:05:25.517Z",
+      "type": "category_related",
+      "url": "/api/smtlocalProduct/edit.json?id=167487781999454415",
+      "method": "GET",
+      "lastAction": {
+        "at": "2026-06-22T16:05:25.457Z",
+        "tag": "BUTTON",
+        "text": "读取 edit.json",
+        "page": {
+          "href": "https://www.dianxiaomi.com/web/smtlocalProduct/draft",
+          "title": "店小秘--产品管理",
+          "readyState": "complete"
+        }
+      },
+      "requestShape": "{\"fields\":[{\"name\":\"body\",\"value\":\"\"}],\"kind\":\"undefined\"}",
+      "candidateCount": 0,
+      "attributeCount": 0,
+      "categoryCandidates": [],
+      "attributeSchema": []
+    },
+    {
+      "createdAt": "2026-06-22T16:29:07.783Z",
+      "type": "category_search_or_tree",
+      "url": "/api/smtlocalCategory/listByCategoryParentId.json",
+      "method": "POST",
+      "lastAction": {},
+      "requestShape": "{\"fields\":[{\"name\":\"body\",\"value\":\"shopId=-1&categoryParentId=0\"}],\"kind\":\"string\"}",
+      "candidateCount": 0,
+      "attributeCount": 0,
+      "categoryCandidates": [],
+      "attributeSchema": []
+    },
+    {
+      "createdAt": "2026-06-22T16:29:21.130Z",
+      "type": "category_search_or_tree",
+      "url": "/api/smtlocalCategory/historyList.json",
+      "method": "POST",
+      "lastAction": {},
+      "requestShape": "{\"fields\":[{\"name\":\"body\",\"value\":\"shopId=8438115\"}],\"kind\":\"string\"}",
+      "candidateCount": 0,
+      "attributeCount": 0,
+      "categoryCandidates": [],
+      "attributeSchema": []
+    },
+    {
+      "createdAt": "2026-06-22T16:29:21.195Z",
+      "type": "category_search_or_tree",
+      "url": "/api/smtlocalCategory/listByCategoryParentId.json",
+      "method": "POST",
+      "lastAction": {},
+      "requestShape": "{\"fields\":[{\"name\":\"body\",\"value\":\"shopId=8438115&categoryParentId=0\"}],\"kind\":\"string\"}",
+      "candidateCount": 0,
+      "attributeCount": 0,
+      "categoryCandidates": [],
+      "attributeSchema": []
+    },
+    {
+      "createdAt": "2026-06-22T16:29:32.542Z",
+      "type": "category_search_or_tree",
+      "url": "/api/smtlocalCategory/listByCategoryName.json",
+      "method": "POST",
+      "lastAction": {
+        "at": "2026-06-22T16:29:32.469Z",
+        "tag": "BUTTON",
+        "text": "搜索",
+        "page": {
+          "href": "https://www.dianxiaomi.com/web/smtlocalProduct/edit?id=167487781999454415",
+          "title": "店小秘--编辑速卖通海外托管产品",
+          "readyState": "complete"
+        }
+      },
+      "requestShape": "{\"fields\":[{\"name\":\"body\",\"value\":\"shopId=8438115&categoryName=Handheld%20Fans\"}],\"kind\":\"string\"}",
+      "candidateCount": 1,
+      "attributeCount": 0,
+      "categoryCandidates": [
+        {
+          "path": "data[0]",
+          "categoryId": "201236906",
+          "name": "Handheld Fans",
+          "rawIds": [
+            "201236906",
+            "1675"
+          ],
+          "isNumericPublishId": true,
+          "rawPreview": "{\"id\":1675,\"categoryId\":\"201236906\",\"categoryParentId\":\"201217830\",\"categoryName\":\"Handheld Fans\",\"categoryNameZh\":\"扇子\",\"nodePath\":\"家居用品(Home & Garden)/家居日用品(Household Merchandises)/扇/迷你风扇/配件/冰垫/冰贴(Cooling Products)/扇子(Handheld Fans)\",\"nodePathId\":\"15/200033149/201217830/201236906\",\"level\":4,\"isLeaf\":1,\"isEuContact\":1,\"isSizeChart\":0,\"isNewSize\":0,\"sizeChartType\":null,\"sizeChartSubTypeList\":null,\"features\":\"{}\",\"hasPlugAttribute\":null,\"isUpdate\":1,\"isDelete\":0,\"createTime\":1721923200000,\"updateTime\":1782057600000}"
+        }
+      ],
+      "attributeSchema": []
+    },
+    {
+      "createdAt": "2026-06-22T16:29:33.633Z",
+      "type": "category_search_or_tree",
+      "url": "/api/smtlocalCategory/listByCategoryParentId.json",
+      "method": "POST",
+      "lastAction": {
+        "at": "2026-06-22T16:29:33.573Z",
+        "tag": "DIV",
+        "text": "家居用品(Home & Garden)/家居日用品(Household Merchandises)/扇/迷你风扇/配件/冰垫/冰贴(Cooling Products)/扇子(Handheld Fans)",
+        "page": {
+          "href": "https://www.dianxiaomi.com/web/smtlocalProduct/edit?id=167487781999454415",
+          "title": "店小秘--编辑速卖通海外托管产品",
+          "readyState": "complete"
+        }
+      },
+      "requestShape": "{\"fields\":[{\"name\":\"body\",\"value\":\"shopId=8438115&categoryParentId=15\"}],\"kind\":\"string\"}",
+      "candidateCount": 9,
+      "attributeCount": 0,
+      "categoryCandidates": [
+        {
+          "path": "data[0]",
+          "categoryId": "200003937",
+          "name": "Arts,Crafts & Sewing",
+          "rawIds": [
+            "200003937",
+            "2272"
+          ],
+          "isNumericPublishId": true,
+          "rawPreview": "{\"id\":2272,\"categoryId\":\"200003937\",\"categoryParentId\":\"15\",\"categoryName\":\"Arts,Crafts & Sewing\",\"categoryNameZh\":\"手工艺品&缝纫用品（半成品）\",\"nodePath\":null,\"nodePathId\":\"15/200003937\",\"level\":2,\"isLeaf\":0,\"isEuContact\":0,\"isSizeChart\":0,\"isNewSize\":0,\"sizeChartType\":null,\"sizeChartSubTypeList\":null,\"features\":\"{}\",\"hasPlugAttribute\":null,\"isUpdate\":0,\"isDelete\":0,\"createTime\":1721923200000,\"updateTime\":1782057600000}"
+        },
+        {
+          "path": "data[1]",
+          "categoryId": "100001824",
+          "name": "Festive & Party Supplies",
+          "rawIds": [
+            "100001824",
+            "2512"
+          ],
+          "isNumericPublishId": true,
+          "rawPreview": "{\"id\":2512,\"categoryId\":\"100001824\",\"categoryParentId\":\"15\",\"categoryName\":\"Festive & Party Supplies\",\"categoryNameZh\":\"节庆派对用品\",\"nodePath\":null,\"nodePathId\":\"15/100001824\",\"level\":2,\"isLeaf\":0,\"isEuContact\":0,\"isSizeChart\":0,\"isNewSize\":0,\"sizeChartType\":null,\"sizeChartSubTypeList\":null,\"features\":\"{}\",\"hasPlugAttribute\":null,\"isUpdate\":0,\"isDelete\":0,\"createTime\":1721923200000,\"updateTime\":1782057600000}"
+        },
+        {
+          "path": "data[2]",
+          "categoryId": "125",
+          "name": "Garden Supplies",
+          "rawIds": [
+            "125",
+            "1260"
+          ],
+          "isNumericPublishId": true,
+          "rawPreview": "{\"id\":1260,\"categoryId\":\"125\",\"categoryParentId\":\"15\",\"categoryName\":\"Garden Supplies\",\"categoryNameZh\":\"园艺用品\",\"nodePath\":null,\"nodePathId\":\"15/125\",\"level\":2,\"isLeaf\":0,\"isEuContact\":0,\"isSizeChart\":0,\"isNewSize\":0,\"sizeChartType\":null,\"sizeChartSubTypeList\":null,\"features\":\"{}\",\"hasPlugAttribute\":null,\"isUpdate\":0,\"isDelete\":0,\"createTime\":1721923200000,\"updateTime\":1782057600000}"
+        },
+        {
+          "path": "data[3]",
+          "categoryId": "3710",
+          "name": "Home Decor",
+          "rawIds": [
+            "3710",
+            "2161"
+          ],
+          "isNumericPublishId": true,
+          "rawPreview": "{\"id\":2161,\"categoryId\":\"3710\",\"categoryParentId\":\"15\",\"categoryName\":\"Home Decor\",\"categoryNameZh\":\"家庭装饰品\",\"nodePath\":null,\"nodePathId\":\"15/3710\",\"level\":2,\"isLeaf\":0,\"isEuContact\":0,\"isSizeChart\":0,\"isNewSize\":0,\"sizeChartType\":null,\"sizeChartSubTypeList\":null,\"features\":\"{}\",\"hasPlugAttribute\":null,\"isUpdate\":0,\"isDelete\":0,\"createTime\":1721923200000,\"updateTime\":1782057600000}"
+        },
+        {
+          "path": "data[4]",
+          "categoryId": "1541",
+          "name": "Home Storage & Organization",
+          "rawIds": [
+            "1541",
+            "1519"
+          ],
+          "isNumericPublishId": true,
+          "rawPreview": "{\"id\":1519,\"categoryId\":\"1541\",\"categoryParentId\":\"15\",\"categoryName\":\"Home Storage & Organization\",\"categoryNameZh\":\"家用储存收藏用具\",\"nodePath\":null,\"nodePathId\":\"15/1541\",\"level\":2,\"isLeaf\":0,\"isEuContact\":0,\"isSizeChart\":0,\"isNewSize\":0,\"sizeChartType\":null,\"sizeChartSubTypeList\":null,\"features\":\"{}\",\"hasPlugAttribute\":null,\"isUpdate\":0,\"isDelete\":0,\"createTime\":1721923200000,\"updateTime\":1782057600000}"
+        },
+        {
+          "path": "data[5]",
+          "categoryId": "405",
+          "name": "Home Textile",
+          "rawIds": [
+            "405",
+            "1465"
+          ],
+          "isNumericPublishId": true,
+          "rawPreview": "{\"id\":1465,\"categoryId\":\"405\",\"categoryParentId\":\"15\",\"categoryName\":\"Home Textile\",\"categoryNameZh\":\"家纺成品\",\"nodePath\":null,\"nodePathId\":\"15/405\",\"level\":2,\"isLeaf\":0,\"isEuContact\":0,\"isSizeChart\":0,\"isNewSize\":0,\"sizeChartType\":null,\"sizeChartSubTypeList\":null,\"features\":\"{}\",\"hasPlugAttribute\":null,\"isUpdate\":0,\"isDelete\":0,\"createTime\":1721923200000,\"updateTime\":1782057600000}"
+        },
+        {
+          "path": "data[6]",
+          "categoryId": "200033149",
+          "name": "Household Merchandises",
+          "rawIds": [
+            "200033149",
+            "1586"
+          ],
+          "isNumericPublishId": true,
+          "rawPreview": "{\"id\":1586,\"categoryId\":\"200033149\",\"categoryParentId\":\"15\",\"categoryName\":\"Household Merchandises\",\"categoryNameZh\":\"家居日用品\",\"nodePath\":null,\"nodePathId\":\"15/200033149\",\"level\":2,\"isLeaf\":0,\"isEuContact\":0,\"isSizeChart\":0,\"isNewSize\":0,\"sizeChartType\":null,\"sizeChartSubTypeList\":null,\"features\":\"{}\",\"hasPlugAttribute\":null,\"isUpdate\":0,\"isDelete\":0,\"createTime\":1721923200000,\"updateTime\":1782057600000}"
+        },
+        {
+          "path": "data[7]",
+          "categoryId": "200000920",
+          "name": "Kitchen,Dining & Bar",
+          "rawIds": [
+            "200000920",
+            "1790"
+          ],
+          "isNumericPublishId": true,
+          "rawPreview": "{\"id\":1790,\"categoryId\":\"200000920\",\"categoryParentId\":\"15\",\"categoryName\":\"Kitchen,Dining & Bar\",\"categoryNameZh\":\"厨房吧台用品\",\"nodePath\":null,\"nodePathId\":\"15/200000920\",\"level\":2,\"isLeaf\":0,\"isEuContact\":0,\"isSizeChart\":0,\"isNewSize\":0,\"sizeChartType\":null,\"sizeChartSubTypeList\":null,\"features\":\"{}\",\"hasPlugAttribute\":null,\"isUpdate\":0,\"isDelete\":0,\"createTime\":1721923200000,\"updateTime\":1782057600000}"
+        },
+        {
+          "path": "data[8]",
+          "categoryId": "100006664",
+          "name": "Pet Products",
+          "rawIds": [
+            "100006664",
+            "2574"
+          ],
+          "isNumericPublishId": true,
+          "rawPreview": "{\"id\":2574,\"categoryId\":\"100006664\",\"categoryParentId\":\"15\",\"categoryName\":\"Pet Products\",\"categoryNameZh\":\"宠物用品\",\"nodePath\":null,\"nodePathId\":\"15/100006664\",\"level\":2,\"isLeaf\":0,\"isEuContact\":0,\"isSizeChart\":0,\"isNewSize\":0,\"sizeChartType\":null,\"sizeChartSubTypeList\":null,\"features\":\"{}\",\"hasPlugAttribute\":null,\"isUpdate\":0,\"isDelete\":0,\"createTime\":1721923200000,\"updateTime\":1782057600000}"
+        }
+      ],
+      "attributeSchema": []
+    },
+    {
+      "createdAt": "2026-06-22T16:29:33.687Z",
+      "type": "category_search_or_tree",
+      "url": "/api/smtlocalCategory/listByCategoryParentId.json",
+      "method": "POST",
+      "lastAction": {
+        "at": "2026-06-22T16:29:33.573Z",
+        "tag": "DIV",
+        "text": "家居用品(Home & Garden)/家居日用品(Household Merchandises)/扇/迷你风扇/配件/冰垫/冰贴(Cooling Products)/扇子(Handheld Fans)",
+        "page": {
+          "href": "https://www.dianxiaomi.com/web/smtlocalProduct/edit?id=167487781999454415",
+          "title": "店小秘--编辑速卖通海外托管产品",
+          "readyState": "complete"
+        }
+      },
+      "requestShape": "{\"fields\":[{\"name\":\"body\",\"value\":\"shopId=8438115&categoryParentId=200033149\"}],\"kind\":\"string\"}",
+      "candidateCount": 14,
+      "attributeCount": 0,
+      "categoryCandidates": [
+        {
+          "path": "data[0]",
+          "categoryId": "100003467",
+          "name": "Bathroom Products",
+          "rawIds": [
+            "100003467",
+            "1676"
+          ],
+          "isNumericPublishId": true,
+          "rawPreview": "{\"id\":1676,\"categoryId\":\"100003467\",\"categoryParentId\":\"200033149\",\"categoryName\":\"Bathroom Products\",\"categoryNameZh\":\"浴室用品\",\"nodePath\":null,\"nodePathId\":\"15/200033149/100003467\",\"level\":3,\"isLeaf\":0,\"isEuContact\":0,\"isSizeChart\":0,\"isNewSize\":0,\"sizeChartType\":null,\"sizeChartSubTypeList\":null,\"features\":\"{}\",\"hasPlugAttribute\":null,\"isUpdate\":0,\"isDelete\":0,\"createTime\":1721923200000,\"updateTime\":1782057600000}"
+        },
+        {
+          "path": "data[1]",
+          "categoryId": "201217830",
+          "name": "Cooling Products",
+          "rawIds": [
+            "201217830",
+            "1670"
+          ],
+          "isNumericPublishId": true,
+          "rawPreview": "{\"id\":1670,\"categoryId\":\"201217830\",\"categoryParentId\":\"200033149\",\"categoryName\":\"Cooling Products\",\"categoryNameZh\":\"扇/迷你风扇/配件/冰垫/冰贴\",\"nodePath\":null,\"nodePathId\":\"15/200033149/201217830\",\"level\":3,\"isLeaf\":0,\"isEuContact\":0,\"isSizeChart\":0,\"isNewSize\":0,\"sizeChartType\":null,\"sizeChartSubTypeList\":null,\"features\":\"{}\",\"hasPlugAttribute\":null,\"isUpdate\":0,\"isDelete\":0,\"createTime\":1721923200000,\"updateTime\":1782057600000}"
+        },
+        {
+          "path": "data[2]",
+          "categoryId": "202187001",
+          "name": "Deworming Supplies",
+          "rawIds": [
+            "202187001",
+            "1714"
+          ],
+          "isNumericPublishId": true,
+          "rawPreview": "{\"id\":1714,\"categoryId\":\"202187001\",\"categoryParentId\":\"200033149\",\"categoryName\":\"Deworming Supplies\",\"categoryNameZh\":\"驱蚊用品（非带电类）\",\"nodePath\":null,\"nodePathId\":\"15/200033149/202187001\",\"level\":3,\"isLeaf\":0,\"isEuContact\":0,\"isSizeChart\":0,\"isNewSize\":0,\"sizeChartType\":null,\"sizeChartSubTypeList\":null,\"features\":\"{}\",\"hasPlugAttribute\":null,\"isUpdate\":0,\"isDelete\":0,\"createTime\":1721923200000,\"updateTime\":1782057600000}"
+        },
+        {
+          "path": "data[3]",
+          "categoryId": "202176005",
+          "name": "Disposable Household Cleaning Products",
+          "rawIds": [
+            "202176005",
+            "1779"
+          ],
+          "isNumericPublishId": true,
+          "rawPreview": "{\"id\":1779,\"categoryId\":\"202176005\",\"categoryParentId\":\"200033149\",\"categoryName\":\"Disposable Household Cleaning Products\",\"categoryNameZh\":\"一次性家庭清洁用品\",\"nodePath\":null,\"nodePathId\":\"15/200033149/202176005\",\"level\":3,\"isLeaf\":0,\"isEuContact\":0,\"isSizeChart\":0,\"isNewSize\":0,\"sizeChartType\":null,\"sizeChartSubTypeList\":null,\"features\":\"{}\",\"hasPlugAttribute\":null,\"isUpdate\":0,\"isDelete\":0,\"createTime\":1721923200000,\"updateTime\":1782057600000}"
+        },
+        {
+          "path": "data[4]",
+          "categoryId": "200033151",
+          "name": "Dust Covers",
+          "rawIds": [
+            "200033151",
+            "1643"
+          ],
+          "isNumericPublishId": true,
+          "rawPreview": "{\"id\":1643,\"categoryId\":\"200033151\",\"categoryParentId\":\"200033149\",\"categoryName\":\"Dust Covers\",\"categoryNameZh\":\"防尘保护罩\",\"nodePath\":null,\"nodePathId\":\"15/200033149/200033151\",\"level\":3,\"isLeaf\":0,\"isEuContact\":0,\"isSizeChart\":0,\"isNewSize\":0,\"sizeChartType\":null,\"sizeChartSubTypeList\":null,\"features\":\"{}\",\"hasPlugAttribute\":null,\"isUpdate\":0,\"isDelete\":0,\"createTime\":1721923200000,\"updateTime\":1782057600000}"
+        },
+        {
+          "path": "data[5]",
+          "categoryId": "202195411",
+          "name": "Home Thermometers",
+          "rawIds": [
+            "202195411",
+            "9676"
+          ],
+          "isNumericPublishId": true,
+          "rawPreview": "{\"id\":9676,\"categoryId\":\"202195411\",\"categoryParentId\":\"200033149\",\"categoryName\":\"Home Thermometers\",\"categoryNameZh\":\"家用温度计\",\"nodePath\":null,\"nodePathId\":\"15/200033149/202195411\",\"level\":3,\"isLeaf\":0,\"isEuContact\":0,\"isSizeChart\":0,\"isNewSize\":0,\"sizeChartType\":null,\"sizeChartSubTypeList\":null,\"features\":\"{}\",\"hasPlugAttribute\":null,\"isUpdate\":0,\"isDelete\":0,\"createTime\":1725033600000,\"updateTime\":1782057600000}"
+        },
+        {
+          "path": "data[6]",
+          "categoryId": "100003864",
+          "name": "Household Cleaning Chemicals",
+          "rawIds": [
+            "100003864",
+            "1729"
+          ],
+          "isNumericPublishId": true,
+          "rawPreview": "{\"id\":1729,\"categoryId\":\"100003864\",\"categoryParentId\":\"200033149\",\"categoryName\":\"Household Cleaning Chemicals\",\"categoryNameZh\":\"家用清洁剂及洗涤剂\",\"nodePath\":null,\"nodePathId\":\"15/200033149/100003864\",\"level\":3,\"isLeaf\":0,\"isEuContact\":0,\"isSizeChart\":0,\"isNewSize\":0,\"sizeChartType\":null,\"sizeChartSubTypeList\":null,\"features\":\"{}\",\"hasPlugAttribute\":null,\"isUpdate\":0,\"isDelete\":0,\"createTime\":1721923200000,\"updateTime\":1782057600000}"
+        },
+        {
+          "path": "data[7]",
+          "categoryId": "1514",
+          "name": "Household Cleaning Tools & Accessories",
+          "rawIds": [
+            "1514",
+            "1587"
+          ],
+          "isNumericPublishId": true,
+          "rawPreview": "{\"id\":1587,\"categoryId\":\"1514\",\"categoryParentId\":\"200033149\",\"categoryName\":\"Household Cleaning Tools & Accessories\",\"categoryNameZh\":\"家庭清洁用具及附件\",\"nodePath\":null,\"nodePathId\":\"15/200033149/1514\",\"level\":3,\"isLeaf\":0,\"isEuContact\":0,\"isSizeChart\":0,\"isNewSize\":0,\"sizeChartType\":null,\"sizeChartSubTypeList\":null,\"features\":\"{}\",\"hasPlugAttribute\":null,\"isUpdate\":0,\"isDelete\":0,\"createTime\":1721923200000,\"updateTime\":1782057600000}"
+        },
+        {
+          "path": "data[8]",
+          "categoryId": "1516",
+          "name": "Laundry Products",
+          "rawIds": [
+            "1516",
+            "1622"
+          ],
+          "isNumericPublishId": true,
+          "rawPreview": "{\"id\":1622,\"categoryId\":\"1516\",\"categoryParentId\":\"200033149\",\"categoryName\":\"Laundry Products\",\"categoryNameZh\":\"洗衣产品\",\"nodePath\":null,\"nodePathId\":\"15/200033149/1516\",\"level\":3,\"isLeaf\":0,\"isEuContact\":0,\"isSizeChart\":0,\"isNewSize\":0,\"sizeChartType\":null,\"sizeChartSubTypeList\":null,\"features\":\"{}\",\"hasPlugAttribute\":null,\"isUpdate\":0,\"isDelete\":0,\"createTime\":1721923200000,\"updateTime\":1782057600000}"
+        },
+        {
+          "path": "data[9]",
+          "categoryId": "1526",
+          "name": "Lighters & Smoking Accessories",
+          "rawIds": [
+            "1526",
+            "1630"
+          ],
+          "isNumericPublishId": true,
+          "rawPreview": "{\"id\":1630,\"categoryId\":\"1526\",\"categoryParentId\":\"200033149\",\"categoryName\":\"Lighters & Smoking Accessories\",\"categoryNameZh\":\"打火机和烟具\",\"nodePath\":null,\"nodePathId\":\"15/200033149/1526\",\"level\":3,\"isLeaf\":0,\"isEuContact\":0,\"isSizeChart\":0,\"isNewSize\":0,\"sizeChartType\":null,\"sizeChartSubTypeList\":null,\"features\":\"{}\",\"hasPlugAttribute\":null,\"isUpdate\":0,\"isDelete\":0,\"createTime\":1721923200000,\"updateTime\":1782057600000}"
+        },
+        {
+          "path": "data[10]",
+          "categoryId": "200368144",
+          "name": "Moth & Mildew Proofing",
+          "rawIds": [
+            "200368144",
+            "1707"
+          ],
+          "isNumericPublishId": true,
+          "rawPreview": "{\"id\":1707,\"categoryId\":\"200368144\",\"categoryParentId\":\"200033149\",\"categoryName\":\"Moth & Mildew Proofing\",\"categoryNameZh\":\"防霉防蛀\",\"nodePath\":null,\"nodePathId\":\"15/200033149/200368144\",\"level\":3,\"isLeaf\":0,\"isEuContact\":0,\"isSizeChart\":0,\"isNewSize\":0,\"sizeChartType\":null,\"sizeChartSubTypeList\":null,\"features\":\"{}\",\"hasPlugAttribute\":null,\"isUpdate\":0,\"isDelete\":0,\"createTime\":1721923200000,\"updateTime\":1782057600000}"
+        },
+        {
+          "path": "data[11]",
+          "categoryId": "100004789",
+          "name": "Rain Gear",
+          "rawIds": [
+            "100004789",
+            "1766"
+          ],
+          "isNumericPublishId": true,
+          "rawPreview": "{\"id\":1766,\"categoryId\":\"100004789\",\"categoryParentId\":\"200033149\",\"categoryName\":\"Rain Gear\",\"categoryNameZh\":\"雨具\",\"nodePath\":null,\"nodePathId\":\"15/200033149/100004789\",\"level\":3,\"isLeaf\":0,\"isEuContact\":0,\"isSizeChart\":0,\"isNewSize\":0,\"sizeChartType\":null,\"sizeChartSubTypeList\":null,\"features\":\"{}\",\"hasPlugAttribute\":null,\"isUpdate\":0,\"isDelete\":0,\"createTime\":1721923200000,\"updateTime\":1782057600000}"
+        },
+        {
+          "path": "data[12]",
+          "categoryId": "201329617",
+          "name": "Shoe Film Machine",
+          "rawIds": [
+            "201329617",
+            "1642"
+          ],
+          "isNumericPublishId": true,
+          "rawPreview": "{\"id\":1642,\"categoryId\":\"201329617\",\"categoryParentId\":\"200033149\",\"categoryName\":\"Shoe Film Machine\",\"categoryNameZh\":\"套鞋机\",\"nodePath\":\"家居用品(Home & Garden)/家居日用品(Household Merchandises)/套鞋机(Shoe Film Machine)\",\"nodePathId\":\"15/200033149/201329617\",\"level\":3,\"isLeaf\":1,\"isEuContact\":1,\"isSizeChart\":0,\"isNewSize\":0,\"sizeChartType\":null,\"sizeChartSubTypeList\":null,\"features\":\"{\\\"AE_FEATURE_Product_manual_only\\\":\\\"required\\\"}\",\"hasPlugAttribute\":null,\"isUpdate\":1,\"isDelete\":0,\"createTime\":1721923200000,\"updateTime\":1782057600000}"
+        },
+        {
+          "path": "data[13]",
+          "categoryId": "200039143",
+          "name": "Warming Products",
+          "rawIds": [
+            "200039143",
+            "1663"
+          ],
+          "isNumericPublishId": true,
+          "rawPreview": "{\"id\":1663,\"categoryId\":\"200039143\",\"categoryParentId\":\"200033149\",\"categoryName\":\"Warming Products\",\"categoryNameZh\":\"保暖用品\",\"nodePath\":null,\"nodePathId\":\"15/200033149/200039143\",\"level\":3,\"isLeaf\":0,\"isEuContact\":0,\"isSizeChart\":0,\"isNewSize\":0,\"sizeChartType\":null,\"sizeChartSubTypeList\":null,\"features\":\"{}\",\"hasPlugAttribute\":null,\"isUpdate\":0,\"isDelete\":0,\"createTime\":1721923200000,\"updateTime\":1782057600000}"
+        }
+      ],
+      "attributeSchema": []
+    },
+    {
+      "createdAt": "2026-06-22T16:29:33.760Z",
+      "type": "category_search_or_tree",
+      "url": "/api/smtlocalCategory/listByCategoryParentId.json",
+      "method": "POST",
+      "lastAction": {
+        "at": "2026-06-22T16:29:33.573Z",
+        "tag": "DIV",
+        "text": "家居用品(Home & Garden)/家居日用品(Household Merchandises)/扇/迷你风扇/配件/冰垫/冰贴(Cooling Products)/扇子(Handheld Fans)",
+        "page": {
+          "href": "https://www.dianxiaomi.com/web/smtlocalProduct/edit?id=167487781999454415",
+          "title": "店小秘--编辑速卖通海外托管产品",
+          "readyState": "complete"
+        }
+      },
+      "requestShape": "{\"fields\":[{\"name\":\"body\",\"value\":\"shopId=8438115&categoryParentId=201217830\"}],\"kind\":\"string\"}",
+      "candidateCount": 5,
+      "attributeCount": 0,
+      "categoryCandidates": [
+        {
+          "path": "data[0]",
+          "categoryId": "202188009",
+          "name": "Cooling Spray",
+          "rawIds": [
+            "202188009",
+            "1673"
+          ],
+          "isNumericPublishId": true,
+          "rawPreview": "{\"id\":1673,\"categoryId\":\"202188009\",\"categoryParentId\":\"201217830\",\"categoryName\":\"Cooling Spray\",\"categoryNameZh\":\"降温喷雾\",\"nodePath\":\"家居用品(Home & Garden)/家居日用品(Household Merchandises)/扇/迷你风扇/配件/冰垫/冰贴(Cooling Products)/降温喷雾(Cooling Spray)\",\"nodePathId\":\"15/200033149/201217830/202188009\",\"level\":4,\"isLeaf\":1,\"isEuContact\":1,\"isSizeChart\":0,\"isNewSize\":0,\"sizeChartType\":null,\"sizeChartSubTypeList\":null,\"features\":\"{\\\"AE_FEATURE_Product_manual_only\\\":\\\"required\\\"}\",\"hasPlugAttribute\":null,\"isUpdate\":1,\"isDelete\":0,\"createTime\":1721923200000,\"updateTime\":1782057600000}"
+        },
+        {
+          "path": "data[1]",
+          "categoryId": "201236906",
+          "name": "Handheld Fans",
+          "rawIds": [
+            "201236906",
+            "1675"
+          ],
+          "isNumericPublishId": true,
+          "rawPreview": "{\"id\":1675,\"categoryId\":\"201236906\",\"categoryParentId\":\"201217830\",\"categoryName\":\"Handheld Fans\",\"categoryNameZh\":\"扇子\",\"nodePath\":\"家居用品(Home & Garden)/家居日用品(Household Merchandises)/扇/迷你风扇/配件/冰垫/冰贴(Cooling Products)/扇子(Handheld Fans)\",\"nodePathId\":\"15/200033149/201217830/201236906\",\"level\":4,\"isLeaf\":1,\"isEuContact\":1,\"isSizeChart\":0,\"isNewSize\":0,\"sizeChartType\":null,\"sizeChartSubTypeList\":null,\"features\":\"{}\",\"hasPlugAttribute\":null,\"isUpdate\":1,\"isDelete\":0,\"createTime\":1721923200000,\"updateTime\":1782057600000}"
+        },
+        {
+          "path": "data[2]",
+          "categoryId": "201231422",
+          "name": "Ice Pad",
+          "rawIds": [
+            "201231422",
+            "1671"
+          ],
+          "isNumericPublishId": true,
+          "rawPreview": "{\"id\":1671,\"categoryId\":\"201231422\",\"categoryParentId\":\"201217830\",\"categoryName\":\"Ice Pad\",\"categoryNameZh\":\"冰垫\",\"nodePath\":\"家居用品(Home & Garden)/家居日用品(Household Merchandises)/扇/迷你风扇/配件/冰垫/冰贴(Cooling Products)/冰垫(Ice Pad)\",\"nodePathId\":\"15/200033149/201217830/201231422\",\"level\":4,\"isLeaf\":1,\"isEuContact\":1,\"isSizeChart\":0,\"isNewSize\":0,\"sizeChartType\":null,\"sizeChartSubTypeList\":null,\"features\":\"{}\",\"hasPlugAttribute\":null,\"isUpdate\":1,\"isDelete\":0,\"createTime\":1721923200000,\"updateTime\":1782057600000}"
+        },
+        {
+          "path": "data[3]",
+          "categoryId": "201335911",
+          "name": "Ice Pillows",
+          "rawIds": [
+            "201335911",
+            "1672"
+          ],
+          "isNumericPublishId": true,
+          "rawPreview": "{\"id\":1672,\"categoryId\":\"201335911\",\"categoryParentId\":\"201217830\",\"categoryName\":\"Ice Pillows\",\"categoryNameZh\":\"冰枕\",\"nodePath\":\"家居用品(Home & Garden)/家居日用品(Household Merchandises)/扇/迷你风扇/配件/冰垫/冰贴(Cooling Products)/冰枕(Ice Pillows)\",\"nodePathId\":\"15/200033149/201217830/201335911\",\"level\":4,\"isLeaf\":1,\"isEuContact\":1,\"isSizeChart\":0,\"isNewSize\":0,\"sizeChartType\":null,\"sizeChartSubTypeList\":null,\"features\":\"{}\",\"hasPlugAttribute\":null,\"isUpdate\":1,\"isDelete\":0,\"createTime\":1721923200000,\"updateTime\":1782057600000}"
+        },
+        {
+          "path": "data[4]",
+          "categoryId": "201220728",
+          "name": "Ice Stickers",
+          "rawIds": [
+            "201220728",
+            "1674"
+          ],
+          "isNumericPublishId": true,
+          "rawPreview": "{\"id\":1674,\"categoryId\":\"201220728\",\"categoryParentId\":\"201217830\",\"categoryName\":\"Ice Stickers\",\"categoryNameZh\":\"冰贴\",\"nodePath\":\"家居用品(Home & Garden)/家居日用品(Household Merchandises)/扇/迷你风扇/配件/冰垫/冰贴(Cooling Products)/冰贴(Ice Stickers)\",\"nodePathId\":\"15/200033149/201217830/201220728\",\"level\":4,\"isLeaf\":1,\"isEuContact\":1,\"isSizeChart\":0,\"isNewSize\":0,\"sizeChartType\":null,\"sizeChartSubTypeList\":null,\"features\":\"{}\",\"hasPlugAttribute\":null,\"isUpdate\":1,\"isDelete\":0,\"createTime\":1721923200000,\"updateTime\":1782057600000}"
+        }
+      ],
+      "attributeSchema": []
+    },
+    {
+      "createdAt": "2026-06-22T16:29:33.800Z",
+      "type": "category_search_or_tree",
+      "url": "/api/smtlocalBrand/list.json?categoryId=201236906&shopId=8438115",
+      "method": "GET",
+      "lastAction": {
+        "at": "2026-06-22T16:29:33.573Z",
+        "tag": "DIV",
+        "text": "家居用品(Home & Garden)/家居日用品(Household Merchandises)/扇/迷你风扇/配件/冰垫/冰贴(Cooling Products)/扇子(Handheld Fans)",
+        "page": {
+          "href": "https://www.dianxiaomi.com/web/smtlocalProduct/edit?id=167487781999454415",
+          "title": "店小秘--编辑速卖通海外托管产品",
+          "readyState": "complete"
+        }
+      },
+      "requestShape": "{\"fields\":[{\"name\":\"body\",\"value\":\"\"}],\"kind\":\"object\"}",
+      "candidateCount": 0,
+      "attributeCount": 0,
+      "categoryCandidates": [],
+      "attributeSchema": []
+    },
+    {
+      "createdAt": "2026-06-22T16:29:33.822Z",
+      "type": "category_search_or_tree",
+      "url": "/api/smtlocalCategory/listQualification.json",
+      "method": "POST",
+      "lastAction": {
+        "at": "2026-06-22T16:29:33.573Z",
+        "tag": "DIV",
+        "text": "家居用品(Home & Garden)/家居日用品(Household Merchandises)/扇/迷你风扇/配件/冰垫/冰贴(Cooling Products)/扇子(Handheld Fans)",
+        "page": {
+          "href": "https://www.dianxiaomi.com/web/smtlocalProduct/edit?id=167487781999454415",
+          "title": "店小秘--编辑速卖通海外托管产品",
+          "readyState": "complete"
+        }
+      },
+      "requestShape": "{\"fields\":[{\"name\":\"body\",\"value\":\"categoryId=201236906\"}],\"kind\":\"string\"}",
+      "candidateCount": 5,
+      "attributeCount": 5,
+      "categoryCandidates": [
+        {
+          "path": "data[0]",
+          "categoryId": "201236906",
+          "name": "外包装/标签实拍图-欧盟",
+          "rawIds": [
+            "201236906",
+            "57144"
+          ],
+          "isNumericPublishId": true,
+          "rawPreview": "{\"id\":57144,\"categoryId\":\"201236906\",\"label\":\"外包装/标签实拍图-欧盟\",\"type\":\"image\",\"key\":\"Package_Label_Photo_EU\",\"tips\":\"请上传发往欧盟的商品包装实物图，应包含生产企业信息、欧盟责任人信息和CE标志\",\"required\":0,\"qualificationMd5\":\"3295bb93323b7aa832836557476c3bbb\",\"createTime\":1745856000000,\"updateTime\":1782057600000}"
+        },
+        {
+          "path": "data[1]",
+          "categoryId": "201236906",
+          "name": "产品安全信息/警示语",
+          "rawIds": [
+            "201236906",
+            "78271"
+          ],
+          "isNumericPublishId": true,
+          "rawPreview": "{\"id\":78271,\"categoryId\":\"201236906\",\"label\":\"产品安全信息/警示语\",\"type\":\"text\",\"key\":\"product_safety_info_warning\",\"tips\":\"(选填）如商品具有特殊的安全信息/警示语，请填写。请勿使用特殊符号（如引号、斜杠等），且长度勿超过200字符。\",\"required\":0,\"qualificationMd5\":\"f8e714c3a28f802434444b44fdec6b1c\",\"createTime\":1752163200000,\"updateTime\":1782057600000}"
+        },
+        {
+          "path": "data[2]",
+          "categoryId": "201236906",
+          "name": "外包装/标签实拍图-英国",
+          "rawIds": [
+            "201236906",
+            "92335"
+          ],
+          "isNumericPublishId": true,
+          "rawPreview": "{\"id\":92335,\"categoryId\":\"201236906\",\"label\":\"外包装/标签实拍图-英国\",\"type\":\"image\",\"key\":\"Package_Label_Photo_UK\",\"tips\":null,\"required\":0,\"qualificationMd5\":\"f1a0caf45d0db388dd97d978c2234927\",\"createTime\":1757606400000,\"updateTime\":1782057600000}"
+        },
+        {
+          "path": "data[3]",
+          "categoryId": "201236906",
+          "name": "欧盟GPSR合规标签",
+          "rawIds": [
+            "201236906",
+            "159655"
+          ],
+          "isNumericPublishId": true,
+          "rawPreview": "{\"id\":159655,\"categoryId\":\"201236906\",\"label\":\"欧盟GPSR合规标签\",\"type\":\"image\",\"key\":\"EU_GPSR_label\",\"tips\":\"请提交符合欧盟通用产品安全法规（General Product Safety Regulation，GPSR）的商品外包装标签实拍图或设计稿。与【外包装/标签实拍图-欧盟】二选一，新提交请优先上传【外包装/标签实拍图-欧盟】\",\"required\":0,\"qualificationMd5\":\"f84f02fa6a7510371e64841738a44bd7\",\"createTime\":1776960000000,\"updateTime\":1782057600000}"
+        },
+        {
+          "path": "data[4]",
+          "categoryId": "201236906",
+          "name": "SEC认证",
+          "rawIds": [
+            "201236906",
+            "170781"
+          ],
+          "isNumericPublishId": true,
+          "rawPreview": "{\"id\":170781,\"categoryId\":\"201236906\",\"label\":\"SEC认证\",\"type\":\"image\",\"key\":\"Sec_Certification\",\"tips\":null,\"required\":0,\"qualificationMd5\":\"d2b4c4166e59f09ff09bde83fb7535b0\",\"createTime\":1778774400000,\"updateTime\":1782057600000}"
+        }
+      ],
+      "attributeSchema": [
+        {
+          "path": "data[0]",
+          "attrId": "57144",
+          "attrName": "外包装/标签实拍图-欧盟",
+          "required": false,
+          "valueCount": 1,
+          "valuesPreview": [
+            {
+              "id": "57144",
+              "name": "外包装/标签实拍图-欧盟"
+            }
+          ],
+          "rawPreview": "{\"id\":57144,\"categoryId\":\"201236906\",\"label\":\"外包装/标签实拍图-欧盟\",\"type\":\"image\",\"key\":\"Package_Label_Photo_EU\",\"tips\":\"请上传发往欧盟的商品包装实物图，应包含生产企业信息、欧盟责任人信息和CE标志\",\"required\":0,\"qualificationMd5\":\"3295bb93323b7aa832836557476c3bbb\",\"createTime\":1745856000000,\"updateTime\":1782057600000}"
+        },
+        {
+          "path": "data[1]",
+          "attrId": "78271",
+          "attrName": "产品安全信息/警示语",
+          "required": false,
+          "valueCount": 1,
+          "valuesPreview": [
+            {
+              "id": "78271",
+              "name": "产品安全信息/警示语"
+            }
+          ],
+          "rawPreview": "{\"id\":78271,\"categoryId\":\"201236906\",\"label\":\"产品安全信息/警示语\",\"type\":\"text\",\"key\":\"product_safety_info_warning\",\"tips\":\"(选填）如商品具有特殊的安全信息/警示语，请填写。请勿使用特殊符号（如引号、斜杠等），且长度勿超过200字符。\",\"required\":0,\"qualificationMd5\":\"f8e714c3a28f802434444b44fdec6b1c\",\"createTime\":1752163200000,\"updateTime\":1782057600000}"
+        },
+        {
+          "path": "data[2]",
+          "attrId": "92335",
+          "attrName": "外包装/标签实拍图-英国",
+          "required": false,
+          "valueCount": 1,
+          "valuesPreview": [
+            {
+              "id": "92335",
+              "name": "外包装/标签实拍图-英国"
+            }
+          ],
+          "rawPreview": "{\"id\":92335,\"categoryId\":\"201236906\",\"label\":\"外包装/标签实拍图-英国\",\"type\":\"image\",\"key\":\"Package_Label_Photo_UK\",\"tips\":null,\"required\":0,\"qualificationMd5\":\"f1a0caf45d0db388dd97d978c2234927\",\"createTime\":1757606400000,\"updateTime\":1782057600000}"
+        },
+        {
+          "path": "data[3]",
+          "attrId": "159655",
+          "attrName": "欧盟GPSR合规标签",
+          "required": false,
+          "valueCount": 1,
+          "valuesPreview": [
+            {
+              "id": "159655",
+              "name": "欧盟GPSR合规标签"
+            }
+          ],
+          "rawPreview": "{\"id\":159655,\"categoryId\":\"201236906\",\"label\":\"欧盟GPSR合规标签\",\"type\":\"image\",\"key\":\"EU_GPSR_label\",\"tips\":\"请提交符合欧盟通用产品安全法规（General Product Safety Regulation，GPSR）的商品外包装标签实拍图或设计稿。与【外包装/标签实拍图-欧盟】二选一，新提交请优先上传【外包装/标签实拍图-欧盟】\",\"required\":0,\"qualificationMd5\":\"f84f02fa6a7510371e64841738a44bd7\",\"createTime\":1776960000000,\"updateTime\":1782057600000}"
+        },
+        {
+          "path": "data[4]",
+          "attrId": "170781",
+          "attrName": "SEC认证",
+          "required": false,
+          "valueCount": 1,
+          "valuesPreview": [
+            {
+              "id": "170781",
+              "name": "SEC认证"
+            }
+          ],
+          "rawPreview": "{\"id\":170781,\"categoryId\":\"201236906\",\"label\":\"SEC认证\",\"type\":\"image\",\"key\":\"Sec_Certification\",\"tips\":null,\"required\":0,\"qualificationMd5\":\"d2b4c4166e59f09ff09bde83fb7535b0\",\"createTime\":1778774400000,\"updateTime\":1782057600000}"
+        }
+      ]
+    },
+    {
+      "createdAt": "2026-06-22T16:29:33.840Z",
+      "type": "category_search_or_tree",
+      "url": "/api/smtlocalCategory/getByCategoryId.json",
+      "method": "POST",
+      "lastAction": {
+        "at": "2026-06-22T16:29:33.573Z",
+        "tag": "DIV",
+        "text": "家居用品(Home & Garden)/家居日用品(Household Merchandises)/扇/迷你风扇/配件/冰垫/冰贴(Cooling Products)/扇子(Handheld Fans)",
+        "page": {
+          "href": "https://www.dianxiaomi.com/web/smtlocalProduct/edit?id=167487781999454415",
+          "title": "店小秘--编辑速卖通海外托管产品",
+          "readyState": "complete"
+        }
+      },
+      "requestShape": "{\"fields\":[{\"name\":\"body\",\"value\":\"categoryId=201236906\"}],\"kind\":\"string\"}",
+      "candidateCount": 1,
+      "attributeCount": 0,
+      "categoryCandidates": [
+        {
+          "path": "data",
+          "categoryId": "201236906",
+          "name": "Handheld Fans",
+          "rawIds": [
+            "201236906",
+            "1675"
+          ],
+          "isNumericPublishId": true,
+          "rawPreview": "{\"id\":1675,\"categoryId\":\"201236906\",\"categoryParentId\":\"201217830\",\"categoryName\":\"Handheld Fans\",\"categoryNameZh\":\"扇子\",\"nodePath\":\"家居用品(Home & Garden)/家居日用品(Household Merchandises)/扇/迷你风扇/配件/冰垫/冰贴(Cooling Products)/扇子(Handheld Fans)\",\"nodePathId\":\"15/200033149/201217830/201236906\",\"level\":4,\"isLeaf\":1,\"isEuContact\":1,\"isSizeChart\":0,\"isNewSize\":0,\"sizeChartType\":null,\"sizeChartSubTypeList\":null,\"features\":\"{}\",\"hasPlugAttribute\":0,\"isUpdate\":1,\"isDelete\":0,\"createTime\":1721923200000,\"updateTime\":1782057600000}"
+        }
+      ],
+      "attributeSchema": []
+    },
+    {
+      "createdAt": "2026-06-22T16:29:34.137Z",
+      "type": "category_attribute",
+      "url": "/api/smtlocalCategory/attributeList.json",
+      "method": "POST",
+      "lastAction": {
+        "at": "2026-06-22T16:29:33.573Z",
+        "tag": "DIV",
+        "text": "家居用品(Home & Garden)/家居日用品(Household Merchandises)/扇/迷你风扇/配件/冰垫/冰贴(Cooling Products)/扇子(Handheld Fans)",
+        "page": {
+          "href": "https://www.dianxiaomi.com/web/smtlocalProduct/edit?id=167487781999454415",
+          "title": "店小秘--编辑速卖通海外托管产品",
+          "readyState": "complete"
+        }
+      },
+      "requestShape": "{\"fields\":[{\"name\":\"body\",\"value\":\"categoryId=201236906\"}],\"kind\":\"string\"}",
+      "candidateCount": 0,
+      "attributeCount": 0,
+      "categoryCandidates": [],
+      "attributeSchema": []
+    },
+    {
+      "createdAt": "2026-06-22T16:29:34.219Z",
+      "type": "category_attribute",
+      "url": "/api/categoryAttrMatch/getCategoryAttr10464dd7.json",
+      "method": "POST",
+      "lastAction": {
+        "at": "2026-06-22T16:29:33.573Z",
+        "tag": "DIV",
+        "text": "家居用品(Home & Garden)/家居日用品(Household Merchandises)/扇/迷你风扇/配件/冰垫/冰贴(Cooling Products)/扇子(Handheld Fans)",
+        "page": {
+          "href": "https://www.dianxiaomi.com/web/smtlocalProduct/edit?id=167487781999454415",
+          "title": "店小秘--编辑速卖通海外托管产品",
+          "readyState": "complete"
+        }
+      },
+      "requestShape": "{\"fields\":[{\"name\":\"body\",\"value\":\"{\\\"platform\\\":\\\"smtlocal\\\",\\\"categoryId\\\":\\\"201236906\\\",\\\"shopId\\\":\\\"8438115\\\"}\"}],\"kind\":\"string\"}",
+      "candidateCount": 0,
+      "attributeCount": 0,
+      "categoryCandidates": [],
+      "attributeSchema": []
+    },
+    {
+      "createdAt": "2026-06-22T16:29:34.626Z",
+      "type": "category_attribute",
+      "url": "/api/smtCommProduct/supportNewSizeAttribute.json?shopId=8438115&categoryId=201236906",
+      "method": "GET",
+      "lastAction": {
+        "at": "2026-06-22T16:29:33.573Z",
+        "tag": "DIV",
+        "text": "家居用品(Home & Garden)/家居日用品(Household Merchandises)/扇/迷你风扇/配件/冰垫/冰贴(Cooling Products)/扇子(Handheld Fans)",
+        "page": {
+          "href": "https://www.dianxiaomi.com/web/smtlocalProduct/edit?id=167487781999454415",
+          "title": "店小秘--编辑速卖通海外托管产品",
+          "readyState": "complete"
+        }
+      },
+      "requestShape": "{\"fields\":[{\"name\":\"body\",\"value\":\"\"}],\"kind\":\"object\"}",
+      "candidateCount": 0,
+      "attributeCount": 0,
+      "categoryCandidates": [],
+      "attributeSchema": []
+    }
+  ],
+  "nextAction": "wire_dynamic_category_search"
+}

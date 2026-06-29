@@ -1,0 +1,217 @@
+{
+  "ok": true,
+  "product": {
+    "asin": "B0DM27MBZN",
+    "known_title": "ElegantArray 12 PCS Drawer Organizer Set, 4 Sizes Tool Storage Trays, Clear Plastic Makeup Vanity Organizer and Storage Bins for Makeup, Stationeries, Multiple Gadgets for Bathroom, Office, Bedroom",
+    "known_category": "Drawer Organizers",
+    "material": "Plastic",
+    "color": "Clear",
+    "price_usd": 9.99,
+    "store": "Halo Home Store",
+    "freight_template": "111"
+  },
+  "api": {
+    "status": 200,
+    "model": "deepseek-v4-flash",
+    "usage": {
+      "prompt_tokens": 352,
+      "completion_tokens": 980,
+      "total_tokens": 1332,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      },
+      "completion_tokens_details": {
+        "reasoning_tokens": 564
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 352
+    },
+    "content": "{\n  \"schemaVersion\": \"product-understanding-v1\",\n  \"asin\": \"B0DM27MBZN\",\n  \"productType\": \"DrawerOrganizerSet\",\n  \"primaryUse\": \"Organizing drawers for makeup, stationery, tools, and small items in bathroom, office, or bedroom\",\n  \"recommendedCategory\": {\n    \"name\": \"Drawer Organizers\",\n    \"path\": \"Home & Kitchen > Storage & Organization > Drawer Organizers\",\n    \"searchTerms\": [\"drawer organizer\", \"plastic storage trays\", \"clear makeup organizer\", \"bathroom drawer bins\", \"office storage bins\"],\n    \"confidence\": 0.95,\n    \"evidence\": [\"known_category\", \"title contains 'Drawer Organizer Set' and relevant use cases\"]\n  },\n  \"attributes\": [\n    {\n      \"name\": \"material\",\n      \"value\": \"Plastic\",\n      \"source\": \"product data\",\n      \"confidence\": 1.0\n    },\n    {\n      \"name\": \"color\",\n      \"value\": \"Clear\",\n      \"source\": \"product data\",\n      \"confidence\": 1.0\n    },\n    {\n      \"name\": \"number_of_items\",\n      \"value\": \"12\",\n      \"source\": \"title\",\n      \"confidence\": 0.95\n    },\n    {\n      \"name\": \"size_variants\",\n      \"value\": \"4 sizes\",\n      \"source\": \"title\",\n      \"confidence\": 0.7\n    }\n  ],\n  \"risks\": [\n    {\n      \"type\": \"classification\",\n      \"level\": \"low\",\n      \"message\": \"Clear plastic may appear less premium; standard drawer organizer category well established.\"\n    }\n  ],\n  \"confidence\": 0.9,\n  \"ruleEngine\": {\n    \"passed\": true,\n    \"blockedBy\": [],\n    \"allowedForEditPage\": true,\n    \"notes\": \"Standard classification for drawer organizer set.\"\n  }\n}"
+  },
+  "raw": {
+    "schemaVersion": "product-understanding-v1",
+    "asin": "B0DM27MBZN",
+    "productType": "DrawerOrganizerSet",
+    "primaryUse": "Organizing drawers for makeup, stationery, tools, and small items in bathroom, office, or bedroom",
+    "recommendedCategory": {
+      "name": "Drawer Organizers",
+      "path": "Home & Kitchen > Storage & Organization > Drawer Organizers",
+      "searchTerms": [
+        "drawer organizer",
+        "plastic storage trays",
+        "clear makeup organizer",
+        "bathroom drawer bins",
+        "office storage bins"
+      ],
+      "confidence": 0.95,
+      "evidence": [
+        "known_category",
+        "title contains 'Drawer Organizer Set' and relevant use cases"
+      ]
+    },
+    "attributes": [
+      {
+        "name": "material",
+        "value": "Plastic",
+        "source": "product data",
+        "confidence": 1.0
+      },
+      {
+        "name": "color",
+        "value": "Clear",
+        "source": "product data",
+        "confidence": 1.0
+      },
+      {
+        "name": "number_of_items",
+        "value": "12",
+        "source": "title",
+        "confidence": 0.95
+      },
+      {
+        "name": "size_variants",
+        "value": "4 sizes",
+        "source": "title",
+        "confidence": 0.7
+      }
+    ],
+    "risks": [
+      {
+        "type": "classification",
+        "level": "low",
+        "message": "Clear plastic may appear less premium; standard drawer organizer category well established."
+      }
+    ],
+    "confidence": 0.9,
+    "ruleEngine": {
+      "passed": true,
+      "blockedBy": [],
+      "allowedForEditPage": true,
+      "notes": "Standard classification for drawer organizer set."
+    }
+  },
+  "adapted": {
+    "schemaVersion": "product-understanding-v1",
+    "asin": "B0DM27MBZN",
+    "productType": "DrawerOrganizerSet",
+    "primaryUse": "Organizing drawers for makeup, stationery, tools, and small items in bathroom, office, or bedroom",
+    "recommendedCategory": {
+      "name": "Drawer Organizers",
+      "path": "Home & Kitchen > Storage & Organization > Drawer Organizers",
+      "searchTerms": [
+        "drawer organizer",
+        "plastic storage trays",
+        "clear makeup organizer",
+        "bathroom drawer bins",
+        "office storage bins"
+      ],
+      "confidence": 0.95,
+      "evidence": [
+        "known_category",
+        "title contains 'Drawer Organizer Set' and relevant use cases"
+      ]
+    },
+    "attributes": [
+      {
+        "name": "material",
+        "value": "Plastic",
+        "source": "product data",
+        "confidence": 1.0
+      },
+      {
+        "name": "color",
+        "value": "Clear",
+        "source": "product data",
+        "confidence": 1.0
+      },
+      {
+        "name": "number_of_items",
+        "value": "12",
+        "source": "title",
+        "confidence": 0.95
+      },
+      {
+        "name": "size_variants",
+        "value": "4 sizes",
+        "source": "title",
+        "confidence": 0.7
+      }
+    ],
+    "risks": [
+      {
+        "type": "classification",
+        "level": "low",
+        "message": "Clear plastic may appear less premium; standard drawer organizer category well established."
+      }
+    ],
+    "confidence": 0.9,
+    "ruleEngine": {
+      "passed": true,
+      "blockedBy": [],
+      "allowedForEditPage": true,
+      "notes": "Adapter output only; local Rule Engine is authoritative before edit-page use."
+    }
+  },
+  "ruleEngine": {
+    "passed": true,
+    "errors": [],
+    "warnings": [],
+    "allowedForEditPage": true,
+    "normalized": {
+      "asin": "B0DM27MBZN",
+      "productType": "DrawerOrganizerSet",
+      "primaryUse": "Organizing drawers for makeup, stationery, tools, and small items in bathroom, office, or bedroom",
+      "recommendedCategory": {
+        "name": "Drawer Organizers",
+        "path": "Home & Kitchen > Storage & Organization > Drawer Organizers",
+        "searchTerms": [
+          "drawer organizer",
+          "plastic storage trays",
+          "clear makeup organizer",
+          "bathroom drawer bins",
+          "office storage bins"
+        ],
+        "confidence": 0.95,
+        "evidence": [
+          "known_category",
+          "title contains 'Drawer Organizer Set' and relevant use cases"
+        ]
+      },
+      "attributes": [
+        {
+          "name": "material",
+          "value": "Plastic",
+          "source": "product data",
+          "confidence": 1.0
+        },
+        {
+          "name": "color",
+          "value": "Clear",
+          "source": "product data",
+          "confidence": 1.0
+        },
+        {
+          "name": "number_of_items",
+          "value": "12",
+          "source": "title",
+          "confidence": 0.95
+        },
+        {
+          "name": "size_variants",
+          "value": "4 sizes",
+          "source": "title",
+          "confidence": 0.7
+        }
+      ],
+      "risks": [
+        {
+          "type": "classification",
+          "level": "low",
+          "message": "Clear plastic may appear less premium; standard drawer organizer category well established."
+        }
+      ],
+      "confidence": 0.9,
+      "allowedForEditPage": true
+    }
+  }
+}

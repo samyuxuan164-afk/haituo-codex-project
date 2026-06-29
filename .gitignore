@@ -1,0 +1,147 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+*.cer
+*secret*
+*secrets*
+*credential*
+*credentials*
+*password*
+*passwd*
+*token*
+*apikey*
+*api-key*
+
+# Browser / automation local state
+chrome-profile/
+chrome-user-data/
+browser-cache/
+browser-session/
+playwright-report/
+test-results/
+.auth/
+storage-state*.json
+cookies*.json
+localStorage*.json
+sessionStorage*.json
+
+# Runtime logs / temporary files
+*.log
+*.tmp
+*.temp
+*.bak
+*.orig
+*.pid
+*.trace
+*.har
+tmp/
+temp/
+cache/
+.cache/
+
+# Node / Python local outputs
+node_modules/
+dist/
+build/
+coverage/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+env/
+
+# Large or regenerated archives
+*.zip
+*.7z
+*.rar
+*.tar
+*.tar.gz
+
+# Local screenshots outside curated evidence folders
+tmp-*.png
+tmp*.png
+screen-*.png
+
+# Keep project evidence intentionally
+!runs/
+!runs/**
+!analysis/
+!analysis/**
+!docs/
+!docs/**
+!skills/
+!skills/**
+!src/
+!src/**
+!tools/
+!tools/**
+
+
+# --- Haituo safety ignore ---
+
+# local agent / workspace
+.agents/
+.codex/
+codex-workspace-backup/
+_migration/
+
+# macOS
+.DS_Store
+
+# secrets / keys
+.env
+.env.*
+*.env
+*.key
+*.pem
+*.p12
+secrets/
+.haituo-secrets/
+**/deepseek.env
+**/*token*
+**/*cookie*
+**/*authorization*
+
+# dependencies / cache
+node_modules/
+__pycache__/
+*.pyc
+.pytest_cache/
+.cache/
+
+# runtime / browser
+runtime/
+chrome-profile/
+browser-profile/
+*.har
+
+# payload / sensitive business data
+save.json
+*payload*.json
+*cookies*.json
+outputs/payloads/
+runs/**/*payload*
+runs/**/*cookie*
+runs/**/*token*
+
+# backups
+.gitignore.bak.*

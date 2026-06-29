@@ -1,0 +1,41 @@
+{
+  "runId": "20260623-224228-167487782000752115",
+  "category": "category-resolver-unresolved",
+  "productId": "167487782000752115",
+  "asin": "on",
+  "stage": "single-product",
+  "pluginVersion": "1.1.19",
+  "taskConfig": {
+    "stock": "15",
+    "exchangeRate": "7",
+    "priceMultiplier": "1.55",
+    "defaultWeightKg": "0.1"
+  },
+  "valueSources": {
+    "sourcePriceUsd": "task_override",
+    "supplyPriceCny": "task_formula",
+    "stock": "task_config",
+    "skuCode": "fallback_product_id",
+    "weight": "default_missing_amazon_weight",
+    "dimensions": "task_inches_converted_to_cm",
+    "taskFormula": {
+      "exchangeRate": "7",
+      "multiplier": "1.55"
+    }
+  },
+  "dryRun": {
+    "pass": false,
+    "riskCount": 6,
+    "warningCount": 8
+  },
+  "op1": {
+    "called": false,
+    "persisted": false
+  },
+  "op2": {
+    "called": false,
+    "responseCode": null
+  },
+  "result": "failed",
+  "failureReason": "dry-run 未通过"
+}

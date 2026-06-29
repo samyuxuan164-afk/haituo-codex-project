@@ -1,0 +1,50 @@
+{
+  "skill": "bumpers-v2",
+  "version": "2.1.0",
+  "scope": "AliExpress local Bumpers products sourced from Amazon",
+  "status": "validated-single-and-small-batch",
+  "productionPrinciples": {
+    "preserveThroughput": true,
+    "doNotRepeatValidatedFlow": true,
+    "sameIssueTwiceBecomesRule": true
+  },
+  "pricingRules": [
+    {
+      "sourcePriceUsdMin": 5,
+      "sourcePriceUsdMax": 20,
+      "formula": "sourcePriceUsd * 7 * 1.55"
+    },
+    {
+      "sourcePriceUsdMin": 21,
+      "sourcePriceUsdMax": 45,
+      "formula": "sourcePriceUsd * 7 * 1.6"
+    },
+    {
+      "sourcePriceUsdMin": 50,
+      "sourcePriceUsdMax": 250,
+      "formula": "sourcePriceUsd * 7 * 1.1"
+    }
+  ],
+  "shippingRules": {
+    "shipFrom": "United States",
+    "domesticShippingFeeCny": 0,
+    "postageId": "50169732817"
+  },
+  "skuRules": {
+    "skuCode": "amazonAsin",
+    "stockSource": "taskConfig.stock",
+    "defaultWeightKg": 0.1,
+    "defaultWeightRisk": "Amazon weight missing; default 0.1kg must be flagged in report",
+    "dimensionInputUnit": "inch",
+    "dimensionOutputUnit": "cm",
+    "inchToCm": 2.54,
+    "dimensionMissingRisk": "Amazon dimensions missing; must be flagged in report",
+    "schemaLearningRequired": true
+  },
+  "contentRules": {
+    "detailWebRequired": true,
+    "detailMobileRequired": true,
+    "descriptionSource": "Amazon description cleaned for trademark and infringement terms",
+    "removeBrandTerms": true
+  }
+}

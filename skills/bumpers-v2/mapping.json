@@ -1,0 +1,82 @@
+{
+  "skill": "bumpers-v2",
+  "version": "2.1.0",
+  "schemaPolicy": {
+    "fieldSchemaReusable": true,
+    "fieldValueReusable": false,
+    "note": "字段结构通过抓包/diff沉淀；字段值必须按当前产品 Amazon 数据、edit.json 与任务配置动态生成。"
+  },
+  "pendingSchemaLearning": {
+    "reason": "页面可填写变种信息，但自动 save.json op=1 后 SKU 行字段未落库，需要抓取页面保存 save.json payload 并 diff。",
+    "targetFields": [
+      "货值",
+      "物流费",
+      "商家库存",
+      "SKU编码",
+      "重量",
+      "尺寸",
+      "特殊商品类型"
+    ],
+    "targetStructures": [
+      "variationListStr",
+      "skuList",
+      "saleSku",
+      "variant",
+      "optionValues",
+      "optionValueIds",
+      "shipFrom"
+    ]
+  },
+  "fieldMapping": {
+    "shopId": "edit.product.shopId",
+    "categoryId": "category.publishCategoryId",
+    "subject": "edit.product.subject",
+    "sourceUrl": "edit.product.sourceUrl",
+    "productPropertyListJson": "category.defaultProperties",
+    "mainImageListJson": "edit.product.mainImageListJson",
+    "optionValues": {
+      "发货地": ["United States"],
+      "Color": [],
+      "Number of Pcs": [],
+      "Size": []
+    },
+    "variationListStr[0].skuCode": "amazon.asin",
+    "variationListStr[0].gloGoodsValue": "rules.pricingRules",
+    "variationListStr[0].gloLogisticValue": 0,
+    "variationListStr[0].supplyPrice": "rules.pricingRules",
+    "variationListStr[0].sellableQuantity": "rules.skuRules.defaultStock",
+    "variationListStr[0].packageWeight": "amazon.weightKg || rules.skuRules.defaultWeightKg",
+    "variationListStr[0].packageLength": "amazon.lengthIn * 2.54",
+    "variationListStr[0].packageWidth": "amazon.widthIn * 2.54",
+    "variationListStr[0].packageHeight": "amazon.heightIn * 2.54",
+    "variationListStr[0].skuPropertyListJson": [
+      {
+        "sku_property_id": "200007763",
+        "sku_property_name": "Ships From",
+        "property_value_id": "201336106",
+        "sku_property_value": "United States",
+        "property_value_definition_name": "",
+        "sku_image": ""
+      }
+    ],
+    "postageId": "50169732817",
+    "aeopQualificationStructListJson": [
+      {
+        "type": "image",
+        "key": "EU_GPSR_label",
+        "value": ""
+      }
+    ],
+    "msrEuId": -2,
+    "msrTrId": -2
+  },
+  "fieldValueRules": {
+    "variationGoodsValue": "task.sourcePriceUsd * task.exchangeRate * task.priceMultiplier",
+    "variationLogisticValue": 0,
+    "variationStock": "task.stock",
+    "variationSkuCode": "amazon.asin",
+    "variationWeight": "amazon.weightKg || task.defaultWeightKg with risk flag",
+    "variationDimensions": "amazon.length/width/height inch * 2.54; missing dimensions require risk flag",
+    "specialProductType": "category default until real save payload proves required field/value"
+  }
+}

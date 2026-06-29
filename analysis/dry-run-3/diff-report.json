@@ -1,0 +1,14 @@
+{
+  "real": "work\\dianxiaomi-automation-v1\\analysis\\save-json-3\\choiceSave.pretty.json",
+  "candidate": "work\\dianxiaomi-automation-v1\\analysis\\dry-run-3\\choiceSave.pretty.json",
+  "fieldCounts": {
+    "real": 32,
+    "candidate": 32
+  },
+  "missingTopFields": [],
+  "extraTopFields": [],
+  "riskFieldDiffs": [],
+  "diffCount": 0,
+  "diffs": [],
+  "pass": true
+}

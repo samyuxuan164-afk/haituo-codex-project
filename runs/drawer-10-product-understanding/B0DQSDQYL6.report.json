@@ -1,0 +1,199 @@
+{
+  "ok": true,
+  "product": {
+    "asin": "B0DQSDQYL6",
+    "known_title": "12 Piece Clear Drawer Organizer Set, 3 Sizes Bathroom Vanity Organizer Trays and Storage Bins for Makeup, Cosmetics, Jewelry, and Gadgets. Perfect for Office, Kitchen, Bedroom, Bathroom Use.",
+    "known_category": "Drawer Organizers",
+    "material": "Plastic",
+    "color": "Clear",
+    "price_usd": 9.99,
+    "store": "Halo Home Store",
+    "freight_template": "111"
+  },
+  "api": {
+    "status": 200,
+    "model": "deepseek-v4-flash",
+    "usage": {
+      "prompt_tokens": 351,
+      "completion_tokens": 944,
+      "total_tokens": 1295,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      },
+      "completion_tokens_details": {
+        "reasoning_tokens": 569
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 351
+    },
+    "content": "{\n  \"schemaVersion\": \"product-understanding-v1\",\n  \"asin\": \"B0DQSDQYL6\",\n  \"productType\": \"Drawer Organizer\",\n  \"primaryUse\": \"Organizing and storing items in drawers\",\n  \"recommendedCategory\": {\n    \"name\": \"Drawer Organizers\",\n    \"path\": \"Home & Kitchen > Storage & Organization > Drawer Organizers\",\n    \"searchTerms\": [\n      \"drawer organizer\",\n      \"clear storage bins\",\n      \"bathroom vanity organizer\",\n      \"makeup organizer\",\n      \"jewelry organizer\"\n    ],\n    \"confidence\": 0.95,\n    \"evidence\": [\n      \"Title includes 'Drawer Organizer Set'\",\n      \"Known category is Drawer Organizers\"\n    ]\n  },\n  \"attributes\": [\n    {\n      \"name\": \"material\",\n      \"value\": \"Plastic\",\n      \"source\": \"product data\",\n      \"confidence\": 1.0\n    },\n    {\n      \"name\": \"color\",\n      \"value\": \"Clear\",\n      \"source\": \"product data\",\n      \"confidence\": 1.0\n    },\n    {\n      \"name\": \"size\",\n      \"value\": \"12 Piece\",\n      \"source\": \"title\",\n      \"confidence\": 0.9\n    },\n    {\n      \"name\": \"price\",\n      \"value\": \"9.99\",\n      \"source\": \"product data\",\n      \"confidence\": 1.0\n    }\n  ],\n  \"risks\": [],\n  \"confidence\": 0.95,\n  \"ruleEngine\": {\n    \"passed\": true,\n    \"blockedBy\": [],\n    \"allowedForEditPage\": true,\n    \"notes\": \"Product details sufficient for listing\"\n  }\n}"
+  },
+  "raw": {
+    "schemaVersion": "product-understanding-v1",
+    "asin": "B0DQSDQYL6",
+    "productType": "Drawer Organizer",
+    "primaryUse": "Organizing and storing items in drawers",
+    "recommendedCategory": {
+      "name": "Drawer Organizers",
+      "path": "Home & Kitchen > Storage & Organization > Drawer Organizers",
+      "searchTerms": [
+        "drawer organizer",
+        "clear storage bins",
+        "bathroom vanity organizer",
+        "makeup organizer",
+        "jewelry organizer"
+      ],
+      "confidence": 0.95,
+      "evidence": [
+        "Title includes 'Drawer Organizer Set'",
+        "Known category is Drawer Organizers"
+      ]
+    },
+    "attributes": [
+      {
+        "name": "material",
+        "value": "Plastic",
+        "source": "product data",
+        "confidence": 1.0
+      },
+      {
+        "name": "color",
+        "value": "Clear",
+        "source": "product data",
+        "confidence": 1.0
+      },
+      {
+        "name": "size",
+        "value": "12 Piece",
+        "source": "title",
+        "confidence": 0.9
+      },
+      {
+        "name": "price",
+        "value": "9.99",
+        "source": "product data",
+        "confidence": 1.0
+      }
+    ],
+    "risks": [],
+    "confidence": 0.95,
+    "ruleEngine": {
+      "passed": true,
+      "blockedBy": [],
+      "allowedForEditPage": true,
+      "notes": "Product details sufficient for listing"
+    }
+  },
+  "adapted": {
+    "schemaVersion": "product-understanding-v1",
+    "asin": "B0DQSDQYL6",
+    "productType": "Drawer Organizer",
+    "primaryUse": "Organizing and storing items in drawers",
+    "recommendedCategory": {
+      "name": "Drawer Organizers",
+      "path": "Home & Kitchen > Storage & Organization > Drawer Organizers",
+      "searchTerms": [
+        "drawer organizer",
+        "clear storage bins",
+        "bathroom vanity organizer",
+        "makeup organizer",
+        "jewelry organizer"
+      ],
+      "confidence": 0.95,
+      "evidence": [
+        "Title includes 'Drawer Organizer Set'",
+        "Known category is Drawer Organizers"
+      ]
+    },
+    "attributes": [
+      {
+        "name": "material",
+        "value": "Plastic",
+        "source": "product data",
+        "confidence": 1.0
+      },
+      {
+        "name": "color",
+        "value": "Clear",
+        "source": "product data",
+        "confidence": 1.0
+      },
+      {
+        "name": "size",
+        "value": "12 Piece",
+        "source": "title",
+        "confidence": 0.9
+      },
+      {
+        "name": "price",
+        "value": "9.99",
+        "source": "product data",
+        "confidence": 1.0
+      }
+    ],
+    "risks": [],
+    "confidence": 0.95,
+    "ruleEngine": {
+      "passed": true,
+      "blockedBy": [],
+      "allowedForEditPage": true,
+      "notes": "Adapter output only; local Rule Engine is authoritative before edit-page use."
+    }
+  },
+  "ruleEngine": {
+    "passed": true,
+    "errors": [],
+    "warnings": [],
+    "allowedForEditPage": true,
+    "normalized": {
+      "asin": "B0DQSDQYL6",
+      "productType": "Drawer Organizer",
+      "primaryUse": "Organizing and storing items in drawers",
+      "recommendedCategory": {
+        "name": "Drawer Organizers",
+        "path": "Home & Kitchen > Storage & Organization > Drawer Organizers",
+        "searchTerms": [
+          "drawer organizer",
+          "clear storage bins",
+          "bathroom vanity organizer",
+          "makeup organizer",
+          "jewelry organizer"
+        ],
+        "confidence": 0.95,
+        "evidence": [
+          "Title includes 'Drawer Organizer Set'",
+          "Known category is Drawer Organizers"
+        ]
+      },
+      "attributes": [
+        {
+          "name": "material",
+          "value": "Plastic",
+          "source": "product data",
+          "confidence": 1.0
+        },
+        {
+          "name": "color",
+          "value": "Clear",
+          "source": "product data",
+          "confidence": 1.0
+        },
+        {
+          "name": "size",
+          "value": "12 Piece",
+          "source": "title",
+          "confidence": 0.9
+        },
+        {
+          "name": "price",
+          "value": "9.99",
+          "source": "product data",
+          "confidence": 1.0
+        }
+      ],
+      "risks": [],
+      "confidence": 0.95,
+      "allowedForEditPage": true
+    }
+  }
+}

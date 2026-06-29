@@ -1,0 +1,290 @@
+{
+  "code": 0,
+  "msg": "Successful",
+  "msgCode": null,
+  "data": {
+    "categoryTree": "[{\"id\":5050263,\"puid\":2437268,\"pcid\":1,\"name\":\"未分类\",\"type\":1,\"fullCid\":\"5050263-\",\"createTime\":1773419483000,\"imgNum\":0,\"productStorageNum\":0,\"commodityProductNum\":0,\"wareHoseProductNum\":0,\"totalNum\":null}]",
+    "unitList": [
+      {
+        "id": 1,
+        "unitId": "100000000",
+        "displayName": "袋 (bag/bags)",
+        "chName": "袋 ",
+        "enName": "bag/bags",
+        "name": "bag"
+      },
+      {
+        "id": 2,
+        "unitId": "100000001",
+        "displayName": "桶 (barrel/barrels)",
+        "chName": "桶 ",
+        "enName": "barrel/barrels",
+        "name": "barrel"
+      },
+      {
+        "id": 3,
+        "unitId": "100000002",
+        "displayName": "蒲式耳 (bushel/bushels)",
+        "chName": "蒲式耳 ",
+        "enName": "bushel/bushels",
+        "name": "bushel"
+      },
+      {
+        "id": 4,
+        "unitId": "100078580",
+        "displayName": "箱 (carton)",
+        "chName": "箱 ",
+        "enName": "carton",
+        "name": "carton"
+      },
+      {
+        "id": 5,
+        "unitId": "100078581",
+        "displayName": "厘米 (centimeter)",
+        "chName": "厘米 ",
+        "enName": "centimeter",
+        "name": "centimeter"
+      },
+      {
+        "id": 6,
+        "unitId": "100000003",
+        "displayName": "立方米 (cubic meter)",
+        "chName": "立方米 ",
+        "enName": "cubic meter",
+        "name": "cubic meter"
+      },
+      {
+        "id": 7,
+        "unitId": "100000004",
+        "displayName": "打 (dozen)",
+        "chName": "打 ",
+        "enName": "dozen",
+        "name": "dozen"
+      },
+      {
+        "id": 8,
+        "unitId": "100078584",
+        "displayName": "英尺 (feet)",
+        "chName": "英尺 ",
+        "enName": "feet",
+        "name": "feet"
+      },
+      {
+        "id": 9,
+        "unitId": "100000005",
+        "displayName": "加仑 (gallon)",
+        "chName": "加仑 ",
+        "enName": "gallon",
+        "name": "gallon"
+      },
+      {
+        "id": 10,
+        "unitId": "100000006",
+        "displayName": "克 (gram)",
+        "chName": "克 ",
+        "enName": "gram",
+        "name": "gram"
+      },
+      {
+        "id": 11,
+        "unitId": "100078587",
+        "displayName": "英寸 (inch)",
+        "chName": "英寸 ",
+        "enName": "inch",
+        "name": "inch"
+      },
+      {
+        "id": 12,
+        "unitId": "100000007",
+        "displayName": "千克 (kilogram)",
+        "chName": "千克 ",
+        "enName": "kilogram",
+        "name": "kilogram"
+      },
+      {
+        "id": 13,
+        "unitId": "100078589",
+        "displayName": "千升 (kiloliter)",
+        "chName": "千升 ",
+        "enName": "kiloliter",
+        "name": "kiloliter"
+      },
+      {
+        "id": 14,
+        "unitId": "100000008",
+        "displayName": "千米 (kilometer)",
+        "chName": "千米 ",
+        "enName": "kilometer",
+        "name": "kilometer"
+      },
+      {
+        "id": 15,
+        "unitId": "100078559",
+        "displayName": "升 (liter/liters)",
+        "chName": "升 ",
+        "enName": "liter/liters",
+        "name": "liter"
+      },
+      {
+        "id": 16,
+        "unitId": "100000009",
+        "displayName": "英吨 (long ton)",
+        "chName": "英吨 ",
+        "enName": "long ton",
+        "name": "long ton"
+      },
+      {
+        "id": 17,
+        "unitId": "100000010",
+        "displayName": "米 (meter)",
+        "chName": "米 ",
+        "enName": "meter",
+        "name": "meter"
+      },
+      {
+        "id": 18,
+        "unitId": "100000011",
+        "displayName": "公吨 (metric ton)",
+        "chName": "公吨 ",
+        "enName": "metric ton",
+        "name": "metric ton"
+      },
+      {
+        "id": 19,
+        "unitId": "100078560",
+        "displayName": "毫克 (milligram)",
+        "chName": "毫克 ",
+        "enName": "milligram",
+        "name": "milligram"
+      },
+      {
+        "id": 20,
+        "unitId": "100078596",
+        "displayName": "毫升 (milliliter)",
+        "chName": "毫升 ",
+        "enName": "milliliter",
+        "name": "milliliter"
+      },
+      {
+        "id": 21,
+        "unitId": "100078597",
+        "displayName": "毫米 (millimeter)",
+        "chName": "毫米 ",
+        "enName": "millimeter",
+        "name": "millimeter"
+      },
+      {
+        "id": 22,
+        "unitId": "100000012",
+        "displayName": "盎司 (ounce)",
+        "chName": "盎司 ",
+        "enName": "ounce",
+        "name": "ounce"
+      },
+      {
+        "id": 23,
+        "unitId": "100000014",
+        "displayName": "包 (pack/packs)",
+        "chName": "包 ",
+        "enName": "pack/packs",
+        "name": "pack"
+      },
+      {
+        "id": 24,
+        "unitId": "100000013",
+        "displayName": "双 (pair)",
+        "chName": "双 ",
+        "enName": "pair",
+        "name": "pair"
+      },
+      {
+        "id": 25,
+        "unitId": "100000015",
+        "displayName": "件/个 (piece/pieces)",
+        "chName": "件/个 ",
+        "enName": "piece/pieces",
+        "name": "piece"
+      },
+      {
+        "id": 26,
+        "unitId": "100000016",
+        "displayName": "磅 (pound)",
+        "chName": "磅 ",
+        "enName": "pound",
+        "name": "pound"
+      },
+      {
+        "id": 27,
+        "unitId": "100078603",
+        "displayName": "夸脱 (quart)",
+        "chName": "夸脱 ",
+        "enName": "quart",
+        "name": "quart"
+      },
+      {
+        "id": 28,
+        "unitId": "100000017",
+        "displayName": "套 (set/sets)",
+        "chName": "套 ",
+        "enName": "set/sets",
+        "name": "set"
+      },
+      {
+        "id": 29,
+        "unitId": "100000018",
+        "displayName": "美吨 (short ton)",
+        "chName": "美吨 ",
+        "enName": "short ton",
+        "name": "short ton"
+      },
+      {
+        "id": 30,
+        "unitId": "100078606",
+        "displayName": "平方英尺 (square feet)",
+        "chName": "平方英尺 ",
+        "enName": "square feet",
+        "name": "square feet"
+      },
+      {
+        "id": 31,
+        "unitId": "100078607",
+        "displayName": "平方英寸 (square inch)",
+        "chName": "平方英寸 ",
+        "enName": "square inch",
+        "name": "square inch"
+      },
+      {
+        "id": 32,
+        "unitId": "100000019",
+        "displayName": "平方米 (square meter)",
+        "chName": "平方米 ",
+        "enName": "square meter",
+        "name": "square meter"
+      },
+      {
+        "id": 33,
+        "unitId": "100078609",
+        "displayName": "平方码 (square yard)",
+        "chName": "平方码 ",
+        "enName": "square yard",
+        "name": "square yard"
+      },
+      {
+        "id": 34,
+        "unitId": "100000020",
+        "displayName": "吨 (ton)",
+        "chName": "吨 ",
+        "enName": "ton",
+        "name": "ton"
+      },
+      {
+        "id": 35,
+        "unitId": "100078558",
+        "displayName": "码 (yard/yards)",
+        "chName": "码 ",
+        "enName": "yard/yards",
+        "name": "yard"
+      }
+    ]
+  }
+}

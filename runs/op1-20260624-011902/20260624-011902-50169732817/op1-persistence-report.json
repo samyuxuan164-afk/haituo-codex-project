@@ -1,0 +1,74 @@
+{
+  "checkedAt": "2026-06-24T08:11:00.697Z",
+  "productId": "50169732817",
+  "dxmState": "draft",
+  "alreadyWaitPublish": false,
+  "afterSourceField": "variationList",
+  "note": "",
+  "beforePayload": {
+    "rowCount": 1,
+    "completeRows": 1,
+    "rows": [
+      {
+        "skuCode": "B09D5Y5HBW",
+        "goodsValue": 71.39,
+        "logisticValue": 0,
+        "stock": 15,
+        "weight": "0.1",
+        "length": "24",
+        "width": "1.5",
+        "height": "16",
+        "hasUsShipsFrom": true
+      }
+    ]
+  },
+  "afterEditJson": {
+    "rowCount": 1,
+    "completeRows": 1,
+    "rows": [
+      {
+        "skuCode": "B09D5Y5HBW",
+        "goodsValue": 71.39,
+        "logisticValue": 0,
+        "stock": 15,
+        "weight": "0.1",
+        "length": "24",
+        "width": "1.5",
+        "height": "16",
+        "hasUsShipsFrom": true
+      }
+    ]
+  },
+  "persisted": true,
+  "productKeys": [
+    "__amazonSource",
+    "__sourceMode",
+    "__editDataKeys",
+    "id",
+    "shopId",
+    "categoryId",
+    "fullCid",
+    "subject",
+    "sourceUrl",
+    "sourceId",
+    "platformProductId",
+    "sourceCategoryName",
+    "categoryName",
+    "dxmState",
+    "currencyCode",
+    "minPrice",
+    "maxPrice",
+    "mainImageListJson",
+    "detailWeb",
+    "detailMobile",
+    "variationList",
+    "productPropertyListJson",
+    "postageId",
+    "deliveryTime",
+    "productUnit",
+    "productId",
+    "optionValues",
+    "optionValueIds",
+    "shipFrom"
+  ]
+}

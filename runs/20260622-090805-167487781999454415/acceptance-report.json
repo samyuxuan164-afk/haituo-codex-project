@@ -1,0 +1,55 @@
+{
+  "runRoot": "runs\\20260622-090805-167487781999454415\\20260622-090805-167487781999454415",
+  "runId": "20260622-090805-167487781999454415",
+  "productId": "167487781999454415",
+  "asin": "B0F1NJXBPT-1",
+  "stage": "dry-run",
+  "choiceSave": {
+    "fieldCount": 34,
+    "categoryId": "5050263-",
+    "postageId": "50169732817",
+    "skuCount": 2,
+    "firstSku": {
+      "skuCode": "B0F1NJXBPT-1",
+      "goodsValue": 71.39,
+      "logisticValue": 0,
+      "stock": 15,
+      "weight": "0.1",
+      "length": "24",
+      "width": "1.5",
+      "height": "16"
+    }
+  },
+  "files": [
+    "choiceSave.pretty.json",
+    "choiceSave.txt",
+    "dry-run-report.json",
+    "final-report.json",
+    "input-edit.json"
+  ],
+  "issues": [
+    {
+      "kind": "category_unresolved",
+      "resolver": {
+        "status": "unresolved",
+        "source": "manual_learning_required",
+        "publishCategoryId": "",
+        "categoryPath": "",
+        "properties": null,
+        "confidence": 0.29000000000000004,
+        "ruleId": "bumpers-200291142",
+        "matchedTerms": [
+          "5050263"
+        ]
+      }
+    },
+    {
+      "kind": "invalid_publish_category_id",
+      "categoryId": "5050263-"
+    }
+  ],
+  "readyForOp2": false,
+  "readyForFiveItemValidation": false,
+  "nextAction": "fix_schema_or_payload_before_continuing",
+  "extractedRoot": "runs\\20260622-090805-167487781999454415"
+}

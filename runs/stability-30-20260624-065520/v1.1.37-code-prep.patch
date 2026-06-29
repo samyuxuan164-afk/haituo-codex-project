@@ -1,0 +1,660 @@
+--- a/src/dianxiaomi-automation-v1-merged-new.user.js
++++ b/src/dianxiaomi-automation-v1-merged-new.user.js
+@@ -1,7 +1,7 @@
+ ﻿// ==UserScript==
+-// @name         DXM Automation V1 - NEW v1.1.36
++// @name         DXM Automation V1 - NEW v1.1.37
+ // @namespace    https://codex.local/dianxiaomi-automation-v1
+-// @version      1.1.36
++// @version      1.1.37
+ // @description  DXM listing automation: edit.json, choiceSave payload, dry-run, save validation, run bundle.
+ // @author       Codex
+ // @match        https://*.dianxiaomi.com/*
+@@ -16,7 +16,7 @@
+   'use strict';
+ 
+   const APP_NAME = 'DXM Automation V1';
+-  const VERSION = '1.1.36';
++  const VERSION = '1.1.37';
+   const PANEL_ID = 'dxm-automation-v1-new-panel';
+   const POS_KEY = 'dxm-automation-v1-new-position';
+   const COLLAPSED_KEY = 'dxm-automation-v1-new-collapsed';
+@@ -46,6 +46,8 @@
+     titleMaxChars: 80,
+     pcDescriptionMinChars: 500,
+     marketingImageCount: 2,
++    customAttributesDefaultSkip: true,
++    saveRetryLimit: 1,
+     aiTitleCapability: 'title optimization',
+     aiDescriptionCapability: 'description rewrite',
+     flow: 'Amazon -> collection box -> claim -> edit page -> save -> collection box -> publish',
+@@ -3531,6 +3533,417 @@
+     return { changed: false, reason: 'postage option 111 not selected', selectedText: getSelectedText(), attempts: 3 };
+   }
+ 
++  function getSelectedTextInContainer(container) {
++    if (!container) return '';
++    const selected = Array.from(container.querySelectorAll('.ant-select-selection-item,.ant-select-selection-placeholder,.select2-selection__rendered,input[type="text"]'))
++      .filter(visibleElement)
++      .map((node) => elementText(node))
++      .find(Boolean);
++    return String(selected || '').trim();
++  }
++
++  function isBlankSelectionText(text) {
++    const normalized = String(text || '').replace(/\s+/g, ' ').trim();
++    if (!normalized) return true;
++    return /\u8bf7\u9009\u62e9|\u672a\u9009\u62e9|select\s+category|choose\s+category/i.test(normalized);
++  }
++
++  function findProductCategoryContainer() {
++    const label = '\u4ea7\u54c1\u5206\u7c7b';
++    const nodes = Array.from(document.querySelectorAll('.ant-form-item,.form-group,.row,div,td,tr'))
++      .filter((node) => !node.closest(`#${PANEL_ID}`) && visibleElement(node))
++      .filter((node) => elementText(node).includes(label) && node.querySelector('.ant-select,input,button'));
++    const ranked = nodes
++      .map((node) => ({ node, text: elementText(node), rect: node.getBoundingClientRect() }))
++      .filter((item) => item.text.length < 500)
++      .sort((a, b) => a.text.length - b.text.length || a.rect.top - b.rect.top);
++    return ranked[0] ? ranked[0].node : findFieldContainerByText(label);
++  }
++
++  function getProductCategorySelectedText() {
++    const container = findProductCategoryContainer();
++    return {
++      container,
++      selectedText: getSelectedTextInContainer(container),
++    };
++  }
++
++  function buildVisibleCategoryTerms() {
++    const product = getProductFromEdit(state.editData) || {};
++    const titleInput = findProductTitleInput();
++    const title = firstNonEmpty(
++      titleInput ? getInputText(titleInput) : '',
++      product.subject,
++      product.title,
++      product.productTitle,
++      ''
++    );
++    const payload = {
++      subject: title,
++      categoryName: firstNonEmpty(product.categoryName, product.sourceCategoryName, ''),
++    };
++    const terms = [];
++    const push = (value) => {
++      const text = String(value || '').replace(/\s+/g, ' ').trim();
++      if (text && !terms.some((item) => item.toLowerCase() === text.toLowerCase())) terms.push(text);
++    };
++    push(product.categoryName);
++    push(product.categoryNameZh);
++    push(product.sourceCategoryName);
++    push(product.sourceCategoryNameZh);
++    buildCategorySearchTerms(payload, product, getAmazonBatchItem(product)).forEach(push);
++    return terms.slice(0, 12);
++  }
++
++  function categoryOptionMatchesTerm(optionText, term) {
++    const option = normalizeCategoryText(optionText);
++    const wanted = normalizeCategoryText(term);
++    if (!option || !wanted) return false;
++    if (option === wanted || option.includes(wanted)) return true;
++    const wantedTokens = tokenizeCategoryTitle(wanted);
++    const optionTokens = tokenizeCategoryTitle(option);
++    if (!wantedTokens.length) return false;
++    const matched = wantedTokens.filter((token) => optionTokens.includes(token)).length;
++    return matched >= Math.max(2, Math.ceil(wantedTokens.length * 0.75));
++  }
++
++  function findVisibleCategoryOptionForTerms(terms) {
++    const visibleDropdowns = Array.from(document.querySelectorAll('.ant-select-dropdown')).filter((node) => {
++      if (!visibleElement(node)) return false;
++      return !String(node.className || '').includes('ant-select-dropdown-hidden');
++    });
++    const roots = visibleDropdowns.length ? visibleDropdowns : [document];
++    for (const root of roots) {
++      const options = Array.from(root.querySelectorAll('.ant-select-item-option,[role="option"],li,div,span'))
++        .filter(visibleElement)
++        .map((node) => ({ node, text: elementText(node) }))
++        .filter((item) => item.text && item.text.length < 240);
++      for (const term of terms) {
++        const exact = options.find((item) => categoryOptionMatchesTerm(item.text, term));
++        if (exact) return { option: exact.node.closest('.ant-select-item-option,[role="option"]') || exact.node, term, optionText: exact.text };
++      }
++    }
++    return null;
++  }
++
++  async function selectVisibleProductCategory() {
++    const current = getProductCategorySelectedText();
++    if (!current.container) return { changed: false, ok: false, reason: 'product category container not found' };
++    if (!isBlankSelectionText(current.selectedText)) {
++      return { changed: false, ok: true, selectedText: current.selectedText, mode: 'already-selected' };
++    }
++
++    const terms = buildVisibleCategoryTerms();
++    const opener = Array.from(current.container.querySelectorAll('.ant-select-selector,.ant-select,input[role="combobox"],input[type="search"],input[type="text"],button'))
++      .filter(visibleElement)[0];
++    if (!opener) return { changed: false, ok: false, reason: 'product category selector not found', terms };
++
++    for (const term of terms) {
++      clickElement(opener);
++      await sleep(350);
++      const searchInput = Array.from(document.querySelectorAll('.ant-select-dropdown input[role="combobox"],.ant-select-dropdown input[type="search"],input[role="combobox"],input[type="search"]'))
++        .filter((node) => visibleElement(node) && !node.closest(`#${PANEL_ID}`))[0];
++      if (searchInput) {
++        setInputValue(searchInput, term);
++        pressKey(searchInput, 'Enter');
++        await sleep(650);
++      }
++      const matched = findVisibleCategoryOptionForTerms([term]);
++      if (!matched) continue;
++      forceSelectOption(matched.option);
++      await sleep(700);
++      const after = getProductCategorySelectedText();
++      if (!isBlankSelectionText(after.selectedText)) {
++        return {
++          changed: true,
++          ok: true,
++          selectedText: after.selectedText,
++          matchedTerm: matched.term,
++          optionText: matched.optionText,
++          mode: 'dropdown-search',
++        };
++      }
++    }
++
++    return { changed: false, ok: false, reason: 'no high-confidence category option selected', terms };
++  }
++
++  const VISIBLE_REQUIRED_ATTRIBUTE_RULES = [
++    {
++      id: 'brand',
++      label: /\u54c1\u724c|brand/i,
++      values: ['NONE', 'None', 'No Brand', 'NoBrand'],
++    },
++    {
++      id: 'high_concerned_chemical',
++      label: /\u9ad8\u5173\u6ce8\u5316\u5b66\u54c1|high[-\s]?concerned chemical/i,
++      values: ['None', 'No', '\u65e0'],
++    },
++    {
++      id: 'origin',
++      label: /\u4ea7\u5730|\u56fd\u5bb6\u6216\u5730\u533a|origin/i,
++      values: ['\u4e2d\u56fd\u5927\u9646', 'Mainland China', 'China'],
++    },
++  ];
++
++  function findVisibleAttributeContainers() {
++    return Array.from(document.querySelectorAll('.ant-form-item,.form-group,.row,div,td,tr'))
++      .filter((node) => !node.closest(`#${PANEL_ID}`) && visibleElement(node))
++      .filter((node) => node.querySelector('.ant-select,input[role="combobox"],input[type="search"],input[type="text"]'))
++      .map((node) => ({ node, text: elementText(node), rect: node.getBoundingClientRect() }))
++      .filter((item) => item.text && item.text.length < 700)
++      .sort((a, b) => a.text.length - b.text.length || a.rect.top - b.rect.top);
++  }
++
++  function findVisibleOptionByCandidateValues(values) {
++    const normalizedValues = values.map((value) => normalizeCategoryText(value)).filter(Boolean);
++    const visibleDropdowns = Array.from(document.querySelectorAll('.ant-select-dropdown')).filter((node) => {
++      if (!visibleElement(node)) return false;
++      return !String(node.className || '').includes('ant-select-dropdown-hidden');
++    });
++    const roots = visibleDropdowns.length ? visibleDropdowns : [document];
++    for (const root of roots) {
++      const options = Array.from(root.querySelectorAll('.ant-select-item-option,[role="option"],li,div,span'))
++        .filter(visibleElement)
++        .map((node) => ({ node, text: elementText(node) }))
++        .filter((item) => item.text && item.text.length < 220);
++      for (const value of normalizedValues) {
++        const found = options.find((item) => {
++          const text = normalizeCategoryText(item.text);
++          return text === value || text.includes(value);
++        });
++        if (found) return { option: found.node.closest('.ant-select-item-option,[role="option"]') || found.node, optionText: found.text };
++      }
++    }
++    return null;
++  }
++
++  async function selectAttributeContainerValue(container, values) {
++    const selectedText = getSelectedTextInContainer(container);
++    if (!isBlankSelectionText(selectedText)) return { changed: false, ok: true, selectedText, mode: 'already-selected' };
++    const opener = Array.from(container.querySelectorAll('.ant-select-selector,.ant-select,input[role="combobox"],input[type="search"],input[type="text"]'))
++      .filter(visibleElement)[0];
++    if (!opener) return { changed: false, ok: false, reason: 'attribute selector not found' };
++    for (const value of values) {
++      clickElement(opener);
++      await sleep(250);
++      const searchInput = Array.from(document.querySelectorAll('.ant-select-dropdown input[role="combobox"],.ant-select-dropdown input[type="search"],input[role="combobox"],input[type="search"]'))
++        .filter((node) => visibleElement(node) && !node.closest(`#${PANEL_ID}`))[0];
++      if (searchInput) {
++        setInputValue(searchInput, value);
++        pressKey(searchInput, 'Enter');
++        await sleep(400);
++      }
++      const option = findVisibleOptionByCandidateValues([value]);
++      if (!option) continue;
++      forceSelectOption(option.option);
++      await sleep(450);
++      const afterText = getSelectedTextInContainer(container);
++      if (!isBlankSelectionText(afterText)) {
++        return { changed: true, ok: true, selectedText: afterText, optionText: option.optionText };
++      }
++    }
++    return { changed: false, ok: false, reason: 'attribute value not selected', values };
++  }
++
++  async function fillVisibleRequiredAttributeFields() {
++    const containers = findVisibleAttributeContainers();
++    const results = [];
++    for (const rule of VISIBLE_REQUIRED_ATTRIBUTE_RULES) {
++      const item = containers.find((candidate) => rule.label.test(candidate.text));
++      if (!item) {
++        results.push({ id: rule.id, ok: false, changed: false, reason: 'container not found' });
++        continue;
++      }
++      const result = await selectAttributeContainerValue(item.node, rule.values);
++      results.push({ id: rule.id, ...result });
++    }
++    return {
++      changed: results.some((item) => item.changed),
++      ok: results.every((item) => item.ok || item.reason === 'container not found'),
++      results,
++    };
++  }
++
++  function findCustomAttributeSection() {
++    const label = '\u81ea\u5b9a\u4e49\u5c5e\u6027';
++    const nodes = Array.from(document.querySelectorAll('.ant-form-item,.form-group,.row,table,tbody,section,div'))
++      .filter((node) => !node.closest(`#${PANEL_ID}`) && visibleElement(node))
++      .filter((node) => elementText(node).includes(label) && node.querySelector('input,button,a,span'));
++    const ranked = nodes
++      .map((node) => ({ node, text: elementText(node), rect: node.getBoundingClientRect() }))
++      .filter((item) => item.text.length < 1600)
++      .sort((a, b) => a.text.length - b.text.length || a.rect.top - b.rect.top);
++    return ranked[0] ? ranked[0].node : null;
++  }
++
++  function getVisibleCustomAttributeValues() {
++    const section = findCustomAttributeSection();
++    if (!section) return { section: null, values: [] };
++    const values = Array.from(section.querySelectorAll('input[type="text"],textarea'))
++      .filter((node) => !node.closest(`#${PANEL_ID}`) && node.type !== 'hidden' && visibleElement(node))
++      .map((node) => getInputText(node))
++      .filter((value) => String(value || '').trim() !== '');
++    return { section, values };
++  }
++
++  async function clearVisibleCustomAttributes() {
++    if (!EDIT_PAGE_RULES.customAttributesDefaultSkip) return { changed: false, skipped: true };
++    const current = getVisibleCustomAttributeValues();
++    if (!current.section) return { changed: false, ok: true, reason: 'custom attribute section not found' };
++    const beforeCount = current.values.length;
++    let clicked = 0;
++    const controls = Array.from(current.section.querySelectorAll('button,a,span,i'))
++      .filter((node) => !node.closest(`#${PANEL_ID}`) && visibleElement(node))
++      .filter((node) => {
++        const text = elementText(node);
++        const className = String(node.className || '');
++        return /^[xX×]$/.test(text) || /delete|remove|close|minus|trash/i.test(className);
++      })
++      .slice(0, 20);
++    for (const control of controls.reverse()) {
++      clickElement(control);
++      clicked += 1;
++      await sleep(120);
++    }
++    let cleared = 0;
++    Array.from(current.section.querySelectorAll('input[type="text"],textarea'))
++      .filter((node) => !node.closest(`#${PANEL_ID}`) && node.type !== 'hidden' && visibleElement(node))
++      .forEach((node) => {
++        if (getInputText(node) && setInputValue(node, '')) cleared += 1;
++      });
++    await sleep(300);
++    const after = getVisibleCustomAttributeValues();
++    return {
++      changed: clicked > 0 || cleared > 0,
++      ok: after.values.length === 0,
++      beforeCount,
++      afterCount: after.values.length,
++      clicked,
++      cleared,
++    };
++  }
++
++  function getVisiblePcDescriptionChars() {
++    const target = findVisiblePcDescriptionTarget();
++    if (!target) return 0;
++    const text = target.type === 'iframe' || target.type === 'contenteditable'
++      ? String(target.node.innerText || target.node.textContent || '')
++      : getInputText(target.node).replace(/<[^>]+>/g, ' ');
++    return text.replace(/\s+/g, ' ').trim().length;
++  }
++
++  function verifyEditTemplateSelections() {
++    const postageContainer = findFieldContainerByText('\u8fd0\u8d39\u6a21\u677f') || document.body;
++    const postageSelectedText = getSelectedTextInContainer(postageContainer);
++    const category = getProductCategorySelectedText();
++    return {
++      postage111: postageSelectedText === EDIT_PAGE_RULES.postageTemplateId || postageSelectedText.includes(EDIT_PAGE_RULES.postageTemplateId),
++      postageSelectedText,
++      categorySelected: !isBlankSelectionText(category.selectedText),
++      categorySelectedText: category.selectedText,
++    };
++  }
++
++  function getVisibleEditPreflightStatus() {
++    const titleInput = findProductTitleInput();
++    const titleText = titleInput ? getInputText(titleInput) : '';
++    const customAttributes = getVisibleCustomAttributeValues();
++    const templates = verifyEditTemplateSelections();
++    const risks = [];
++    if (!titleText || titleText.length > EDIT_PAGE_RULES.titleMaxChars) risks.push(`title invalid length=${titleText.length}`);
++    if (!templates.categorySelected) risks.push('product category is not selected');
++    if (!templates.postage111) risks.push(`postage template is not 111: ${templates.postageSelectedText || 'empty'}`);
++    const pcDescriptionChars = getVisiblePcDescriptionChars();
++    if (pcDescriptionChars < EDIT_PAGE_RULES.pcDescriptionMinChars) risks.push(`PC description too short: ${pcDescriptionChars}`);
++    if (customAttributes.values.length) risks.push(`custom attributes must be skipped, remaining=${customAttributes.values.length}`);
++    return {
++      pass: risks.length === 0,
++      risks,
++      titleLength: titleText.length,
++      pcDescriptionChars,
++      templates,
++      customAttributeCount: customAttributes.values.length,
++    };
++  }
++
++  function collectVisibleEditPageErrors() {
++    const patterns = /(\u672a\u9009\u62e9|\u8bf7\u9009\u62e9|\u4e0d\u80fd\u8d85\u8fc7|\u4e0d\u80fd\u4e3a\u7a7a|\u5fc5\u586b|\u9519\u8bef|\u5931\u8d25)/;
++    return Array.from(document.querySelectorAll('div,span,p,label,td'))
++      .filter((node) => !node.closest(`#${PANEL_ID}`) && visibleElement(node))
++      .map((node) => elementText(node))
++      .filter((text) => text && text.length < 220 && patterns.test(text))
++      .filter((text, index, list) => list.indexOf(text) === index)
++      .slice(0, 20);
++  }
++
++  function findEditPageSaveButton() {
++    const buttons = Array.from(document.querySelectorAll('button,a,.ant-btn,input[type="button"]'))
++      .filter((node) => !node.closest(`#${PANEL_ID}`) && visibleElement(node))
++      .map((node) => ({ node, text: elementText(node) || String(node.value || '') }));
++    return (
++      buttons.find((item) => item.text === '\u4fdd\u5b58\u5e76\u79fb\u5165\u5f85\u53d1\u5e03') ||
++      buttons.find((item) => item.text === '\u4fdd\u5b58') ||
++      buttons.find((item) => item.text.includes('\u4fdd\u5b58') && !item.text.includes('\u53d1\u5e03'))
++    );
++  }
++
++  async function runEditPagePreflightAndFix() {
++    const category = await selectVisibleProductCategory();
++    const requiredAttributes = await fillVisibleRequiredAttributeFields();
++    const customAttributes = await clearVisibleCustomAttributes();
++    const postage = await selectPostageTemplate111();
++    const sanitization = applyVisiblePlatformTextSanitization();
++    const preflight = getVisibleEditPreflightStatus();
++    const result = { category, requiredAttributes, customAttributes, postage, sanitization, preflight };
++    if (!state.report) state.report = {};
++    state.report.editPagePreflight = result;
++    return result;
++  }
++
++  async function saveEditPageWithPreflight() {
++    if (!isEditPage()) throw new Error('not edit page');
++    const applyResult = await applyVisibleEditPageRules({ manual: true, preSave: true });
++    let preflight = await runEditPagePreflightAndFix();
++    if (!preflight.preflight.pass) {
++      throw new Error(`edit preflight failed: ${preflight.preflight.risks.join('; ')}`);
++    }
++
++    const button = findEditPageSaveButton();
++    if (!button) throw new Error('edit page save button not found');
++    clickElement(button.node);
++    await sleep(3500);
++
++    let errors = collectVisibleEditPageErrors();
++    let retry = null;
++    if (errors.length && EDIT_PAGE_RULES.saveRetryLimit > 0) {
++      retry = await runEditPagePreflightAndFix();
++      if (retry.preflight.pass) {
++        const retryButton = findEditPageSaveButton();
++        if (retryButton) {
++          clickElement(retryButton.node);
++          await sleep(3500);
++          errors = collectVisibleEditPageErrors();
++        }
++      }
++    }
++
++    const result = {
++      at: nowIso(),
++      applyResult,
++      preflight,
++      retry,
++      errors,
++      clicked: button.text,
++      ok: errors.length === 0,
++    };
++    if (!state.report) state.report = {};
++    state.report.editPageSaveWithPreflight = result;
++    log(`edit preflight save ${result.ok ? 'ok' : 'has errors'}: ${errors.join(' | ')}`, result);
++    updateUi();
++    return result;
++  }
++
+   function getMarketingImageStatus() {
+     const sections = Array.from(document.querySelectorAll('div,section,td,tr')).filter((node) => elementText(node).includes('\u8425\u9500\u56fe\u7247'));
+     const section = sections
+@@ -3577,12 +3990,29 @@
+     } catch (error) {
+       variation = { changed: false, reason: error.message };
+     }
++    const category = await selectVisibleProductCategory();
++    const customAttributes = await clearVisibleCustomAttributes();
+     const postage = await selectPostageTemplate111();
+-    const result = { at: nowIso(), manual: Boolean(options.manual), title, description, textSanitization, variation, postage, marketing };
++    const preflight = getVisibleEditPreflightStatus();
++    const result = {
++      at: nowIso(),
++      manual: Boolean(options.manual),
++      preSave: Boolean(options.preSave),
++      title,
++      description,
++      textSanitization,
++      variation,
++      category,
++      requiredAttributes,
++      customAttributes,
++      postage,
++      marketing,
++      preflight,
++    };
+     state.visibleEditRuleResult = result;
+     if (!state.report) state.report = {};
+     state.report.visibleEditRuleResult = result;
+-    log(`\u7f16\u8f91\u9875\u89c4\u5219\u5df2\u5e94\u7528\uff1a\u6807\u9898${title.changed ? '\u5df2\u6539' : '\u672a\u6539'}\uff0c\u63cf\u8ff0${description.changed ? '\u5df2\u6539' : '\u672a\u6539'}\uff0c\u5b57\u7b26\u6e05\u6d17${textSanitization.changed ? '\u5df2\u5904\u7406' : '\u65e0\u9700\u5904\u7406'}\uff0c\u8fd0\u8d39111${postage.changed ? '\u5df2\u9009' : '\u672a\u9009'}\uff0c\u8425\u9500\u56fe${marketing.changed ? '\u5df2\u89e6\u53d1' : '\u672a\u89e6\u53d1'}`, result);
++    log(`\u7f16\u8f91\u9875\u89c4\u5219\u5df2\u5e94\u7528\uff1a\u6807\u9898${title.changed ? '\u5df2\u6539' : '\u672a\u6539'}\uff0c\u63cf\u8ff0${description.changed ? '\u5df2\u6539' : '\u672a\u6539'}\uff0c\u7c7b\u76ee${category.ok ? '\u5df2\u9009' : '\u672a\u9009'}\uff0c\u5fc5\u586b\u5c5e\u6027${requiredAttributes.ok ? '\u5df2\u5904\u7406' : '\u672a\u5b8c\u6210'}\uff0c\u81ea\u5b9a\u4e49\u5c5e\u6027${customAttributes.ok ? '\u5df2\u6e05\u7a7a' : '\u4ecd\u5b58\u5728'}\uff0c\u8fd0\u8d39111${postage.changed ? '\u5df2\u9009' : '\u672a\u9009'}\uff0c\u9884\u68c0${preflight.pass ? '\u901a\u8fc7' : '\u672a\u901a\u8fc7'}`, result);
+     updateUi();
+     return result;
+   }
+@@ -4125,6 +4555,7 @@
+           <button type="button" data-action="learnSavePayload">\u5b66\u4e60\u771f\u5b9e\u4fdd\u5b58payload</button>
+           <button type="button" data-action="saveCompletion" disabled>save.json op=1\u843d\u5e93</button>
+           <button type="button" data-action="applyVisibleEditRules">\u5e94\u7528\u7f16\u8f91\u9875\u89c4\u5219</button>
++          <button type="button" data-action="preflightSaveEdit">\u9884\u68c0\u5e76\u4fdd\u5b58</button>
+           <button type="button" data-action="fillVisibleVariation">\u8bca\u65ad\u8865\u5f53\u524d\u9875\u53d8\u79cd</button>
+         </div>
+         <label><input type="checkbox" data-field="allowSubmit"> \u6211\u786e\u8ba4\u53ea\u63d0\u4ea4 1 \u4e2a\u6d4b\u8bd5\u4ea7\u54c1</label>
+@@ -4187,6 +4618,7 @@
+         if (action === 'learnSavePayload') await learnLatestCapturedSavePayload();
+         if (action === 'saveCompletion') await saveCompletionOnly();
+         if (action === 'applyVisibleEditRules') await applyVisibleEditPageRules({ manual: true });
++        if (action === 'preflightSaveEdit') await saveEditPageWithPreflight();
+         if (action === 'fillVisibleVariation') fillVisibleVariationFields();
+         if (action === 'submit') await submitOne();
+         if (action === 'publishCurrentTest') await publishCurrentTestProduct();
+
+--- a/AGENT.md
++++ b/AGENT.md
+@@ -14,3 +14,16 @@
+ 8. Sink Strainer 不能归到 Kitchen Faucets；水槽过滤器不能归到厨房龙头。
+ 9. 编辑页自定义属性默认不填写，除非平台强制、类目强制或发布失败明确提示缺少该字段。
+ 10. 优先保证标题、类目、必填属性、PC 描述、营销图、运费模板、品牌过滤正确。
++
++## 2026-06-24 编辑页保存前预检规则 v1.1.37
++
++1. 编辑页保存前必须先做页面可见字段预检，不允许只依赖 payload 或本地报告判定成功。
++2. 产品分类必须在编辑页真实选中；如果页面显示未选择分类，必须根据商品关键词自动选择最接近的可见类目，仍无法选择则禁止保存并记录为类目错误。
++3. 运费模板必须通过下拉选项真实选择 `111`，不是向输入框写入文本；保存前必须复核页面显示已选中 `111`。
++4. 自定义属性默认清空或跳过，不作为发布前必填项；除非平台强制、类目强制或失败提示明确要求，否则不填写自定义属性。
++5. 必填属性允许自动补齐保守默认值：品牌优先 `None/No Brand`，高关注化学品优先 `None/天然未处理`，产地优先 `Mainland China/中国大陆`。
++6. 标题、PC 描述、属性、规格、图片文字和即将提交的平台文本字段必须执行特殊字符清洗，禁止 `"`、`′`、`″`、中文引号和智能引号；尺寸写法统一为 `inch`。
++7. 保存前必须确认标题不超过 80 字符、PC 描述不少于 500 英文字符、类目已选、运费模板 111 已选、自定义属性为空。
++8. 保存失败时，如果页面提示未选择、不能为空、不能超过字符数或特殊字符错误，允许自动纠偏后重试 1 次；仍失败则记录失败原因并跳过商品。
++9. 模板继承必须以页面实际显示为准：类目、运费模板和必填属性必须在保存前被页面确认，不能只记录为“已写入”。
++10. 本规则为正式执行规则，适用于后续小批量和批量运行。
+
+--- a/AGENTS.md
++++ b/AGENTS.md
+@@ -127,3 +127,16 @@
+ 2. 发布成功必须以商品进入发布中、在线产品、审核中或平台可确认状态为准。
+ 3. 接口返回成功不等于最终成功。
+ 4. 发布失败必须记录失败原因，并回到编辑页修复后再重新保存和发布。
++
++## 2026-06-24 编辑页保存前预检规则 v1.1.37
++
++1. 编辑页保存前必须先做页面可见字段预检，不允许只依赖 payload 或本地报告判定成功。
++2. 产品分类必须在编辑页真实选中；如果页面显示未选择分类，必须根据商品关键词自动选择最接近的可见类目，仍无法选择则禁止保存并记录为类目错误。
++3. 运费模板必须通过下拉选项真实选择 `111`，不是向输入框写入文本；保存前必须复核页面显示已选中 `111`。
++4. 自定义属性默认清空或跳过，不作为发布前必填项；除非平台强制、类目强制或失败提示明确要求，否则不填写自定义属性。
++5. 必填属性允许自动补齐保守默认值：品牌优先 `None/No Brand`，高关注化学品优先 `None/天然未处理`，产地优先 `Mainland China/中国大陆`。
++6. 标题、PC 描述、属性、规格、图片文字和即将提交的平台文本字段必须执行特殊字符清洗，禁止 `"`、`′`、`″`、中文引号和智能引号；尺寸写法统一为 `inch`。
++7. 保存前必须确认标题不超过 80 字符、PC 描述不少于 500 英文字符、类目已选、运费模板 111 已选、自定义属性为空。
++8. 保存失败时，如果页面提示未选择、不能为空、不能超过字符数或特殊字符错误，允许自动纠偏后重试 1 次；仍失败则记录失败原因并跳过商品。
++9. 模板继承必须以页面实际显示为准：类目、运费模板和必填属性必须在保存前被页面确认，不能只记录为“已写入”。
++10. 本规则为正式执行规则，适用于后续小批量和批量运行。
+
+--- a/skills/dxm-edit-page-automation/SKILL.md
++++ b/skills/dxm-edit-page-automation/SKILL.md
+@@ -114,3 +114,18 @@
+ 描述生成优先调用描述重写能力。
+ 
+ 如果当前环境没有可用 AI 能力，允许使用本地合规兜底生成，但必须继续通过发布前校验。
++
++## 2026-06-24 v1.1.37 编辑页保存前预检
++
++本规则来自 30 商品稳定性验证的失败归因，属于正式规则，不作为临时补丁。
++
++1. 保存前必须读取编辑页可见状态，确认产品分类、运费模板、必填属性、标题、PC 描述和自定义属性状态。
++2. 产品分类不能为空。自动化必须根据标题、来源商品和已识别品类选择页面可见的最接近类目；如果仍无法选中，禁止保存并记录为 `category-not-selected`。
++3. 运费模板固定选择 `111`。必须通过下拉选项触发真实选择并复核页面显示，不能只向输入框写入 `111`。
++4. 自定义属性默认清空或跳过。除非平台强制、类目强制或失败提示明确要求，否则不填写自定义属性，避免 70 字符限制和特殊字符校验错误。
++5. 必填属性自动补齐采用保守默认值：品牌优先 `None/No Brand`，高关注化学品优先 `None/天然未处理`，产地优先 `Mainland China/中国大陆`。
++6. 保存前必须执行特殊字符清洗，范围包括标题、PC 描述、属性、规格、图片文字、详情文案和即将提交的平台文本字段。
++7. 禁止 `"`、`′`、`″`、中文引号、智能引号；`4.625"`、`4.625″`、`4.625 in.` 必须统一为 `4.625 inch`。
++8. 保存前预检必须满足：标题不超过 80 字符、PC 描述不少于 500 英文字符、类目已选、运费模板 111 已选、自定义属性为空。
++9. 保存失败后，如果错误属于未选择、不能为空、不能超过字符数或特殊字符问题，允许自动纠偏并重试 1 次。
++10. 重试仍失败时，记录页面错误、当前字段状态和商品标识，然后跳过该商品继续下一商品。
+
+--- a/skills/bumpers-v2/known_issues.json
++++ b/skills/bumpers-v2/known_issues.json
+@@ -52,6 +52,14 @@
+       "cause": "op=1 is a move-to-waitPublish flow, not the intermediate edit-page save needed to persist all required fields before publishing.",
+       "currentMitigation": "merged plugin v1.1.6 disables op=1 as completion save; next step is to capture the real edit-page save payload with save Payload V3.",
+       "status": "under-schema-learning"
++    },
++    {
++      "id": "edit-page-category-and-custom-attrs-not-preflighted",
++      "symptom": "Stability run enters the edit page but save or move-to-waitPublish fails because product category is blank and imported custom attributes exceed platform limits.",
++      "cause": "Visible edit-page rules rewrote title, description and freight template, but did not hard-preflight the visible product category or clear imported custom attributes before saving.",
++      "evidenceRun": "runs/stability-30-20260624-065520",
++      "currentMitigation": "merged plugin v1.1.37 adds visible category selection, required attribute defaults, custom attribute cleanup, template verification, preflight save, and one retry after fixable validation errors.",
++      "status": "patched-awaiting-live-validation"
+     }
+   ]
+ }
+
+--- /dev/null
++++ b/docs/stability-code-prep-20260624.md
+@@ -0,0 +1,79 @@
++# 2026-06-24 稳定性验证代码准备记录
++
++## 当前阶段
++
++今晚不继续扩大验证范围，不重复执行 30 商品验证。本阶段只做代码准备：分析失败原因、修改插件、沉淀规则、生成补丁，等待下一次人工更新插件后再现场验证。
++
++## 已确认失败原因
++
++1. 类目没有在编辑页真实选中。
++   - 店小秘保存和发布接口不会判断业务类目是否正确。
++   - 如果编辑页产品分类为空或错误，保存/发布可能失败，也可能产生错误质量结果。
++2. 自定义属性不应默认填写。
++   - 本轮失败中自定义属性触发了长度和字符限制。
++   - 自定义属性不是核心必填项，默认跳过能降低失败率。
++3. 运费模板必须真实选择 `111`。
++   - 不能只写入文本，必须触发页面下拉选择并在保存前复核。
++4. 必填属性需要保守补齐。
++   - 品牌、高关注化学品、产地等字段应使用页面允许值。
++5. 保存动作缺少失败后纠偏重试。
++   - 遇到未选择、不能为空、字符过长、特殊字符错误时，应先自动修正并重试一次。
++6. 模板继承必须验证页面结果。
++   - 不能只认为规则已写入或 payload 已构造，必须读页面可见字段确认。
++
++## v1.1.37 修改方案
++
++1. 新增编辑页保存前预检。
++   - 检查标题、PC 描述、产品分类、运费模板、自定义属性和页面错误提示。
++2. 新增产品分类可见项选择。
++   - 根据标题、来源链接、分类文本提取关键词，选择页面可见的最接近类目。
++3. 新增必填属性保守补齐。
++   - Brand 优先 `None/No Brand`。
++   - High-concerned Chemical 优先 `None/天然未处理`。
++   - Origin 优先 `Mainland China/中国大陆`。
++4. 新增自定义属性清空策略。
++   - 默认清空自定义属性输入值，除非后续明确证明平台或类目强制要求。
++5. 强化运费模板 `111` 选择验证。
++   - 先选择，再读取页面选中状态。
++6. 新增保存失败重试。
++   - 保存失败后收集页面错误，执行一次预检修复并重试。
++7. 新增“预检并保存”入口。
++   - 用于明天在编辑页直接验证完整保存链路。
++
++## 新版本规划
++
++版本：`v1.1.37`
++
++目标：不新增采集架构，不扩大验证范围，只修复编辑页保存稳定性。
++
++验证对象：
++
++1. 已进入待发布或发布失败的测试商品。
++2. 新采集后进入编辑页的商品。
++3. 不执行大批量发布。
++
++## 明天验证项目
++
++1. Tampermonkey 页面实际运行版本是否为 `v1.1.37`。
++2. 编辑页点击“预检并保存”后，产品分类是否真实选中。
++3. 必填属性是否自动补齐并保持可保存状态。
++4. 自定义属性是否被清空或跳过。
++5. 运费模板是否真实选择 `111`。
++6. 保存失败时是否自动纠偏并重试一次。
++7. 保存后商品是否回到待发布。
++8. 保存后标题、描述、类目、属性、运费模板是否保持正确。
++
++## 预期效果
++
++1. 类目空白导致的保存失败预计明显下降。
++2. 自定义属性长度和特殊字符错误预计基本消失。
++3. 运费模板误写入但未真实选择的问题预计消失。
++4. 单商品编辑页失败后可自动修复一次，减少人工介入。
++5. 小批量链路成功率预计从当前不可稳定放大提升到 80%-90% 区间。
++
++## 仍需现场验证的风险
++
++1. 店小秘类目下拉组件可能存在异步加载或虚拟滚动，部分类目仍可能无法自动选中。
++2. 不同类目的必填属性名称可能不同，当前只补齐已观察到的高频必填项。
++3. 保存失败重试只能处理可见页面错误，隐藏接口错误仍需继续沉淀。
++4. 类目业务正确性需要后续接入更强的商品类型到平台类目映射表。
+

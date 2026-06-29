@@ -1,0 +1,50 @@
+{
+  "skill": "bumpers-v2",
+  "version": "2.0.0",
+  "category": {
+    "publishCategoryId": "200291142",
+    "sourceCategoryPatterns": [
+      "5050263-",
+      "bumper",
+      "bumpers",
+      "rubber bumpers",
+      "cabinet bumpers",
+      "table top bumpers",
+      "bumper pads",
+      "柜门消音垫"
+    ],
+    "defaultProperties": [
+      {
+        "attr_name_id": "2",
+        "attr_name": "Brand Name",
+        "attr_value_id": "201512802",
+        "attr_value": "None",
+        "attr_value_unit": null,
+        "attr_value_start": null,
+        "attr_value_end": null
+      },
+      {
+        "attr_name_id": "400000603",
+        "attr_name": "High-concerned chemical",
+        "attr_value_id": "23399591357",
+        "attr_value": "天然未处理(None)"
+      },
+      {
+        "attr_name_id": "219",
+        "attr_name": "Origin",
+        "attr_value_id": "9442295690",
+        "attr_value": "美国(Origin)(US(Origin))",
+        "attr_value_unit": null,
+        "attr_value_start": null,
+        "attr_value_end": null
+      }
+    ]
+  },
+  "futureReservedFiles": [
+    "category_required_fields.json",
+    "amazon_to_dxm_mapping.json",
+    "category_defaults.json",
+    "manual_confirm_queue.json",
+    "learned_rules.json"
+  ]
+}

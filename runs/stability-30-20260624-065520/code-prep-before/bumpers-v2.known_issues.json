@@ -1,0 +1,57 @@
+{
+  "skill": "bumpers-v2",
+  "version": "2.0.0",
+  "knownIssues": [
+    {
+      "id": "category-not-persisted",
+      "symptom": "dry-run passes but platform returns category_id is not valid or product category remains unselected in edit page",
+      "cause": "payload categoryId was patched, but product edit state did not persist category selection",
+      "currentMitigation": "use op=1 completion save before op=2 publish and verify categoryState in report",
+      "status": "under-v1-investigation"
+    },
+    {
+      "id": "properties-not-persisted",
+      "symptom": "Brand Name, High-concerned chemical, Origin appear empty in edit page",
+      "cause": "productPropertyListJson exists only in constructed payload, not in saved product state",
+      "currentMitigation": "op=1 completion save must persist productPropertyListJson",
+      "status": "under-v1-investigation"
+    },
+    {
+      "id": "ship-from-not-persisted",
+      "symptom": "United States is not checked in variation parameters and publish fails",
+      "cause": "optionValues and variationListStr are not both persisted to product state",
+      "currentMitigation": "ensure optionValues.发货地 and skuPropertyListJson both contain United States before op=2",
+      "status": "under-v1-investigation"
+    },
+    {
+      "id": "detector-cannot-capture-userscript-fetch",
+      "symptom": "V2 detector sometimes records click but not userscript save.json request",
+      "cause": "Tampermonkey execution context may bypass page hook",
+      "currentMitigation": "merged plugin records its own API calls in reports",
+      "status": "mitigated"
+    },
+    {
+      "id": "wait-publish-op1-rejected",
+      "symptom": "op=1 returns code -1: 产品保存成功，移入待发布失败：只有采集箱中的产品才能移入待发布！",
+      "cause": "Product is already in dxmState=offline and dxmOfflineState=waitPublish, so collection-box op=1 cannot move it to waitPublish again.",
+      "evidenceRun": "runs/20260622-071513-167487781998795063.zip",
+      "currentMitigation": "merged plugin v1.1.4 blocks dry-run for waitPublish/publishFail products in the main collection-box flow; use a true draft product, or capture page-save payload for waitPublish as a separate schema.",
+      "status": "mitigated"
+    },
+    {
+      "id": "page-state-guessed-from-sidebar",
+      "symptom": "Plugin reads a waitPublish product while the user is on the collection-box page.",
+      "cause": "The old candidate-state detector scanned full page text; the sidebar always contains 待发布产品, so waitPublish pageList candidates were tried before draft candidates.",
+      "evidenceRun": "runs/20260622-071513-167487781998795063.zip",
+      "currentMitigation": "merged plugin v1.1.5 reads draft candidates only for the main collection-box flow; non-draft states must be handled by manual ID or a separate schema-learning flow.",
+      "status": "mitigated"
+    },
+    {
+      "id": "op1-is-not-edit-page-save",
+      "symptom": "After clicking op=1, the product moves to waitPublish, but the waitPublish edit page still has blank value/freight/stock/SKU/weight/dimensions fields.",
+      "cause": "op=1 is a move-to-waitPublish flow, not the intermediate edit-page save needed to persist all required fields before publishing.",
+      "currentMitigation": "merged plugin v1.1.6 disables op=1 as completion save; next step is to capture the real edit-page save payload with save Payload V3.",
+      "status": "under-schema-learning"
+    }
+  ]
+}

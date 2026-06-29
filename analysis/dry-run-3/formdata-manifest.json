@@ -1,0 +1,31 @@
+{
+  "dryRun": true,
+  "submit": false,
+  "endpoint": "/api/smtlocalProduct/save.json",
+  "method": "POST",
+  "formData": [
+    {
+      "name": "file",
+      "fileName": "blob",
+      "type": "application/zip",
+      "path": "work\\dianxiaomi-automation-v1\\analysis\\dry-run-3\\choiceSave.zip",
+      "size": 3040
+    },
+    {
+      "name": "op",
+      "value": "2"
+    }
+  ],
+  "riskFields": {
+    "id": "草稿产品 ID，必须对应当前有效草稿产品，不能跨产品复用。",
+    "mainImageListJson": "图片已上传到 wxalbum 后的 URL 列表，跨产品复用会错图。",
+    "imgUrl": "图片管道分隔 URL，必须与 mainImageListJson 一致。",
+    "marketImage1": "营销/市场图，可能由页面生成。",
+    "marketImage2": "营销/市场图，可能由页面生成。",
+    "variationListStr": "SKU、价格、库存、重量、尺寸核心字段，错误会影响商品发布。",
+    "postageId": "物流模板 ID，需确认店铺有效。",
+    "aeopQualificationStructListJson": "合规字段，错误可能导致发布失败或违规。",
+    "detailMobile": "移动端详情 JSON，包含图片和描述。",
+    "detailWeb": "PC 详情 HTML，包含图片和描述。"
+  }
+}

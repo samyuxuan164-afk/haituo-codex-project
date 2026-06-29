@@ -1,0 +1,235 @@
+{
+  "ok": true,
+  "product": {
+    "asin": "B0F1N93ZTB",
+    "known_title": "ZEXALOR 8-Section Clear Drawer Organizer, Large Acrylic Drawer Divider Tray for Desk, Bathroom, Office Makeup, Junk, Plastic Drawers Organizer 13.7 x 8.7 x 2 inch",
+    "known_category": "Drawer Organizers",
+    "material": "Acrylic, Plastic",
+    "color": "Clear",
+    "price_usd": 14.99,
+    "store": "Halo Home Store",
+    "freight_template": "111"
+  },
+  "api": {
+    "status": 200,
+    "model": "deepseek-v4-flash",
+    "usage": {
+      "prompt_tokens": 359,
+      "completion_tokens": 1052,
+      "total_tokens": 1411,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      },
+      "completion_tokens_details": {
+        "reasoning_tokens": 568
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 359
+    },
+    "content": "{\n  \"schemaVersion\": \"product-understanding-v1\",\n  \"asin\": \"B0F1N93ZTB\",\n  \"productType\": \"Drawer Organizer\",\n  \"primaryUse\": \"Organizing drawers for desk, bathroom, office, makeup, junk\",\n  \"recommendedCategory\": {\n    \"name\": \"Drawer Organizers\",\n    \"path\": \"Home & Kitchen > Kitchen & Dining > Storage & Organization > Drawer Organizers\",\n    \"searchTerms\": [\n      \"drawer organizer\",\n      \"acrylic drawer divider\",\n      \"clear drawer tray\",\n      \"desk organizer\",\n      \"bathroom organizer\",\n      \"makeup organizer\",\n      \"storage tray\",\n      \"plastic drawer divider\",\n      \"sectioned organizer\",\n      \"13.7 x 8.7 inch tray\"\n    ],\n    \"confidence\": 0.95,\n    \"evidence\": [\n      \"Title specifies '8-Section Clear Drawer Organizer'\",\n      \"Material is acrylic/plastic\",\n      \"Listed in category 'Drawer Organizers'\"\n    ]\n  },\n  \"attributes\": [\n    {\n      \"name\": \"material\",\n      \"value\": \"Acrylic, Plastic\",\n      \"source\": \"product data\",\n      \"confidence\": 1.0\n    },\n    {\n      \"name\": \"color\",\n      \"value\": \"Clear\",\n      \"source\": \"product data\",\n      \"confidence\": 1.0\n    },\n    {\n      \"name\": \"size\",\n      \"value\": \"13.7 x 8.7 x 2 inch\",\n      \"source\": \"title\",\n      \"confidence\": 1.0\n    },\n    {\n      \"name\": \"number_of_sections\",\n      \"value\": \"8\",\n      \"source\": \"title\",\n      \"confidence\": 1.0\n    },\n    {\n      \"name\": \"shape\",\n      \"value\": \"Rectangular\",\n      \"source\": \"Inferred from dimensions\",\n      \"confidence\": 0.8\n    }\n  ],\n  \"risks\": [],\n  \"confidence\": 0.95,\n  \"ruleEngine\": {\n    \"passed\": true,\n    \"blockedBy\": [],\n    \"allowedForEditPage\": true,\n    \"notes\": \"Product classification straightforward\"\n  }\n}"
+  },
+  "raw": {
+    "schemaVersion": "product-understanding-v1",
+    "asin": "B0F1N93ZTB",
+    "productType": "Drawer Organizer",
+    "primaryUse": "Organizing drawers for desk, bathroom, office, makeup, junk",
+    "recommendedCategory": {
+      "name": "Drawer Organizers",
+      "path": "Home & Kitchen > Kitchen & Dining > Storage & Organization > Drawer Organizers",
+      "searchTerms": [
+        "drawer organizer",
+        "acrylic drawer divider",
+        "clear drawer tray",
+        "desk organizer",
+        "bathroom organizer",
+        "makeup organizer",
+        "storage tray",
+        "plastic drawer divider",
+        "sectioned organizer",
+        "13.7 x 8.7 inch tray"
+      ],
+      "confidence": 0.95,
+      "evidence": [
+        "Title specifies '8-Section Clear Drawer Organizer'",
+        "Material is acrylic/plastic",
+        "Listed in category 'Drawer Organizers'"
+      ]
+    },
+    "attributes": [
+      {
+        "name": "material",
+        "value": "Acrylic, Plastic",
+        "source": "product data",
+        "confidence": 1.0
+      },
+      {
+        "name": "color",
+        "value": "Clear",
+        "source": "product data",
+        "confidence": 1.0
+      },
+      {
+        "name": "size",
+        "value": "13.7 x 8.7 x 2 inch",
+        "source": "title",
+        "confidence": 1.0
+      },
+      {
+        "name": "number_of_sections",
+        "value": "8",
+        "source": "title",
+        "confidence": 1.0
+      },
+      {
+        "name": "shape",
+        "value": "Rectangular",
+        "source": "Inferred from dimensions",
+        "confidence": 0.8
+      }
+    ],
+    "risks": [],
+    "confidence": 0.95,
+    "ruleEngine": {
+      "passed": true,
+      "blockedBy": [],
+      "allowedForEditPage": true,
+      "notes": "Product classification straightforward"
+    }
+  },
+  "adapted": {
+    "schemaVersion": "product-understanding-v1",
+    "asin": "B0F1N93ZTB",
+    "productType": "Drawer Organizer",
+    "primaryUse": "Organizing drawers for desk, bathroom, office, makeup, junk",
+    "recommendedCategory": {
+      "name": "Drawer Organizers",
+      "path": "Home & Kitchen > Kitchen & Dining > Storage & Organization > Drawer Organizers",
+      "searchTerms": [
+        "drawer organizer",
+        "acrylic drawer divider",
+        "clear drawer tray",
+        "desk organizer",
+        "bathroom organizer",
+        "makeup organizer",
+        "storage tray",
+        "plastic drawer divider",
+        "sectioned organizer",
+        "13.7 x 8.7 inch tray"
+      ],
+      "confidence": 0.95,
+      "evidence": [
+        "Title specifies '8-Section Clear Drawer Organizer'",
+        "Material is acrylic/plastic",
+        "Listed in category 'Drawer Organizers'"
+      ]
+    },
+    "attributes": [
+      {
+        "name": "material",
+        "value": "Acrylic, Plastic",
+        "source": "product data",
+        "confidence": 1.0
+      },
+      {
+        "name": "color",
+        "value": "Clear",
+        "source": "product data",
+        "confidence": 1.0
+      },
+      {
+        "name": "size",
+        "value": "13.7 x 8.7 x 2 inch",
+        "source": "title",
+        "confidence": 1.0
+      },
+      {
+        "name": "number_of_sections",
+        "value": "8",
+        "source": "title",
+        "confidence": 1.0
+      },
+      {
+        "name": "shape",
+        "value": "Rectangular",
+        "source": "Inferred from dimensions",
+        "confidence": 0.8
+      }
+    ],
+    "risks": [],
+    "confidence": 0.95,
+    "ruleEngine": {
+      "passed": true,
+      "blockedBy": [],
+      "allowedForEditPage": true,
+      "notes": "Adapter output only; local Rule Engine is authoritative before edit-page use."
+    }
+  },
+  "ruleEngine": {
+    "passed": true,
+    "errors": [],
+    "warnings": [],
+    "allowedForEditPage": true,
+    "normalized": {
+      "asin": "B0F1N93ZTB",
+      "productType": "Drawer Organizer",
+      "primaryUse": "Organizing drawers for desk, bathroom, office, makeup, junk",
+      "recommendedCategory": {
+        "name": "Drawer Organizers",
+        "path": "Home & Kitchen > Kitchen & Dining > Storage & Organization > Drawer Organizers",
+        "searchTerms": [
+          "drawer organizer",
+          "acrylic drawer divider",
+          "clear drawer tray",
+          "desk organizer",
+          "bathroom organizer",
+          "makeup organizer",
+          "storage tray",
+          "plastic drawer divider",
+          "sectioned organizer",
+          "13.7 x 8.7 inch tray"
+        ],
+        "confidence": 0.95,
+        "evidence": [
+          "Title specifies '8-Section Clear Drawer Organizer'",
+          "Material is acrylic/plastic",
+          "Listed in category 'Drawer Organizers'"
+        ]
+      },
+      "attributes": [
+        {
+          "name": "material",
+          "value": "Acrylic, Plastic",
+          "source": "product data",
+          "confidence": 1.0
+        },
+        {
+          "name": "color",
+          "value": "Clear",
+          "source": "product data",
+          "confidence": 1.0
+        },
+        {
+          "name": "size",
+          "value": "13.7 x 8.7 x 2 inch",
+          "source": "title",
+          "confidence": 1.0
+        },
+        {
+          "name": "number_of_sections",
+          "value": "8",
+          "source": "title",
+          "confidence": 1.0
+        },
+        {
+          "name": "shape",
+          "value": "Rectangular",
+          "source": "Inferred from dimensions",
+          "confidence": 0.8
+        }
+      ],
+      "risks": [],
+      "confidence": 0.95,
+      "allowedForEditPage": true
+    }
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "skill": "category-resolver",
+  "version": "0.1.0",
+  "goal": "Resolve a product's Dianxiaomi/AliExpress publish category dynamically from Amazon/edit.json data and learned category evidence.",
+  "principles": {
+    "noHardcodedSingleCategoryFlow": true,
+    "fieldSchemaReusable": true,
+    "fieldValueReusable": false,
+    "lowConfidenceRequiresOneTimeLearning": true,
+    "manualLearningIsNotPerProductFilling": true
+  },
+  "sourcePriority": [
+    "learned_rules.exact_asin_or_source_category",
+    "learned_rules.keyword_and_attribute_match",
+    "dianxiaomi_category_search_api",
+    "edit_json_existing_category",
+    "manual_confirm_queue_for_new_category"
+  ],
+  "confidencePolicy": {
+    "autoApplyMinConfidence": 0.85,
+    "manualConfirmBelowConfidence": 0.85,
+    "rejectBelowConfidence": 0.55
+  },
+  "requiredResolverOutput": {
+    "categoryId": "Dianxiaomi/AliExpress publish category ID",
+    "categoryPath": "Human-readable category path",
+    "requiredProperties": "Required productPropertyListJson defaults or extraction rules",
+    "optionValues": "Required option values such as Ships From",
+    "confidence": "0-1",
+    "evidence": "Matched terms, source category, or captured payload reference"
+  }
+}

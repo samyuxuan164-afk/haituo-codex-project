@@ -1,0 +1,217 @@
+{
+  "ok": true,
+  "product": {
+    "asin": "B08XFMNXDT",
+    "known_title": "Oggi Clear Drawer Organizer - 3 x 12.5 inch - Ideal for Organizing Kitchen Drawers, Office, Desk, Silverware, Kitchen Utensils, Cosmetics and Bathrooms",
+    "known_category": "Drawer Organizers",
+    "material": "Plastic",
+    "color": "Clear",
+    "price_usd": 5.99,
+    "store": "Halo Home Store",
+    "freight_template": "111"
+  },
+  "api": {
+    "status": 200,
+    "model": "deepseek-v4-flash",
+    "usage": {
+      "prompt_tokens": 341,
+      "completion_tokens": 811,
+      "total_tokens": 1152,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      },
+      "completion_tokens_details": {
+        "reasoning_tokens": 370
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 341
+    },
+    "content": "{\n  \"schemaVersion\": \"product-understanding-v1\",\n  \"asin\": \"B08XFMNXDT\",\n  \"productType\": \"Drawer Organizer\",\n  \"primaryUse\": \"Organizing and storing household items\",\n  \"recommendedCategory\": {\n    \"name\": \"Drawer Organizers\",\n    \"path\": \"Home & Kitchen > Kitchen & Dining > Storage & Organization > Drawer Organizers\",\n    \"searchTerms\": [\n      \"clear drawer organizer\",\n      \"plastic drawer organizer\",\n      \"kitchen drawer organizer\",\n      \"silverware tray\",\n      \"office desk organizer\"\n    ],\n    \"confidence\": 0.95,\n    \"evidence\": [\n      \"ASIN title includes 'Clear Drawer Organizer'\",\n      \"Known category matches 'Drawer Organizers'\"\n    ]\n  },\n  \"attributes\": [\n    {\n      \"name\": \"brand\",\n      \"value\": \"Oggi\",\n      \"source\": \"ASIN title\",\n      \"confidence\": 1.0\n    },\n    {\n      \"name\": \"material\",\n      \"value\": \"Plastic\",\n      \"source\": \"Product data field 'material'\",\n      \"confidence\": 1.0\n    },\n    {\n      \"name\": \"color\",\n      \"value\": \"Clear\",\n      \"source\": \"Product data field 'color'\",\n      \"confidence\": 1.0\n    },\n    {\n      \"name\": \"size\",\n      \"value\": \"3 x 12.5 inch\",\n      \"source\": \"ASIN title\",\n      \"confidence\": 1.0\n    },\n    {\n      \"name\": \"price\",\n      \"value\": \"5.99\",\n      \"source\": \"Product data field 'price_usd'\",\n      \"confidence\": 1.0\n    }\n  ],\n  \"risks\": [],\n  \"confidence\": 0.95,\n  \"ruleEngine\": {\n    \"passed\": true,\n    \"blockedBy\": [],\n    \"allowedForEditPage\": true,\n    \"notes\": \"Product matches known category and attributes are clear.\"\n  }\n}"
+  },
+  "raw": {
+    "schemaVersion": "product-understanding-v1",
+    "asin": "B08XFMNXDT",
+    "productType": "Drawer Organizer",
+    "primaryUse": "Organizing and storing household items",
+    "recommendedCategory": {
+      "name": "Drawer Organizers",
+      "path": "Home & Kitchen > Kitchen & Dining > Storage & Organization > Drawer Organizers",
+      "searchTerms": [
+        "clear drawer organizer",
+        "plastic drawer organizer",
+        "kitchen drawer organizer",
+        "silverware tray",
+        "office desk organizer"
+      ],
+      "confidence": 0.95,
+      "evidence": [
+        "ASIN title includes 'Clear Drawer Organizer'",
+        "Known category matches 'Drawer Organizers'"
+      ]
+    },
+    "attributes": [
+      {
+        "name": "brand",
+        "value": "Oggi",
+        "source": "ASIN title",
+        "confidence": 1.0
+      },
+      {
+        "name": "material",
+        "value": "Plastic",
+        "source": "Product data field 'material'",
+        "confidence": 1.0
+      },
+      {
+        "name": "color",
+        "value": "Clear",
+        "source": "Product data field 'color'",
+        "confidence": 1.0
+      },
+      {
+        "name": "size",
+        "value": "3 x 12.5 inch",
+        "source": "ASIN title",
+        "confidence": 1.0
+      },
+      {
+        "name": "price",
+        "value": "5.99",
+        "source": "Product data field 'price_usd'",
+        "confidence": 1.0
+      }
+    ],
+    "risks": [],
+    "confidence": 0.95,
+    "ruleEngine": {
+      "passed": true,
+      "blockedBy": [],
+      "allowedForEditPage": true,
+      "notes": "Product matches known category and attributes are clear."
+    }
+  },
+  "adapted": {
+    "schemaVersion": "product-understanding-v1",
+    "asin": "B08XFMNXDT",
+    "productType": "Drawer Organizer",
+    "primaryUse": "Organizing and storing household items",
+    "recommendedCategory": {
+      "name": "Drawer Organizers",
+      "path": "Home & Kitchen > Kitchen & Dining > Storage & Organization > Drawer Organizers",
+      "searchTerms": [
+        "clear drawer organizer",
+        "plastic drawer organizer",
+        "kitchen drawer organizer",
+        "silverware tray",
+        "office desk organizer"
+      ],
+      "confidence": 0.95,
+      "evidence": [
+        "ASIN title includes 'Clear Drawer Organizer'",
+        "Known category matches 'Drawer Organizers'"
+      ]
+    },
+    "attributes": [
+      {
+        "name": "brand",
+        "value": "Oggi",
+        "source": "ASIN title",
+        "confidence": 1.0
+      },
+      {
+        "name": "material",
+        "value": "Plastic",
+        "source": "Product data field 'material'",
+        "confidence": 1.0
+      },
+      {
+        "name": "color",
+        "value": "Clear",
+        "source": "Product data field 'color'",
+        "confidence": 1.0
+      },
+      {
+        "name": "size",
+        "value": "3 x 12.5 inch",
+        "source": "ASIN title",
+        "confidence": 1.0
+      },
+      {
+        "name": "price",
+        "value": "5.99",
+        "source": "Product data field 'price_usd'",
+        "confidence": 1.0
+      }
+    ],
+    "risks": [],
+    "confidence": 0.95,
+    "ruleEngine": {
+      "passed": true,
+      "blockedBy": [],
+      "allowedForEditPage": true,
+      "notes": "Adapter output only; local Rule Engine is authoritative before edit-page use."
+    }
+  },
+  "ruleEngine": {
+    "passed": true,
+    "errors": [],
+    "warnings": [],
+    "allowedForEditPage": true,
+    "normalized": {
+      "asin": "B08XFMNXDT",
+      "productType": "Drawer Organizer",
+      "primaryUse": "Organizing and storing household items",
+      "recommendedCategory": {
+        "name": "Drawer Organizers",
+        "path": "Home & Kitchen > Kitchen & Dining > Storage & Organization > Drawer Organizers",
+        "searchTerms": [
+          "clear drawer organizer",
+          "plastic drawer organizer",
+          "kitchen drawer organizer",
+          "silverware tray",
+          "office desk organizer"
+        ],
+        "confidence": 0.95,
+        "evidence": [
+          "ASIN title includes 'Clear Drawer Organizer'",
+          "Known category matches 'Drawer Organizers'"
+        ]
+      },
+      "attributes": [
+        {
+          "name": "brand",
+          "value": "Oggi",
+          "source": "ASIN title",
+          "confidence": 1.0
+        },
+        {
+          "name": "material",
+          "value": "Plastic",
+          "source": "Product data field 'material'",
+          "confidence": 1.0
+        },
+        {
+          "name": "color",
+          "value": "Clear",
+          "source": "Product data field 'color'",
+          "confidence": 1.0
+        },
+        {
+          "name": "size",
+          "value": "3 x 12.5 inch",
+          "source": "ASIN title",
+          "confidence": 1.0
+        },
+        {
+          "name": "price",
+          "value": "5.99",
+          "source": "Product data field 'price_usd'",
+          "confidence": 1.0
+        }
+      ],
+      "risks": [],
+      "confidence": 0.95,
+      "allowedForEditPage": true
+    }
+  }
+}

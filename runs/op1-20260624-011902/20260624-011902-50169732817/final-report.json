@@ -1,0 +1,43 @@
+{
+  "runId": "20260624-011902-50169732817",
+  "category": "dxm-category-search:200231151",
+  "productId": "50169732817",
+  "asin": "B09D5Y5HBW",
+  "stage": "single-product",
+  "pluginVersion": "1.1.23",
+  "taskConfig": {
+    "stock": "15",
+    "exchangeRate": "7",
+    "priceMultiplier": "1.55",
+    "defaultWeightKg": "0.1"
+  },
+  "valueSources": {
+    "sourcePriceUsd": "task_override",
+    "supplyPriceCny": "task_formula",
+    "stock": "task_config",
+    "skuCode": "amazon_asin",
+    "weight": "default_missing_amazon_weight",
+    "dimensions": "task_inches_converted_to_cm",
+    "taskFormula": {
+      "exchangeRate": "7",
+      "multiplier": "1.55"
+    }
+  },
+  "dryRun": {
+    "pass": true,
+    "riskCount": 0,
+    "warningCount": 6
+  },
+  "op1": {
+    "called": true,
+    "success": false,
+    "persisted": true
+  },
+  "op2": {
+    "called": true,
+    "success": false,
+    "responseCode": -1
+  },
+  "result": "failed",
+  "failureReason": "op=1 save.json 返回失败"
+}

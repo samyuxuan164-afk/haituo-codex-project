@@ -1,0 +1,62 @@
+{
+  "name": "product-understanding-rule-engine",
+  "version": "0.1.0",
+  "purpose": "Validate DeepSeek Product Understanding output before it can influence Dianxiaomi edit-page category or attributes.",
+  "rules": [
+    {
+      "id": "strict-json-only",
+      "severity": "blocker",
+      "description": "DeepSeek output must be a single strict JSON object matching product-understanding-v1."
+    },
+    {
+      "id": "no-publish-advice",
+      "severity": "blocker",
+      "description": "DeepSeek must not output publish, review and publish, ready to publish, 发布, 上架, 刊登, or one-click publish advice."
+    },
+    {
+      "id": "rule-engine-gate",
+      "severity": "blocker",
+      "description": "DeepSeek output cannot be used for edit-page category or attributes unless local Rule Engine validation passes."
+    },
+    {
+      "id": "category-confidence-threshold",
+      "severity": "blocker",
+      "description": "Recommended category confidence must be at least 0.72 before edit-page use."
+    },
+    {
+      "id": "category-is-suggestion-not-final",
+      "severity": "blocker",
+      "description": "Recommended category is only a search/mapping suggestion. Dianxiaomi visible selectable category and project rules remain the source of truth."
+    },
+    {
+      "id": "category-full-path-semantic-check",
+      "severity": "blocker",
+      "description": "Category validation must check the full Dianxiaomi path, not only the English leaf name. Clothing/underwear storage paths are blocked unless product evidence clearly shows clothing, underwear, socks, wardrobe, or closet use."
+    },
+    {
+      "id": "single-item-chain-sample-not-category-proof",
+      "severity": "warning",
+      "description": "A single successful collection/claim/edit chain sample cannot prove category or attribute correctness. Same-category validation must use multiple differentiated products and compare full category path plus required attributes."
+    },
+    {
+      "id": "attribute-source-required",
+      "severity": "blocker",
+      "description": "Every attribute must include source and confidence. Low-confidence attributes cannot be written to edit page automatically."
+    },
+    {
+      "id": "material-required-for-edit",
+      "severity": "blocker",
+      "description": "Material must be inferred from Amazon title/detail evidence or a project-safe fallback before edit-page use; it must not remain blank on the edit page when the category requires it."
+    },
+    {
+      "id": "ships-from-task-default-us",
+      "severity": "blocker",
+      "description": "For the current Amazon US to AliExpress local project flow, SKU variation Ships From defaults to United States and must be present before save."
+    },
+    {
+      "id": "risk-blocks-edit-use",
+      "severity": "blocker",
+      "description": "Any blocker risk blocks edit-page use until resolved by project rules or manual confirmation."
+    }
+  ]
+}

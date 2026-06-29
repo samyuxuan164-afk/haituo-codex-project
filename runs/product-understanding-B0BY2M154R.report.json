@@ -1,0 +1,232 @@
+{
+  "ok": true,
+  "product": {
+    "asin": "B0BY2M154R",
+    "known_title": "Ravinte 6 Pack Drawer Organizer - 6 inch X 9 inch Plastic Storage Bins, Acrylic Organizers with Non-Slip Pads Clear Desk Storage Tray for Makeup, Jewelries, Kitchen Utensils, Bathroom and Office",
+    "known_category": "Office Products > Office and School Supplies > Desk Accessories and Workspace Organizers > Drawer Organizers",
+    "brand_after_cleaning": "NONE",
+    "brand_source": "Amazon byline/title contains Ravinte; title and description must remove brand before edit/save.",
+    "material": "Acrylic, Plastic",
+    "color": "Clear",
+    "quantity": "6",
+    "dimensions": "9 inch L x 6 inch W x 2 inch H",
+    "price_usd": 17.99,
+    "target_stock": 15,
+    "freight_template": "111",
+    "visual_precheck": "Main image shows clear storage trays without visible product logo or brand packaging. Brand text exists in Amazon title/byline only and must be cleaned.",
+    "validation_boundary": "1-item small-sample edit-save validation only; save to wait-to-publish; no final publish."
+  },
+  "api": {
+    "status": 200,
+    "model": "deepseek-v4-flash",
+    "usage": {
+      "prompt_tokens": 498,
+      "completion_tokens": 966,
+      "total_tokens": 1464,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      },
+      "completion_tokens_details": {
+        "reasoning_tokens": 497
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 498
+    },
+    "content": "{\n  \"schemaVersion\": \"product-understanding-v1\",\n  \"asin\": \"B0BY2M154R\",\n  \"productType\": \"Drawer Organizer\",\n  \"primaryUse\": \"Organizing drawers for makeup, jewelry, kitchen utensils, bathroom and office supplies\",\n  \"recommendedCategory\": {\n    \"name\": \"Drawer Organizers\",\n    \"path\": \"Office Products > Office and School Supplies > Desk Accessories and Workspace Organizers > Drawer Organizers\",\n    \"searchTerms\": [\"drawer organizer\", \"storage bin\", \"acrylic organizer\", \"clear desk tray\", \"kitchen drawer organizer\", \"bathroom storage\", \"office desk organizer\", \"6 pack organizer\"],\n    \"confidence\": 0.95,\n    \"evidence\": [\"Known category matches product type\", \"Title and description confirm use for multiple spaces\"]\n  },\n  \"attributes\": [\n    {\n      \"name\": \"Material\",\n      \"value\": \"Acrylic, Plastic\",\n      \"source\": \"Product data\",\n      \"confidence\": 1.0\n    },\n    {\n      \"name\": \"Color\",\n      \"value\": \"Clear\",\n      \"source\": \"Product data\",\n      \"confidence\": 1.0\n    },\n    {\n      \"name\": \"Quantity\",\n      \"value\": \"6\",\n      \"source\": \"Product data\",\n      \"confidence\": 1.0\n    },\n    {\n      \"name\": \"Size (Dimensions)\",\n      \"value\": \"9 x 6 x 2 inches\",\n      \"source\": \"Product data\",\n      \"confidence\": 1.0\n    }\n  ],\n  \"risks\": [\n    {\n      \"type\": \"Brand in Title/Byline\",\n      \"level\": \"medium\",\n      \"message\": \"Brand 'Ravinte' appears in Amazon title and byline and must be removed before listing. Visual precheck confirms no brand on product images.\"\n    }\n  ],\n  \"confidence\": 0.85,\n  \"ruleEngine\": {\n    \"passed\": true,\n    \"blockedBy\": [],\n    \"allowedForEditPage\": true,\n    \"notes\": \"Brand cleanup required before save; all other attributes valid for edit-save validation.\"\n  }\n}"
+  },
+  "raw": {
+    "schemaVersion": "product-understanding-v1",
+    "asin": "B0BY2M154R",
+    "productType": "Drawer Organizer",
+    "primaryUse": "Organizing drawers for makeup, jewelry, kitchen utensils, bathroom and office supplies",
+    "recommendedCategory": {
+      "name": "Drawer Organizers",
+      "path": "Office Products > Office and School Supplies > Desk Accessories and Workspace Organizers > Drawer Organizers",
+      "searchTerms": [
+        "drawer organizer",
+        "storage bin",
+        "acrylic organizer",
+        "clear desk tray",
+        "kitchen drawer organizer",
+        "bathroom storage",
+        "office desk organizer",
+        "6 pack organizer"
+      ],
+      "confidence": 0.95,
+      "evidence": [
+        "Known category matches product type",
+        "Title and description confirm use for multiple spaces"
+      ]
+    },
+    "attributes": [
+      {
+        "name": "Material",
+        "value": "Acrylic, Plastic",
+        "source": "Product data",
+        "confidence": 1.0
+      },
+      {
+        "name": "Color",
+        "value": "Clear",
+        "source": "Product data",
+        "confidence": 1.0
+      },
+      {
+        "name": "Quantity",
+        "value": "6",
+        "source": "Product data",
+        "confidence": 1.0
+      },
+      {
+        "name": "Size (Dimensions)",
+        "value": "9 x 6 x 2 inches",
+        "source": "Product data",
+        "confidence": 1.0
+      }
+    ],
+    "risks": [
+      {
+        "type": "Brand in Title/Byline",
+        "level": "medium",
+        "message": "Brand 'Ravinte' appears in Amazon title and byline and must be removed before listing. Visual precheck confirms no brand on product images."
+      }
+    ],
+    "confidence": 0.85,
+    "ruleEngine": {
+      "passed": true,
+      "blockedBy": [],
+      "allowedForEditPage": true,
+      "notes": "Brand cleanup required before save; all other attributes valid for edit-save validation."
+    }
+  },
+  "adapted": {
+    "schemaVersion": "product-understanding-v1",
+    "asin": "B0BY2M154R",
+    "productType": "Drawer Organizer",
+    "primaryUse": "Organizing drawers for makeup, jewelry, kitchen utensils, bathroom and office supplies",
+    "recommendedCategory": {
+      "name": "Drawer Organizers",
+      "path": "Office Products > Office and School Supplies > Desk Accessories and Workspace Organizers > Drawer Organizers",
+      "searchTerms": [
+        "drawer organizer",
+        "storage bin",
+        "acrylic organizer",
+        "clear desk tray",
+        "kitchen drawer organizer",
+        "bathroom storage",
+        "office desk organizer",
+        "6 pack organizer"
+      ],
+      "confidence": 0.95,
+      "evidence": [
+        "Known category matches product type",
+        "Title and description confirm use for multiple spaces"
+      ]
+    },
+    "attributes": [
+      {
+        "name": "Material",
+        "value": "Acrylic, Plastic",
+        "source": "Product data",
+        "confidence": 1.0
+      },
+      {
+        "name": "Color",
+        "value": "Clear",
+        "source": "Product data",
+        "confidence": 1.0
+      },
+      {
+        "name": "Quantity",
+        "value": "6",
+        "source": "Product data",
+        "confidence": 1.0
+      },
+      {
+        "name": "Size (Dimensions)",
+        "value": "9 x 6 x 2 inches",
+        "source": "Product data",
+        "confidence": 1.0
+      }
+    ],
+    "risks": [
+      {
+        "type": "Brand in Title/Byline",
+        "level": "medium",
+        "message": "Brand 'Ravinte' appears in Amazon title and byline and must be removed before listing. Visual precheck confirms no brand on product images."
+      }
+    ],
+    "confidence": 0.85,
+    "ruleEngine": {
+      "passed": true,
+      "blockedBy": [],
+      "allowedForEditPage": true,
+      "notes": "Adapter output only; local Rule Engine is authoritative before edit-page use."
+    }
+  },
+  "ruleEngine": {
+    "passed": true,
+    "errors": [],
+    "warnings": [],
+    "allowedForEditPage": true,
+    "normalized": {
+      "asin": "B0BY2M154R",
+      "productType": "Drawer Organizer",
+      "primaryUse": "Organizing drawers for makeup, jewelry, kitchen utensils, bathroom and office supplies",
+      "recommendedCategory": {
+        "name": "Drawer Organizers",
+        "path": "Office Products > Office and School Supplies > Desk Accessories and Workspace Organizers > Drawer Organizers",
+        "searchTerms": [
+          "drawer organizer",
+          "storage bin",
+          "acrylic organizer",
+          "clear desk tray",
+          "kitchen drawer organizer",
+          "bathroom storage",
+          "office desk organizer",
+          "6 pack organizer"
+        ],
+        "confidence": 0.95,
+        "evidence": [
+          "Known category matches product type",
+          "Title and description confirm use for multiple spaces"
+        ]
+      },
+      "attributes": [
+        {
+          "name": "Material",
+          "value": "Acrylic, Plastic",
+          "source": "Product data",
+          "confidence": 1.0
+        },
+        {
+          "name": "Color",
+          "value": "Clear",
+          "source": "Product data",
+          "confidence": 1.0
+        },
+        {
+          "name": "Quantity",
+          "value": "6",
+          "source": "Product data",
+          "confidence": 1.0
+        },
+        {
+          "name": "Size (Dimensions)",
+          "value": "9 x 6 x 2 inches",
+          "source": "Product data",
+          "confidence": 1.0
+        }
+      ],
+      "risks": [
+        {
+          "type": "Brand in Title/Byline",
+          "level": "medium",
+          "message": "Brand 'Ravinte' appears in Amazon title and byline and must be removed before listing. Visual precheck confirms no brand on product images."
+        }
+      ],
+      "confidence": 0.85,
+      "allowedForEditPage": true
+    }
+  }
+}

@@ -1,0 +1,117 @@
+{
+  "skill": "category-resolver",
+  "version": "0.1.0",
+  "rules": [
+    {
+      "id": "pen-holders-visible-dxm",
+      "status": "active",
+      "type": "categoryMapping",
+      "scope": "desk-stationery-storage-only",
+      "categoryId": "",
+      "categoryPath": "Office & School Supplies > Desk Accessories & Organizer > Pen Holders",
+      "match": {
+        "anyTitleTerms": [
+          "pen holder",
+          "pen holders",
+          "pencil holder",
+          "pencil holders",
+          "pencil cup",
+          "desk pen holder",
+          "desk pen organizer",
+          "rotating pen organizer",
+          "rotating pencil organizer",
+          "rotating pencil cup",
+          "rotating organizer for pencils",
+          "rotating organizer for office supplies",
+          "desktop stationery storage",
+          "桌面文具收纳",
+          "笔筒"
+        ],
+        "anySourceCategoryTerms": [
+          "pen holders",
+          "desk accessories",
+          "office supplies"
+        ],
+        "negativeTitleTerms": [
+          "cable organizer",
+          "makeup organizer",
+          "bathroom organizer",
+          "kitchen organizer",
+          "drawer organizer",
+          "clothing organizer",
+          "wardrobe organizer",
+          "letter organizer",
+          "file organizer"
+        ]
+      },
+      "principles": [
+        "Amazon original category is only auxiliary and cannot be copied as the DXM category.",
+        "DXM category must be judged by actual use, physical form, title semantics, and image content.",
+        "Generic Organizer alone must not match Pen Holders.",
+        "If Amazon category and DXM category differ but DXM category better matches actual use, use the DXM category."
+      ],
+      "visibleCategorySearchTerms": [
+        "Pen Holders",
+        "笔筒",
+        "Pencil Holders",
+        "Pencil Cup",
+        "Desk Pen Holder"
+      ],
+      "evidence": [
+        "manual confirmation 2026-06-25: DXM visible category path 办公、文化及教育用品 > 桌上收纳用品 > 笔筒(Pen Holders)"
+      ]
+    },
+    {
+      "id": "bumpers-200291142",
+      "status": "active",
+      "categoryId": "200291142",
+      "categoryPath": "Home Improvement > Hardware > Furniture Hardware > Cabinet Bumpers",
+      "match": {
+        "anyTitleTerms": [
+          "bumper",
+          "bumpers",
+          "rubber bumper",
+          "cabinet bumper",
+          "door stopper",
+          "furniture pad",
+          "self adhesive bumper"
+        ],
+        "anySourceCategoryTerms": [
+          "cabinet bumpers",
+          "rubber bumpers"
+        ]
+      },
+      "defaults": {
+        "productPropertyListJson": [
+          {
+            "attr_name_id": "2",
+            "attr_name": "Brand Name",
+            "attr_value_id": "201512802",
+            "attr_value": "None",
+            "attr_value_unit": null,
+            "attr_value_start": null,
+            "attr_value_end": null
+          },
+          {
+            "attr_name_id": "400000603",
+            "attr_name": "High-concerned chemical",
+            "attr_value_id": "23399591357",
+            "attr_value": "天然未处理(None)"
+          },
+          {
+            "attr_name_id": "219",
+            "attr_name": "Origin",
+            "attr_value_id": "9442295690",
+            "attr_value": "美国(Origin)(US(Origin))",
+            "attr_value_unit": null,
+            "attr_value_start": null,
+            "attr_value_end": null
+          }
+        ]
+      },
+      "evidence": [
+        "analysis/save-json-3/choiceSave.pretty.json"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,241 @@
+{
+  "ok": true,
+  "product": {
+    "asin": "B0CDNP8FCL",
+    "known_title": "6 Pack Large Clear Plastic Drawer Organizer Trays, Acrylic Kitchen Drawer Organization and Storage Dividers, Non-Slip Storage Bins for Makeup, Kitchen Utensils, Bathroom, Jewelries and Office Desk",
+    "known_category": "Drawer Organizers",
+    "material": "Acrylic, Plastic",
+    "color": "Clear",
+    "price_usd": 24.99,
+    "store": "Halo Home Store",
+    "freight_template": "111"
+  },
+  "api": {
+    "status": 200,
+    "model": "deepseek-v4-flash",
+    "usage": {
+      "prompt_tokens": 350,
+      "completion_tokens": 807,
+      "total_tokens": 1157,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      },
+      "completion_tokens_details": {
+        "reasoning_tokens": 289
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 350
+    },
+    "content": "{\n  \"schemaVersion\": \"product-understanding-v1\",\n  \"asin\": \"B0CDNP8FCL\",\n  \"productType\": \"DrawerOrganizer\",\n  \"primaryUse\": \"Organizing and storing items in drawers (kitchen, bathroom, office, etc.)\",\n  \"recommendedCategory\": {\n    \"name\": \"Drawer Organizers\",\n    \"path\": \"Kitchen & Dining > Kitchen Storage & Organization > Drawer Organizers\",\n    \"searchTerms\": [\n      \"drawer organizer\",\n      \"clear plastic drawer dividers\",\n      \"acrylic storage bins\",\n      \"kitchen drawer storage\",\n      \"bathroom organizer trays\",\n      \"non-slip drawer trays\"\n    ],\n    \"confidence\": 0.95,\n    \"evidence\": [\n      \"Title explicitly states 'Drawer Organizer Trays'\",\n      \"Known category from provided data is 'Drawer Organizers'\",\n      \"Common product classification for clear plastic/acrylic storage bins\"\n    ]\n  },\n  \"attributes\": [\n    {\n      \"name\": \"material\",\n      \"value\": \"Acrylic, Plastic\",\n      \"source\": \"product data\",\n      \"confidence\": 1.0\n    },\n    {\n      \"name\": \"color\",\n      \"value\": \"Clear\",\n      \"source\": \"product data\",\n      \"confidence\": 1.0\n    },\n    {\n      \"name\": \"number_of_pieces\",\n      \"value\": \"6\",\n      \"source\": \"title\",\n      \"confidence\": 0.95\n    },\n    {\n      \"name\": \"size\",\n      \"value\": \"Large\",\n      \"source\": \"title\",\n      \"confidence\": 0.9\n    },\n    {\n      \"name\": \"feature\",\n      \"value\": \"Non-Slip\",\n      \"source\": \"title\",\n      \"confidence\": 0.9\n    }\n  ],\n  \"risks\": [\n    {\n      \"type\": \"category_mismatch\",\n      \"level\": \"low\",\n      \"message\": \"Product may also fit in 'Office Products > Storage & Organization' or 'Home & Kitchen > Storage & Organization' but primary match is strong.\"\n    }\n  ],\n  \"confidence\": 0.95,\n  \"ruleEngine\": {\n    \"passed\": true,\n    \"blockedBy\": [],\n    \"allowedForEditPage\": true,\n    \"notes\": \"Standard drawer organizer product with no apparent policy violations.\"\n  }\n}"
+  },
+  "raw": {
+    "schemaVersion": "product-understanding-v1",
+    "asin": "B0CDNP8FCL",
+    "productType": "DrawerOrganizer",
+    "primaryUse": "Organizing and storing items in drawers (kitchen, bathroom, office, etc.)",
+    "recommendedCategory": {
+      "name": "Drawer Organizers",
+      "path": "Kitchen & Dining > Kitchen Storage & Organization > Drawer Organizers",
+      "searchTerms": [
+        "drawer organizer",
+        "clear plastic drawer dividers",
+        "acrylic storage bins",
+        "kitchen drawer storage",
+        "bathroom organizer trays",
+        "non-slip drawer trays"
+      ],
+      "confidence": 0.95,
+      "evidence": [
+        "Title explicitly states 'Drawer Organizer Trays'",
+        "Known category from provided data is 'Drawer Organizers'",
+        "Common product classification for clear plastic/acrylic storage bins"
+      ]
+    },
+    "attributes": [
+      {
+        "name": "material",
+        "value": "Acrylic, Plastic",
+        "source": "product data",
+        "confidence": 1.0
+      },
+      {
+        "name": "color",
+        "value": "Clear",
+        "source": "product data",
+        "confidence": 1.0
+      },
+      {
+        "name": "number_of_pieces",
+        "value": "6",
+        "source": "title",
+        "confidence": 0.95
+      },
+      {
+        "name": "size",
+        "value": "Large",
+        "source": "title",
+        "confidence": 0.9
+      },
+      {
+        "name": "feature",
+        "value": "Non-Slip",
+        "source": "title",
+        "confidence": 0.9
+      }
+    ],
+    "risks": [
+      {
+        "type": "category_mismatch",
+        "level": "low",
+        "message": "Product may also fit in 'Office Products > Storage & Organization' or 'Home & Kitchen > Storage & Organization' but primary match is strong."
+      }
+    ],
+    "confidence": 0.95,
+    "ruleEngine": {
+      "passed": true,
+      "blockedBy": [],
+      "allowedForEditPage": true,
+      "notes": "Standard drawer organizer product with no apparent policy violations."
+    }
+  },
+  "adapted": {
+    "schemaVersion": "product-understanding-v1",
+    "asin": "B0CDNP8FCL",
+    "productType": "DrawerOrganizer",
+    "primaryUse": "Organizing and storing items in drawers (kitchen, bathroom, office, etc.)",
+    "recommendedCategory": {
+      "name": "Drawer Organizers",
+      "path": "Kitchen & Dining > Kitchen Storage & Organization > Drawer Organizers",
+      "searchTerms": [
+        "drawer organizer",
+        "clear plastic drawer dividers",
+        "acrylic storage bins",
+        "kitchen drawer storage",
+        "bathroom organizer trays",
+        "non-slip drawer trays"
+      ],
+      "confidence": 0.95,
+      "evidence": [
+        "Title explicitly states 'Drawer Organizer Trays'",
+        "Known category from provided data is 'Drawer Organizers'",
+        "Common product classification for clear plastic/acrylic storage bins"
+      ]
+    },
+    "attributes": [
+      {
+        "name": "material",
+        "value": "Acrylic, Plastic",
+        "source": "product data",
+        "confidence": 1.0
+      },
+      {
+        "name": "color",
+        "value": "Clear",
+        "source": "product data",
+        "confidence": 1.0
+      },
+      {
+        "name": "number_of_pieces",
+        "value": "6",
+        "source": "title",
+        "confidence": 0.95
+      },
+      {
+        "name": "size",
+        "value": "Large",
+        "source": "title",
+        "confidence": 0.9
+      },
+      {
+        "name": "feature",
+        "value": "Non-Slip",
+        "source": "title",
+        "confidence": 0.9
+      }
+    ],
+    "risks": [
+      {
+        "type": "category_mismatch",
+        "level": "low",
+        "message": "Product may also fit in 'Office Products > Storage & Organization' or 'Home & Kitchen > Storage & Organization' but primary match is strong."
+      }
+    ],
+    "confidence": 0.95,
+    "ruleEngine": {
+      "passed": true,
+      "blockedBy": [],
+      "allowedForEditPage": true,
+      "notes": "Adapter output only; local Rule Engine is authoritative before edit-page use."
+    }
+  },
+  "ruleEngine": {
+    "passed": true,
+    "errors": [],
+    "warnings": [],
+    "allowedForEditPage": true,
+    "normalized": {
+      "asin": "B0CDNP8FCL",
+      "productType": "DrawerOrganizer",
+      "primaryUse": "Organizing and storing items in drawers (kitchen, bathroom, office, etc.)",
+      "recommendedCategory": {
+        "name": "Drawer Organizers",
+        "path": "Kitchen & Dining > Kitchen Storage & Organization > Drawer Organizers",
+        "searchTerms": [
+          "drawer organizer",
+          "clear plastic drawer dividers",
+          "acrylic storage bins",
+          "kitchen drawer storage",
+          "bathroom organizer trays",
+          "non-slip drawer trays"
+        ],
+        "confidence": 0.95,
+        "evidence": [
+          "Title explicitly states 'Drawer Organizer Trays'",
+          "Known category from provided data is 'Drawer Organizers'",
+          "Common product classification for clear plastic/acrylic storage bins"
+        ]
+      },
+      "attributes": [
+        {
+          "name": "material",
+          "value": "Acrylic, Plastic",
+          "source": "product data",
+          "confidence": 1.0
+        },
+        {
+          "name": "color",
+          "value": "Clear",
+          "source": "product data",
+          "confidence": 1.0
+        },
+        {
+          "name": "number_of_pieces",
+          "value": "6",
+          "source": "title",
+          "confidence": 0.95
+        },
+        {
+          "name": "size",
+          "value": "Large",
+          "source": "title",
+          "confidence": 0.9
+        },
+        {
+          "name": "feature",
+          "value": "Non-Slip",
+          "source": "title",
+          "confidence": 0.9
+        }
+      ],
+      "risks": [
+        {
+          "type": "category_mismatch",
+          "level": "low",
+          "message": "Product may also fit in 'Office Products > Storage & Organization' or 'Home & Kitchen > Storage & Organization' but primary match is strong."
+        }
+      ],
+      "confidence": 0.95,
+      "allowedForEditPage": true
+    }
+  }
+}

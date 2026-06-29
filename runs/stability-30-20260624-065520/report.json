@@ -1,0 +1,156 @@
+{
+  "runId": "stability-30-20260624-065520",
+  "startedAt": "2026-06-24T06:55:58",
+  "target": {
+    "categories": 3,
+    "itemsPerCategory": 10,
+    "total": 30
+  },
+  "categories": [
+    {
+      "category": "drawer organizer",
+      "searchUrl": "https://www.amazon.com/s?k=drawer+organizer&rh=p_36%3A500-2000",
+      "asins": [
+        "B0B1M6ML2J",
+        "B08KXKVT4K",
+        "B0DHC8QSXQ",
+        "B0CTFC1VJS",
+        "B0GCDLKD4X",
+        "B0GTK5K5D7",
+        "B0GCFJ9NBD",
+        "B0CHNZ3Q9B",
+        "B0FQ2J1N36",
+        "B0F388ZBX4"
+      ],
+      "links": [
+        "https://www.amazon.com/dp/B0B1M6ML2J",
+        "https://www.amazon.com/dp/B08KXKVT4K",
+        "https://www.amazon.com/dp/B0DHC8QSXQ",
+        "https://www.amazon.com/dp/B0CTFC1VJS",
+        "https://www.amazon.com/dp/B0GCDLKD4X",
+        "https://www.amazon.com/dp/B0GTK5K5D7",
+        "https://www.amazon.com/dp/B0GCFJ9NBD",
+        "https://www.amazon.com/dp/B0CHNZ3Q9B",
+        "https://www.amazon.com/dp/B0FQ2J1N36",
+        "https://www.amazon.com/dp/B0F388ZBX4"
+      ]
+    },
+    {
+      "category": "cabinet hooks",
+      "searchUrl": "https://www.amazon.com/s?k=cabinet+hooks&rh=p_36%3A500-2000",
+      "asins": [
+        "B0FP2X7MK9",
+        "B0D7VWY1YY",
+        "B0FZKHYBZ4",
+        "B0CHQGXNJ9",
+        "B0B2F55P76",
+        "B076ZTFGGC",
+        "B09NHSH7N8",
+        "B0B99VKV8P",
+        "B0C6GS3B3R",
+        "B0751TRS6Y"
+      ],
+      "links": [
+        "https://www.amazon.com/dp/B0FP2X7MK9",
+        "https://www.amazon.com/dp/B0D7VWY1YY",
+        "https://www.amazon.com/dp/B0FZKHYBZ4",
+        "https://www.amazon.com/dp/B0CHQGXNJ9",
+        "https://www.amazon.com/dp/B0B2F55P76",
+        "https://www.amazon.com/dp/B076ZTFGGC",
+        "https://www.amazon.com/dp/B09NHSH7N8",
+        "https://www.amazon.com/dp/B0B99VKV8P",
+        "https://www.amazon.com/dp/B0C6GS3B3R",
+        "https://www.amazon.com/dp/B0751TRS6Y"
+      ]
+    },
+    {
+      "category": "desk organizer",
+      "searchUrl": "https://www.amazon.com/s?k=desk+organizer&rh=p_36%3A500-2000",
+      "asins": [
+        "B0GN1TZZ9W",
+        "B0GN24KR3P",
+        "B0GN2PQMGL",
+        "B0GN274YHZ",
+        "B0DJJYPNN7",
+        "B0C2TCDL5Q",
+        "B0C9ZHWC9K",
+        "B0DF28BCMJ",
+        "B0D1X7YJ32",
+        "B0CQTJ2RRG"
+      ],
+      "links": [
+        "https://www.amazon.com/dp/B0GN1TZZ9W",
+        "https://www.amazon.com/dp/B0GN24KR3P",
+        "https://www.amazon.com/dp/B0GN2PQMGL",
+        "https://www.amazon.com/dp/B0GN274YHZ",
+        "https://www.amazon.com/dp/B0DJJYPNN7",
+        "https://www.amazon.com/dp/B0C2TCDL5Q",
+        "https://www.amazon.com/dp/B0C9ZHWC9K",
+        "https://www.amazon.com/dp/B0DF28BCMJ",
+        "https://www.amazon.com/dp/B0D1X7YJ32",
+        "https://www.amazon.com/dp/B0CQTJ2RRG"
+      ]
+    }
+  ],
+  "events": [
+    {
+      "at": "2026-06-24T07:00:40",
+      "category": "drawer organizer",
+      "stage": "collection_auto_claim",
+      "result": "partial",
+      "success": 1,
+      "failed_or_not_processed": 9,
+      "reason": "DXM data acquisition modal reported only 1 executed from 10 pasted links"
+    },
+    {
+      "at": "2026-06-24T07:01:56",
+      "category": "drawer organizer",
+      "stage": "collection_auto_claim_final",
+      "result": "success",
+      "success": 10,
+      "failed": 0,
+      "reason": "DXM modal reported collected 10, auto-claimed 10, failed 0, duplicates skipped 0"
+    },
+    {
+      "at": "2026-06-24T07:20:46",
+      "category": "cabinet hooks",
+      "stage": "collection_auto_claim_final",
+      "result": "partial_success",
+      "success": 9,
+      "failed": 1,
+      "reason": "DXM modal reported collected 9, failed 1; auto-claimed 9, failed 0; message suggests anti-scraping on one product"
+    },
+    {
+      "at": "2026-06-24T07:31:11",
+      "category": "desk organizer",
+      "stage": "collection_final",
+      "result": "partial_success",
+      "success": 9,
+      "failed": 0,
+      "skipped_duplicate": 1,
+      "reason": "DXM duplicate modal reported one duplicate; remaining nine links collected successfully with zero failures"
+    },
+    {
+      "at": "2026-06-24T07:43:08",
+      "category": "desk organizer",
+      "stage": "edit_save_move_to_wait_publish",
+      "result": "blocked",
+      "attempted": 1,
+      "success": 0,
+      "failed": 1,
+      "reason": "Edit page save failed: product category remained unselected and custom attributes were filled, causing length validation. This violates the formal rule that custom attributes default skip."
+    }
+  ],
+  "stoppedAt": "2026-06-24T07:43:08",
+  "currentStatus": {
+    "plannedTotal": 30,
+    "collectionBoxProducts": 28,
+    "collectionClaimSucceeded": 28,
+    "collectionClaimFailedOrSkipped": 2,
+    "editSaveAttempted": 1,
+    "editSaveSucceeded": 0,
+    "editSaveFailed": 1,
+    "blocked": true,
+    "blocker": "Main plugin edit-page automation is not consistently enforcing required rules: category not selected; custom attributes not skipped."
+  }
+}

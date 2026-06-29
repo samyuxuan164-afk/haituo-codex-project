@@ -1,0 +1,271 @@
+{
+  "ok": true,
+  "product": {
+    "asin": "B0G3NMVGSJ",
+    "known_title": "Manalete 4 Pack 15 x 6 inch Extra Large Clear Plastic Drawer Organizer Trays, Multi-Purpose Storage Bins for Vanity, Makeup, Kitchen Utensils, Bathroom, Office Desk, Auto Tools and Craft Supplies",
+    "known_category": "Drawer Organizers",
+    "material": "Plastic",
+    "color": "Clear",
+    "price_usd": 18.99,
+    "store": "Halo Home Store",
+    "freight_template": "111"
+  },
+  "api": {
+    "status": 200,
+    "model": "deepseek-v4-flash",
+    "usage": {
+      "prompt_tokens": 353,
+      "completion_tokens": 808,
+      "total_tokens": 1161,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      },
+      "completion_tokens_details": {
+        "reasoning_tokens": 202
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 353
+    },
+    "content": "{\n  \"schemaVersion\": \"product-understanding-v1\",\n  \"asin\": \"B0G3NMVGSJ\",\n  \"productType\": \"Drawer Organizer\",\n  \"primaryUse\": \"To organize and store items such as makeup, kitchen utensils, bathroom supplies, office desk accessories, tools, and craft supplies in drawers.\",\n  \"recommendedCategory\": {\n    \"name\": \"Drawer Organizers\",\n    \"path\": \"Home & Kitchen > Kitchen & Dining > Storage & Organization > Drawer Organizers\",\n    \"searchTerms\": [\n      \"clear drawer organizer\",\n      \"plastic storage bins\",\n      \"multi-purpose drawer trays\",\n      \"15x6 organizer tray\",\n      \"extra large drawer divider\",\n      \"vanity organizer\",\n      \"makeup storage\",\n      \"kitchen utensil organizer\",\n      \"bathroom drawer organizer\",\n      \"office desk storage bin\"\n    ],\n    \"confidence\": 0.95,\n    \"evidence\": [\n      \"Known category is 'Drawer Organizers'\",\n      \"Title includes 'Drawer Organizer Trays' and 'Multi-Purpose Storage Bins'\",\n      \"Common usage in home, kitchen, bathroom, and office contexts\"\n    ]\n  },\n  \"attributes\": [\n    {\n      \"name\": \"Material\",\n      \"value\": \"Plastic\",\n      \"source\": \"Title\",\n      \"confidence\": 0.99\n    },\n    {\n      \"name\": \"Color\",\n      \"value\": \"Clear\",\n      \"source\": \"Title\",\n      \"confidence\": 0.99\n    },\n    {\n      \"name\": \"Size\",\n      \"value\": \"15 x 6 inch\",\n      \"source\": \"Title\",\n      \"confidence\": 0.98\n    },\n    {\n      \"name\": \"Pack Count\",\n      \"value\": \"4\",\n      \"source\": \"Title\",\n      \"confidence\": 0.99\n    },\n    {\n      \"name\": \"Shape\",\n      \"value\": \"Rectangular\",\n      \"source\": \"Inferred from dimensions and typical drawer organizers\",\n      \"confidence\": 0.85\n    },\n    {\n      \"name\": \"Intended Use\",\n      \"value\": \"Multi-purpose (drawer organization for vanity, makeup, kitchen utensils, bathroom, office desk, auto tools, craft supplies)\",\n      \"source\": \"Title\",\n      \"confidence\": 0.95\n    },\n    {\n      \"name\": \"Brand\",\n      \"value\": \"Manalete\",\n      \"source\": \"Title\",\n      \"confidence\": 0.99\n    }\n  ],\n  \"risks\": [],\n  \"confidence\": 0.95,\n  \"ruleEngine\": {\n    \"passed\": true,\n    \"blockedBy\": [],\n    \"allowedForEditPage\": true,\n    \"notes\": \"Product is straightforward. No classification blockers. Attributes are clear from title.\"\n  }\n}"
+  },
+  "raw": {
+    "schemaVersion": "product-understanding-v1",
+    "asin": "B0G3NMVGSJ",
+    "productType": "Drawer Organizer",
+    "primaryUse": "To organize and store items such as makeup, kitchen utensils, bathroom supplies, office desk accessories, tools, and craft supplies in drawers.",
+    "recommendedCategory": {
+      "name": "Drawer Organizers",
+      "path": "Home & Kitchen > Kitchen & Dining > Storage & Organization > Drawer Organizers",
+      "searchTerms": [
+        "clear drawer organizer",
+        "plastic storage bins",
+        "multi-purpose drawer trays",
+        "15x6 organizer tray",
+        "extra large drawer divider",
+        "vanity organizer",
+        "makeup storage",
+        "kitchen utensil organizer",
+        "bathroom drawer organizer",
+        "office desk storage bin"
+      ],
+      "confidence": 0.95,
+      "evidence": [
+        "Known category is 'Drawer Organizers'",
+        "Title includes 'Drawer Organizer Trays' and 'Multi-Purpose Storage Bins'",
+        "Common usage in home, kitchen, bathroom, and office contexts"
+      ]
+    },
+    "attributes": [
+      {
+        "name": "Material",
+        "value": "Plastic",
+        "source": "Title",
+        "confidence": 0.99
+      },
+      {
+        "name": "Color",
+        "value": "Clear",
+        "source": "Title",
+        "confidence": 0.99
+      },
+      {
+        "name": "Size",
+        "value": "15 x 6 inch",
+        "source": "Title",
+        "confidence": 0.98
+      },
+      {
+        "name": "Pack Count",
+        "value": "4",
+        "source": "Title",
+        "confidence": 0.99
+      },
+      {
+        "name": "Shape",
+        "value": "Rectangular",
+        "source": "Inferred from dimensions and typical drawer organizers",
+        "confidence": 0.85
+      },
+      {
+        "name": "Intended Use",
+        "value": "Multi-purpose (drawer organization for vanity, makeup, kitchen utensils, bathroom, office desk, auto tools, craft supplies)",
+        "source": "Title",
+        "confidence": 0.95
+      },
+      {
+        "name": "Brand",
+        "value": "Manalete",
+        "source": "Title",
+        "confidence": 0.99
+      }
+    ],
+    "risks": [],
+    "confidence": 0.95,
+    "ruleEngine": {
+      "passed": true,
+      "blockedBy": [],
+      "allowedForEditPage": true,
+      "notes": "Product is straightforward. No classification blockers. Attributes are clear from title."
+    }
+  },
+  "adapted": {
+    "schemaVersion": "product-understanding-v1",
+    "asin": "B0G3NMVGSJ",
+    "productType": "Drawer Organizer",
+    "primaryUse": "To organize and store items such as makeup, kitchen utensils, bathroom supplies, office desk accessories, tools, and craft supplies in drawers.",
+    "recommendedCategory": {
+      "name": "Drawer Organizers",
+      "path": "Home & Kitchen > Kitchen & Dining > Storage & Organization > Drawer Organizers",
+      "searchTerms": [
+        "clear drawer organizer",
+        "plastic storage bins",
+        "multi-purpose drawer trays",
+        "15x6 organizer tray",
+        "extra large drawer divider",
+        "vanity organizer",
+        "makeup storage",
+        "kitchen utensil organizer",
+        "bathroom drawer organizer",
+        "office desk storage bin"
+      ],
+      "confidence": 0.95,
+      "evidence": [
+        "Known category is 'Drawer Organizers'",
+        "Title includes 'Drawer Organizer Trays' and 'Multi-Purpose Storage Bins'",
+        "Common usage in home, kitchen, bathroom, and office contexts"
+      ]
+    },
+    "attributes": [
+      {
+        "name": "Material",
+        "value": "Plastic",
+        "source": "Title",
+        "confidence": 0.99
+      },
+      {
+        "name": "Color",
+        "value": "Clear",
+        "source": "Title",
+        "confidence": 0.99
+      },
+      {
+        "name": "Size",
+        "value": "15 x 6 inch",
+        "source": "Title",
+        "confidence": 0.98
+      },
+      {
+        "name": "Pack Count",
+        "value": "4",
+        "source": "Title",
+        "confidence": 0.99
+      },
+      {
+        "name": "Shape",
+        "value": "Rectangular",
+        "source": "Inferred from dimensions and typical drawer organizers",
+        "confidence": 0.85
+      },
+      {
+        "name": "Intended Use",
+        "value": "Multi-purpose (drawer organization for vanity, makeup, kitchen utensils, bathroom, office desk, auto tools, craft supplies)",
+        "source": "Title",
+        "confidence": 0.95
+      },
+      {
+        "name": "Brand",
+        "value": "Manalete",
+        "source": "Title",
+        "confidence": 0.99
+      }
+    ],
+    "risks": [],
+    "confidence": 0.95,
+    "ruleEngine": {
+      "passed": true,
+      "blockedBy": [],
+      "allowedForEditPage": true,
+      "notes": "Adapter output only; local Rule Engine is authoritative before edit-page use."
+    }
+  },
+  "ruleEngine": {
+    "passed": true,
+    "errors": [],
+    "warnings": [],
+    "allowedForEditPage": true,
+    "normalized": {
+      "asin": "B0G3NMVGSJ",
+      "productType": "Drawer Organizer",
+      "primaryUse": "To organize and store items such as makeup, kitchen utensils, bathroom supplies, office desk accessories, tools, and craft supplies in drawers.",
+      "recommendedCategory": {
+        "name": "Drawer Organizers",
+        "path": "Home & Kitchen > Kitchen & Dining > Storage & Organization > Drawer Organizers",
+        "searchTerms": [
+          "clear drawer organizer",
+          "plastic storage bins",
+          "multi-purpose drawer trays",
+          "15x6 organizer tray",
+          "extra large drawer divider",
+          "vanity organizer",
+          "makeup storage",
+          "kitchen utensil organizer",
+          "bathroom drawer organizer",
+          "office desk storage bin"
+        ],
+        "confidence": 0.95,
+        "evidence": [
+          "Known category is 'Drawer Organizers'",
+          "Title includes 'Drawer Organizer Trays' and 'Multi-Purpose Storage Bins'",
+          "Common usage in home, kitchen, bathroom, and office contexts"
+        ]
+      },
+      "attributes": [
+        {
+          "name": "Material",
+          "value": "Plastic",
+          "source": "Title",
+          "confidence": 0.99
+        },
+        {
+          "name": "Color",
+          "value": "Clear",
+          "source": "Title",
+          "confidence": 0.99
+        },
+        {
+          "name": "Size",
+          "value": "15 x 6 inch",
+          "source": "Title",
+          "confidence": 0.98
+        },
+        {
+          "name": "Pack Count",
+          "value": "4",
+          "source": "Title",
+          "confidence": 0.99
+        },
+        {
+          "name": "Shape",
+          "value": "Rectangular",
+          "source": "Inferred from dimensions and typical drawer organizers",
+          "confidence": 0.85
+        },
+        {
+          "name": "Intended Use",
+          "value": "Multi-purpose (drawer organization for vanity, makeup, kitchen utensils, bathroom, office desk, auto tools, craft supplies)",
+          "source": "Title",
+          "confidence": 0.95
+        },
+        {
+          "name": "Brand",
+          "value": "Manalete",
+          "source": "Title",
+          "confidence": 0.99
+        }
+      ],
+      "risks": [],
+      "confidence": 0.95,
+      "allowedForEditPage": true
+    }
+  }
+}
