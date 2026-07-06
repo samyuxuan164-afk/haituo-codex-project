@@ -1,0 +1,76 @@
+{
+  "schemaVersion": "product-understanding-v1",
+  "asin": "B0D6GHYJZM",
+  "productType": "DrawerOrganizer",
+  "primaryUse": "Organizing drawers in bathrooms, dressers, kitchens, and desks",
+  "recommendedCategory": {
+    "name": "Drawer Organizers",
+    "path": "Home & Kitchen > Storage & Organization > Drawer Organizers",
+    "searchTerms": [
+      "clear plastic drawer organizers",
+      "bathroom storage bins",
+      "dresser storage bins",
+      "stackable kitchen organizers",
+      "desk organizer trays",
+      "makeup organizer",
+      "jewelry organizer",
+      "utensil organizer",
+      "junk drawer organizer",
+      "gadget organizer",
+      "15 piece storage set",
+      "clear drawer dividers"
+    ],
+    "confidence": 0.95,
+    "evidence": [
+      "Title explicitly states 'Drawer Organizers Set'",
+      "Known category provided is 'Drawer Organizers'",
+      "Product is a set of 15 clear plastic bins for various drawer uses"
+    ]
+  },
+  "attributes": [
+    {
+      "name": "material",
+      "value": "Plastic",
+      "source": "product data",
+      "confidence": 0.99
+    },
+    {
+      "name": "color",
+      "value": "Clear",
+      "source": "product data",
+      "confidence": 0.99
+    },
+    {
+      "name": "number_of_pieces",
+      "value": "15",
+      "source": "title",
+      "confidence": 0.99
+    },
+    {
+      "name": "number_of_sizes",
+      "value": "4",
+      "source": "title",
+      "confidence": 0.98
+    },
+    {
+      "name": "recommended_use",
+      "value": "Bathroom, dresser, kitchen, desk organization",
+      "source": "title",
+      "confidence": 0.95
+    },
+    {
+      "name": "stackable",
+      "value": "Yes",
+      "source": "title",
+      "confidence": 0.97
+    }
+  ],
+  "risks": [],
+  "confidence": 0.95,
+  "ruleEngine": {
+    "passed": true,
+    "blockedBy": [],
+    "allowedForEditPage": true,
+    "notes": "Adapter output only; local Rule Engine is authoritative before edit-page use."
+  }
+}
