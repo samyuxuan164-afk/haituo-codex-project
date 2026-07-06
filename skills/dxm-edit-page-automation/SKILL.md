@@ -33,6 +33,46 @@ Amazon 商品 -> 店小秘采集箱 -> 认领 -> 编辑页自动填写 -> 保存
 6. 运费模板。
 7. 品牌过滤。
 
+## 2026-06-30 当前编辑页字段硬规则
+
+### Input
+
+```json
+{
+  "asin": "Amazon ASIN",
+  "amazonOriginalPriceUsd": 0,
+  "visibleRequiredMarks": [],
+  "targetStore": "Halo Home Store"
+}
+```
+
+### Process
+
+1. 编辑页字段是否必填只按页面红色 `*` 判断。
+2. 没有红色 `*` 的字段默认不填写、不点击、不作为 preflight 阻塞点。
+3. 产品属性区域只处理红星必填项；`Material`、`is_customized`、`Certification` 无红星时必须跳过。
+4. `Function` / `Feature` 有红星时，有准确项选准确项；没有准确项直接选 `Other/其他`，目标是快速、安全通过必填。
+5. `Material` 有红星时按 Amazon 材质证据填写：完全匹配优先，相近材质兜底；没有相近材质就选一个可用材质项；如果下拉无选项但字段可输入，直接输入 Amazon 材质。
+6. 自定义属性默认清空/删除；不要改写 Amazon bullet 文案。
+7. 产品图片区域必须点击营销图片 `一键生成`，生成 `1:1 白底图` 和 `3:4 场景图`。
+8. 变种参数只勾选红星必填 `发货地 = 美国(United States)`；`Color`、`Number of Pcs`、`Size` 无红星时不勾选。
+9. 变种信息 `销售方式/打包出售` 无红星，默认不勾选、不分析。
+10. `商家仓库存` 默认填写 `15`。
+11. `SKU编码` 填写当前 ASIN。
+12. `货值(CNY)` 按 `Amazon 原价 USD x 7 x 1.55` 计算并保留 2 位小数。
+13. 运费模板固定真实选择并读回 `111`。
+
+### Output
+
+```json
+{
+  "status": "ready_for_preflight | skipped",
+  "filledRequiredFields": [],
+  "skippedNonRequiredFields": [],
+  "fieldFailures": []
+}
+```
+
 ## 标题规则
 
 1. 标题必须重新生成，禁止直接使用 Amazon 标题。
@@ -53,14 +93,14 @@ Amazon 商品 -> 店小秘采集箱 -> 认领 -> 编辑页自动填写 -> 保存
 8. 不少于 500 个英文字符。
 9. 正常产品图和场景图允许保留。
 
-## 图片与 Logo 规则
+## 图片与 Logo 边界
 
 1. 营销图片固定保留 2 张，优先使用店小秘系统一键生成。
 2. 删除 Brand Story 模块。
 3. 保留正常产品图和场景图。
-4. 过滤 Logo 图、品牌图、品牌水印图。
-5. 选品阶段禁止带明显 Logo 的产品进入采集流程。
-6. 发现品牌 Logo、水印、品牌名称印刷在产品主体上，直接跳过，不进入采集流程。
+4. Logo / 品牌图片风险应在 Amazon 采集链接阶段规避。
+5. 已进入当前编辑批次的商品默认视为已通过采集前 Logo 风险过滤。
+6. 编辑页阶段不因“可能有 Logo 风险”等待人工；只有页面实际保存/发布前校验明确暴露图片资质问题时，才记录字段级失败并跳过当前商品。
 
 ## 运费模板
 
@@ -129,6 +169,9 @@ Amazon 商品 -> 店小秘采集箱 -> 认领 -> 编辑页自动填写 -> 保存
 8. 保存前预检必须满足：标题不超过 80 字符、PC 描述不少于 500 英文字符、类目已选、运费模板 111 已选、自定义属性为空。
 9. 保存失败后，如果错误属于未选择、不能为空、不能超过字符数或特殊字符问题，允许自动纠偏并重试 1 次。
 10. 重试仍失败时，记录页面错误、当前字段状态和商品标识，然后跳过该商品继续下一商品。
+11. preflight 字段确实无法自动补齐时，记录字段级失败并继续下一商品，不等待人工。
+12. 类目证据分裂、店小秘可见类目搜不到、AliExpress 验证页阻断时，记录原因并继续下一商品，不等待人工。
+13. 商品级跳过不等于批次失败；批次必须继续处理后续商品，除非出现 WebBridge / tab-control 环境中断。
 ## 2026-06-25 标题品牌硬规则
 
 1. 标题禁止保留任何品牌名称。
@@ -147,3 +190,74 @@ Amazon 商品 -> 店小秘采集箱 -> 认领 -> 编辑页自动填写 -> 保存
 6. Amazon 原始品类不能直接等同于店小秘平台类目；店小秘类目必须根据商品实际用途、实物形态、图片内容和标题语义重新判断。
 7. 如果 Amazon 类目和店小秘类目不一致，以店小秘平台更贴近商品用途的类目为准；只有类目明显错误才拦截，名称不同但用途匹配可以通过。
 8. 店小秘存在明确叶子类目时，必须选择叶子类目；没有高置信叶子类目时禁止保存并记录类目待确认。
+
+## 2026-06-30 Recovery 编辑页控制规则
+
+### Input
+
+```json
+{
+  "asin": "Amazon ASIN",
+  "editUrl": "Dianxiaomi edit URL",
+  "categorySearchTerms": [],
+  "amazonOriginalPriceUsd": 0,
+  "currentPageState": {
+    "unsavedEditPage": true,
+    "visibleCategory": "",
+    "preflightErrors": []
+  }
+}
+```
+
+### Process
+
+1. 如果当前编辑页已有未保存修改且需要继续下一个商品，必须用新的 edit URL 标签打开下一个商品；不要在当前未保存页直接导航，避免 beforeunload / WebBridge 等待卡住。
+2. 如果 `应用编辑页规则` 超时后页面无法滚动，先恢复滚动函数：
+   - 用临时 iframe 取回原生 `window.scrollTo` / `window.scrollBy`；
+   - 用临时 iframe 取回原生 `Element.prototype.scrollIntoView`；
+   - 恢复后再继续字段定位。
+3. 如果类目弹窗已经写回主表单但遮罩残留，允许只隐藏包含 `选择类目` 的 `.ant-modal-root/.ant-modal-wrap/.ant-modal-mask` 残留层；禁止改动主表单类目字段。
+4. 下拉选择必须先清理旧 `.ant-select-dropdown`，再打开目标字段；如果打开目标字段后选项仍属于上一个字段，记录 `select_overlay_cross_field_stale`，不要保存。
+5. 红星必填产品属性下拉必须真实选择：打开目标下拉、读取当前可见选项、点击真实选项对象、读回选中标签；普通输入框可以按字段规则输入，但下拉搜索框里的文字不能当成已选值。
+6. 必填字段下拉返回空、`暂无数据`、或无法找到安全默认选项时，记录字段级失败并继续下一个商品：
+   - 品牌：`brand_dropdown_no_none_option`
+   - 功能/特性：先选准确项；没有准确项选真实下拉选项 `Other/其他`
+   - 框架材质：按 Material 证据流程选真实下拉选项；金属网格/钢制收纳优先 `Metal` / `Steel` / `Iron` / `Alloy` / 等价项，再用 `Other/其他`
+   - 红星必填材质：先执行 Material 兜底流程，选择精确项、相近项、任一可用材质项，或在无下拉选项且字段接受自由输入时输入 Amazon 材质；仍失败才记录 `material_required_unfillable`
+   - 其他红星必填属性：`required_attribute_option_not_found`
+   - 运费：`postage_111_option_not_found`
+   - 变种：`variation_required_option_not_found`
+7. 店小秘类目搜索出现多个合理但业务含义不同的叶子类目时，记录 `dxm_candidate_category_split`，不要保存，也不要跳过；必须回到速卖通/Amazon 类目证据裁决。
+8. 只有速卖通相似商品证据本身分裂且无法裁决时，才记录 `aliexpress_category_evidence_split` 并跳过当前商品。
+9. 店小秘搜索不到对应可见叶子类目时，记录 `dxm_visible_category_not_found`，禁止保存。
+10. 只有以下条件全部满足，才能点击 `保存并移入待发布`：
+   - 类目已选择且业务匹配；
+   - Brand / High-concerned chemical / Origin 等红星必填属性已真实读回；
+   - 运费模板真实读回为 `111`；
+   - Ships From 真实读回为 `United States/美国`；
+   - 价格等于 `Amazon original price × 7 × 1.55`；
+   - SKU 为当前 ASIN；
+   - 库存为 `15`；
+   - 自定义属性已清空或不存在 70 字符错误；
+   - 没有红星必填变种属性错误。
+
+### Output
+
+```json
+{
+  "status": "saved_to_wait_publish | skipped",
+  "fieldFailures": [
+    {
+      "field": "field id",
+      "reason": "machine-readable reason",
+      "visibleEvidence": "visible page text"
+    }
+  ],
+  "environmentRecovery": [
+    "opened_next_edit_in_new_tab",
+    "restored_scroll_functions",
+    "hidden_stale_category_modal"
+  ],
+  "forbiddenActionsExecuted": false
+}
+```

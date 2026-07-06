@@ -1,0 +1,177 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://codex.local/dianxiaomi-automation-v1/aliexpress-evidence.schema.json",
+  "title": "AliExpress category evidence store",
+  "type": "object",
+  "required": ["schemaVersion", "updatedAt", "records"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "aliexpress-evidence-store-v1"
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "records": {
+      "type": "object",
+      "description": "ASIN-keyed AliExpress evidence records.",
+      "additionalProperties": {
+        "$ref": "#/$defs/evidenceRecord"
+      }
+    }
+  },
+  "$defs": {
+    "evidenceRecord": {
+      "type": "object",
+      "required": [
+        "asin",
+        "status",
+        "updatedAt"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "asin": {
+          "type": "string",
+          "pattern": "^B0[A-Z0-9]{8}$"
+        },
+        "amazonTitle": {
+          "type": "string"
+        },
+        "amazonImage": {
+          "type": "string"
+        },
+        "amazonUrl": {
+          "type": "string"
+        },
+        "productFamily": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "not_checked",
+            "aliexpress_verified",
+            "conditional_verified",
+            "detail_verified",
+            "dxm_category_validation_required",
+            "semantic_consensus_needs_dxm_mapping",
+            "aliexpress_verification_required",
+            "evidence_missing",
+            "evidence_split",
+            "learned_rule_matched",
+            "needs_manual_review"
+          ]
+        },
+        "aliexpressKeyword": {
+          "type": "string"
+        },
+        "aliexpressEvidenceUrl": {
+          "type": "string"
+        },
+        "aliexpressMatchedCategory": {
+          "type": "string"
+        },
+        "aliexpressCategoryId": {
+          "type": "string"
+        },
+        "aliexpressDetailCategoryName": {
+          "type": "string"
+        },
+        "aliexpressDetailCategoryPath": {
+          "type": "string"
+        },
+        "aliexpressUniqueCategoryConfirmed": {
+          "type": "boolean"
+        },
+        "dxmCandidateCategory": {
+          "type": "string"
+        },
+        "dxmCandidateCategoryId": {
+          "type": "string"
+        },
+        "dxmSearchTerms": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "safeAdjacentUsed": {
+          "type": "boolean"
+        },
+        "platformCategoryConfirmed": {
+          "type": "boolean"
+        },
+        "platformCategoryIntent": {
+          "type": "string"
+        },
+        "platformCategoryTerms": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "detailVerificationBlocked": {
+          "type": "boolean"
+        },
+        "detailVerificationBlockedUrls": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "detailSliderAttempted": {
+          "type": "boolean"
+        },
+        "detailSliderAttempts": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "evidenceConfidence": {
+          "type": "number"
+        },
+        "confidenceTier": {
+          "type": "string"
+        },
+        "verificationMode": {
+          "type": "string"
+        },
+        "conditionalChecks": {
+          "type": "object"
+        },
+        "evidenceSummary": {
+          "type": "string"
+        },
+        "reason": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string",
+          "enum": [
+            "aliexpress_search",
+            "aliexpress_detail_page",
+            "aliexpress_image_search",
+            "aliexpress_similar_product",
+            "learned_rule",
+            "manual_record",
+            "not_checked"
+          ]
+        },
+        "detailEvidence": {
+          "type": "object"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    }
+  }
+}

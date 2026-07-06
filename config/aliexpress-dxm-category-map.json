@@ -1,0 +1,72 @@
+{
+  "schemaVersion": "aliexpress-dxm-category-map-v1",
+  "updatedAt": "2026-07-01T00:00:00.000Z",
+  "mappings": {
+    "200231151": {
+      "postCategoryId": "200231151",
+      "status": "active",
+      "productFamily": "kitchen-sink-strainer",
+      "dxmCandidateCategory": "家装（硬装）(Home Improvement)/厨房设施(Kitchen Fixture)/厨房水槽配件(Kitchen Sink Accessories)/厨房水槽水漏、过滤网(Kitchen Drains & Strainers)",
+      "dxmCandidateCategoryId": "",
+      "confidence": 0.86,
+      "safeAdjacentAllowed": false,
+      "source": "resolver_validated",
+      "evidence": [
+        "runs/category-resolver/20260630-remaining3-poc/summary.md"
+      ],
+      "blockedWrongCategories": [
+        "商用餐厨操作类电器（带电）(Commercial Kitchen Operation Appliances)"
+      ],
+      "notes": "Validated by read-only Dianxiaomi category modal search for sink/drain/strainer terms. This mapping is category logic, not an ASIN-specific save rule.",
+      "createdAt": "2026-07-01T00:00:00.000Z",
+      "updatedAt": "2026-07-01T00:00:00.000Z"
+    },
+    "100003261": {
+      "postCategoryId": "100003261",
+      "status": "needs_review",
+      "productFamily": "faucet-mat-splash-guard",
+      "dxmCandidateCategory": "",
+      "dxmCandidateCategoryId": "",
+      "confidence": 0.42,
+      "safeAdjacentAllowed": false,
+      "source": "readonly_dxm_mapping_review",
+      "evidence": [
+        "runs/aliexpress-evidence-store.json:B0CZ7F61XN",
+        "runs/aliexpress-evidence-store.json:B0DZ14L38Y",
+        "runs/remaining7-aliexpress-evidence-20260702.md",
+        "readonly Dianxiaomi draft/edit-classification attempt on 2026-07-02"
+      ],
+      "blockedWrongCategories": [
+        "家装（硬装）(Home Improvement)/厨房设施(Kitchen Fixture)/厨房水槽配件(Kitchen Sink Accessories)/厨房水槽水漏、过滤网(Kitchen Drains & Strainers)",
+        "Kitchen Faucets",
+        "厨房龙头(Kitchen Faucets)",
+        "厨房皂液器(Kitchen Soap Dispensers)"
+      ],
+      "notes": "B0CZ7F61XN and B0DZ14L38Y AliExpress titles are semantically consistent as faucet mat / sink splash guard, but no safe visible DXM leaf category has been confirmed. Do not reuse the active kitchen-drains-strainers mapping because these products are not drains, strainers, or sink stoppers. Keep blocked until a precise or explicitly safe adjacent DXM leaf is confirmed.",
+      "createdAt": "2026-07-02T00:00:00.000Z",
+      "updatedAt": "2026-07-02T00:00:00.000Z"
+    },
+    "100003327": {
+      "postCategoryId": "100003327",
+      "status": "active",
+      "productFamily": "faucet-mat-splash-guard",
+      "dxmCandidateCategory": "家装（硬装）(Home Improvement)/厨房设施(Kitchen Fixture)/厨房水槽配件(Kitchen Sink Accessories)/厨房水槽水漏、过滤网(Kitchen Drains & Strainers)",
+      "dxmCandidateCategoryId": "",
+      "confidence": 0.5,
+      "safeAdjacentAllowed": false,
+      "source": "user_confirmed_platform_category_mapping",
+      "evidence": [
+        "runs/aliexpress-evidence-store.json:B0DZ14L38Y",
+        "user confirmation on 2026-07-03: use AliExpress postCategoryId mapping directly for DXM category fill"
+      ],
+      "blockedWrongCategories": [
+        "Kitchen Faucets",
+        "厨房龙头(Kitchen Faucets)",
+        "厨房皂液器(Kitchen Soap Dispensers)"
+      ],
+      "notes": "B0DZ14L38Y AliExpress platform category postCategoryId=100003327 is confirmed; DXM edit flow should use this explicit dxmCandidateCategory path and must not infer from product synonyms or dxmSearchTerms.",
+      "createdAt": "2026-07-03T00:00:00.000Z",
+      "updatedAt": "2026-07-03T00:00:00.000Z"
+    }
+  }
+}

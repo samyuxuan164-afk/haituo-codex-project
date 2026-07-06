@@ -1,0 +1,1222 @@
+{
+  "ok": true,
+  "dryRun": true,
+  "exceptionDryRun": true,
+  "storePath": "/Users/sam/Documents/电商上架项目/自动上架/dianxiaomi-automation-v1/runs/amazon-price-store.json",
+  "queuePath": "/Users/sam/Documents/电商上架项目/自动上架/dianxiaomi-automation-v1/runs/exception-queue.json",
+  "batch": {
+    "totalInput": 10,
+    "selected": 10,
+    "startIndex": 0,
+    "limit": null
+  },
+  "rows": [
+    {
+      "asin": "B0CZ7F61XN",
+      "ok": true,
+      "amazonDisplayedPriceUsd": 11.99,
+      "expectedCnyPrice": 130.09,
+      "priceWritten": false,
+      "exceptionWritten": 0,
+      "exceptionPreviewed": 0,
+      "reason": "",
+      "selectedSelector": "#corePriceDisplay_desktop_feature_div",
+      "href": "https://www.amazon.com/dp/B0CZ7F61XN?th=1",
+      "title": "Amazon.com: 24 Inch Longer Faucet Mat for Kitchen Sink, 5° Slope Fast Self-draining, Kitchen Sink Splash Guard Silicone Sink Faucet Mat Splash Guard Kitchen Sink Area Tidy Splash Faucet Guard Draining Mat: Home & Kitchen"
+    },
+    {
+      "asin": "B0DZ14L38Y",
+      "ok": true,
+      "amazonDisplayedPriceUsd": 11.99,
+      "expectedCnyPrice": 130.09,
+      "priceWritten": false,
+      "exceptionWritten": 0,
+      "exceptionPreviewed": 0,
+      "reason": "",
+      "selectedSelector": "#corePriceDisplay_desktop_feature_div",
+      "href": "https://www.amazon.com/dp/B0DZ14L38Y?th=1",
+      "title": "Amazon.com: 24'' Longer Faucet Mat for Kitchen Sink Splash Guard[7° Slope Fast Self-draining][Snap Lock Fit]Kitchen Sink Faucet Mat Splash Guard Kitchen Sink Area Water Splash Guard Behind Faucet Draining Mat: Home & Kitchen"
+    },
+    {
+      "asin": "B0DXFB86J7",
+      "ok": true,
+      "amazonDisplayedPriceUsd": 9.99,
+      "expectedCnyPrice": 108.39,
+      "priceWritten": false,
+      "exceptionWritten": 0,
+      "exceptionPreviewed": 0,
+      "reason": "",
+      "selectedSelector": "#corePriceDisplay_desktop_feature_div",
+      "href": "https://www.amazon.com/dp/B0DXFB86J7",
+      "title": "Amazon.com - BanYakong Kitchen Cutting Board Organizer Rack, 5-Slot Storage Holder for Boards, Bakeware, Cookie Sheets (1pc Black)"
+    },
+    {
+      "asin": "B0DPSJP47V",
+      "ok": true,
+      "amazonDisplayedPriceUsd": 9.99,
+      "expectedCnyPrice": 108.39,
+      "priceWritten": false,
+      "exceptionWritten": 0,
+      "exceptionPreviewed": 0,
+      "reason": "",
+      "selectedSelector": "#corePriceDisplay_desktop_feature_div",
+      "href": "https://www.amazon.com/dp/B0DPSJP47V?th=1",
+      "title": "Amazon.com - Paper Towel Holder Countertop, Standing Paper Roll Holder with Anti Slip Weighted Base, Stainless Steel Freestanding Paper Towel Holder for Kitchen, Black"
+    },
+    {
+      "asin": "B0F1DDLKBB",
+      "ok": true,
+      "amazonDisplayedPriceUsd": 18.99,
+      "expectedCnyPrice": 206.04,
+      "priceWritten": false,
+      "exceptionWritten": 0,
+      "exceptionPreviewed": 0,
+      "reason": "",
+      "selectedSelector": "#desktop_buybox",
+      "href": "https://www.amazon.com/dp/B0F1DDLKBB?th=1",
+      "title": "亚马逊：Stylstoreazy 两件装可堆叠收纳架，适用于厨房、洗衣房、食品储藏室整理，带竹制顶盖的垃圾袋架，壁挂式垃圾袋分配器，黑色，大号和小号：家居与厨房"
+    },
+    {
+      "asin": "B0CTBQCKL9",
+      "ok": true,
+      "amazonDisplayedPriceUsd": 5.99,
+      "expectedCnyPrice": 64.99,
+      "priceWritten": false,
+      "exceptionWritten": 0,
+      "exceptionPreviewed": 0,
+      "reason": "",
+      "selectedSelector": "#corePriceDisplay_desktop_feature_div",
+      "href": "https://www.amazon.com/dp/B0CTBQCKL9",
+      "title": "Amazon.com - LeCorner Plastic Bag Holder, Large Capacity Grocery Bag Holder, Breathable Mesh Plastic Bag Holders for Grocery Bags Storage, Lightweight Trash Bag Holder Dispenser Organizer, Black"
+    },
+    {
+      "asin": "B0FH7774VK",
+      "ok": true,
+      "amazonDisplayedPriceUsd": 15.58,
+      "expectedCnyPrice": 169.04,
+      "priceWritten": false,
+      "exceptionWritten": 0,
+      "exceptionPreviewed": 0,
+      "reason": "",
+      "selectedSelector": "#corePriceDisplay_desktop_feature_div",
+      "href": "https://www.amazon.com/dp/B0FH7774VK?th=1",
+      "title": "Amazon.com: POUGNY 2 Pack Pull-Out Storage Organizers, Under Sink Organizer and Storage for Bathroom & Kitchen,Multi-Purpose Under Cabinet Organizers and storage Black : Home & Kitchen"
+    },
+    {
+      "asin": "B01E2EYG4U",
+      "ok": true,
+      "amazonDisplayedPriceUsd": 19.96,
+      "expectedCnyPrice": 216.57,
+      "priceWritten": false,
+      "exceptionWritten": 0,
+      "exceptionPreviewed": 0,
+      "reason": "",
+      "selectedSelector": "#corePriceDisplay_desktop_feature_div",
+      "href": "https://www.amazon.com/dp/B01E2EYG4U?th=1",
+      "title": "Amazon.com - Royexe Storage Cubes Pack Of 8 - Standard Size Cube Storage Bin 10.5x10.5x11 With Dual Handles For Easy Carrying- Fabric Storage Bins Collapsible (Black)"
+    },
+    {
+      "asin": "B0GFV4N3K8",
+      "ok": true,
+      "amazonDisplayedPriceUsd": 12.99,
+      "expectedCnyPrice": 140.94,
+      "priceWritten": false,
+      "exceptionWritten": 0,
+      "exceptionPreviewed": 0,
+      "reason": "",
+      "selectedSelector": "#corePriceDisplay_desktop_feature_div",
+      "href": "https://www.amazon.com/dp/B0GFV4N3K8?th=1",
+      "title": "Amazon.com: Chair Leg Floor Protectors, 24 Pack Silicone Furniture Pads for Hardwood Floors, Anti-Scratch Furniture Sliders Felt Pads, Noise-Reducing Chair Feet Covers, Table Legs Fit Sizes to(1.3\" to 1.97\") : Tools & Home Improvement"
+    },
+    {
+      "asin": "B0C1JY1C7F",
+      "ok": true,
+      "amazonDisplayedPriceUsd": 8.99,
+      "expectedCnyPrice": 97.54,
+      "priceWritten": false,
+      "exceptionWritten": 0,
+      "exceptionPreviewed": 0,
+      "reason": "",
+      "selectedSelector": "#corePriceDisplay_desktop_feature_div",
+      "href": "https://www.amazon.com/dp/B0C1JY1C7F?th=1",
+      "title": "Amazon.com: COVERCORNER Furniture Sliders for Carpet 8 PCS - 3 1/2 inch Furniture Moving Slider Chair Legs Floors Protectors– Move Your Furniture Easy & Safely(for Carpet) : Tools & Home Improvement"
+    }
+  ],
+  "summary": {
+    "total": 10,
+    "captured": 10,
+    "failed": 0,
+    "priceWritten": 0,
+    "exceptionWritten": 0,
+    "exceptionPreviewed": 0
+  },
+  "details": [
+    {
+      "asin": "B0CZ7F61XN",
+      "result": {
+        "ok": true,
+        "dryRun": true,
+        "capture": {
+          "ok": true,
+          "asin": "B0CZ7F61XN",
+          "url": "https://www.amazon.com/dp/B0CZ7F61XN",
+          "href": "https://www.amazon.com/dp/B0CZ7F61XN?th=1",
+          "title": "Amazon.com: 24 Inch Longer Faucet Mat for Kitchen Sink, 5° Slope Fast Self-draining, Kitchen Sink Splash Guard Silicone Sink Faucet Mat Splash Guard Kitchen Sink Area Tidy Splash Faucet Guard Draining Mat: Home & Kitchen",
+          "selectedSelector": "#corePriceDisplay_desktop_feature_div",
+          "selectedText": "-17% | 9. | $11.99 | $9.99 with 17 percent savings -17% $9 . 99 List Price: $11.99 List Price: $11.99 $11.99",
+          "captcha": false,
+          "unavailable": false,
+          "price": {
+            "ok": true,
+            "amazonDisplayedPriceUsd": 11.99,
+            "reason": "",
+            "candidates": [
+              {
+                "type": "single",
+                "source": "symbol",
+                "raw": "$11.99",
+                "values": [
+                  11.99
+                ],
+                "selected": 11.99
+              },
+              {
+                "type": "single",
+                "source": "symbol",
+                "raw": "$9.99",
+                "values": [
+                  9.99
+                ],
+                "selected": 9.99
+              },
+              {
+                "type": "single",
+                "source": "symbol",
+                "raw": "$9",
+                "values": [
+                  9
+                ],
+                "selected": 9
+              },
+              {
+                "type": "single",
+                "source": "symbol",
+                "raw": "$11.99",
+                "values": [
+                  11.99
+                ],
+                "selected": 11.99
+              },
+              {
+                "type": "single",
+                "source": "symbol",
+                "raw": "$11.99",
+                "values": [
+                  11.99
+                ],
+                "selected": 11.99
+              },
+              {
+                "type": "single",
+                "source": "symbol",
+                "raw": "$11.99",
+                "values": [
+                  11.99
+                ],
+                "selected": 11.99
+              }
+            ],
+            "rule": "single_displayed_price",
+            "sourceText": "-17% | 9. | $11.99 | $9.99 with 17 percent savings -17% $9 . 99 List Price: $11.99 List Price: $11.99 $11.99"
+          },
+          "page": {
+            "ok": true,
+            "url": "https://www.amazon.com/dp/B0CZ7F61XN",
+            "page": {
+              "success": true,
+              "url": "https://www.amazon.com/dp/B0CZ7F61XN",
+              "tabId": 1541975605
+            }
+          }
+        },
+        "record": {
+          "asin": "B0CZ7F61XN",
+          "amazonDisplayedPriceUsd": 11.99,
+          "currency": "USD",
+          "source": "amazon_product_page",
+          "status": "trusted",
+          "reason": "",
+          "amazonUrl": "https://www.amazon.com/dp/B0CZ7F61XN",
+          "evidenceUrl": "https://www.amazon.com/dp/B0CZ7F61XN?th=1",
+          "title": "Amazon.com: 24 Inch Longer Faucet Mat for Kitchen Sink, 5° Slope Fast Self-draining, Kitchen Sink Splash Guard Silicone Sink Faucet Mat Splash Guard Kitchen Sink Area Tidy Splash Faucet Guard Draining Mat: Home & Kitchen",
+          "priceRange": {
+            "min": null,
+            "max": null
+          },
+          "capture": {
+            "rule": "single_displayed_price",
+            "selectedSelector": "#corePriceDisplay_desktop_feature_div",
+            "capturedAt": "2026-07-02T04:22:45.603Z"
+          },
+          "amazonOriginalPriceUsd": 11.99,
+          "updatedAt": "2026-07-02T04:22:45.604Z",
+          "createdAt": "2026-07-02T04:22:45.604Z"
+        },
+        "written": null,
+        "exceptionWrites": {
+          "dryRun": true,
+          "rows": []
+        }
+      }
+    },
+    {
+      "asin": "B0DZ14L38Y",
+      "result": {
+        "ok": true,
+        "dryRun": true,
+        "capture": {
+          "ok": true,
+          "asin": "B0DZ14L38Y",
+          "url": "https://www.amazon.com/dp/B0DZ14L38Y",
+          "href": "https://www.amazon.com/dp/B0DZ14L38Y?th=1",
+          "title": "Amazon.com: 24'' Longer Faucet Mat for Kitchen Sink Splash Guard[7° Slope Fast Self-draining][Snap Lock Fit]Kitchen Sink Faucet Mat Splash Guard Kitchen Sink Area Water Splash Guard Behind Faucet Draining Mat: Home & Kitchen",
+          "selectedSelector": "#corePriceDisplay_desktop_feature_div",
+          "selectedText": "11. | $11.99 $11 . 99",
+          "captcha": false,
+          "unavailable": false,
+          "price": {
+            "ok": true,
+            "amazonDisplayedPriceUsd": 11.99,
+            "reason": "",
+            "candidates": [
+              {
+                "type": "single",
+                "source": "symbol",
+                "raw": "$11.99",
+                "values": [
+                  11.99
+                ],
+                "selected": 11.99
+              },
+              {
+                "type": "single",
+                "source": "symbol",
+                "raw": "$11",
+                "values": [
+                  11
+                ],
+                "selected": 11
+              }
+            ],
+            "rule": "single_displayed_price",
+            "sourceText": "11. | $11.99 $11 . 99"
+          },
+          "page": {
+            "ok": true,
+            "url": "https://www.amazon.com/dp/B0DZ14L38Y",
+            "page": {
+              "success": true,
+              "url": "https://www.amazon.com/dp/B0DZ14L38Y",
+              "tabId": 1541975605,
+              "frameId": "F67620B174115F706E640307A2A1E18A"
+            }
+          }
+        },
+        "record": {
+          "asin": "B0DZ14L38Y",
+          "amazonDisplayedPriceUsd": 11.99,
+          "currency": "USD",
+          "source": "amazon_product_page",
+          "status": "trusted",
+          "reason": "",
+          "amazonUrl": "https://www.amazon.com/dp/B0DZ14L38Y",
+          "evidenceUrl": "https://www.amazon.com/dp/B0DZ14L38Y?th=1",
+          "title": "Amazon.com: 24'' Longer Faucet Mat for Kitchen Sink Splash Guard[7° Slope Fast Self-draining][Snap Lock Fit]Kitchen Sink Faucet Mat Splash Guard Kitchen Sink Area Water Splash Guard Behind Faucet Draining Mat: Home & Kitchen",
+          "priceRange": {
+            "min": null,
+            "max": null
+          },
+          "capture": {
+            "rule": "single_displayed_price",
+            "selectedSelector": "#corePriceDisplay_desktop_feature_div",
+            "capturedAt": "2026-07-02T04:22:48.201Z"
+          },
+          "amazonOriginalPriceUsd": 11.99,
+          "updatedAt": "2026-07-02T04:22:48.201Z",
+          "createdAt": "2026-07-02T04:22:48.201Z"
+        },
+        "written": null,
+        "exceptionWrites": {
+          "dryRun": true,
+          "rows": []
+        }
+      }
+    },
+    {
+      "asin": "B0DXFB86J7",
+      "result": {
+        "ok": true,
+        "dryRun": true,
+        "capture": {
+          "ok": true,
+          "asin": "B0DXFB86J7",
+          "url": "https://www.amazon.com/dp/B0DXFB86J7",
+          "href": "https://www.amazon.com/dp/B0DXFB86J7",
+          "title": "Amazon.com - BanYakong Kitchen Cutting Board Organizer Rack, 5-Slot Storage Holder for Boards, Bakeware, Cookie Sheets (1pc Black)",
+          "selectedSelector": "#corePriceDisplay_desktop_feature_div",
+          "selectedText": "9. | $9.99 $9 . 99",
+          "captcha": false,
+          "unavailable": false,
+          "price": {
+            "ok": true,
+            "amazonDisplayedPriceUsd": 9.99,
+            "reason": "",
+            "candidates": [
+              {
+                "type": "single",
+                "source": "symbol",
+                "raw": "$9.99",
+                "values": [
+                  9.99
+                ],
+                "selected": 9.99
+              },
+              {
+                "type": "single",
+                "source": "symbol",
+                "raw": "$9",
+                "values": [
+                  9
+                ],
+                "selected": 9
+              }
+            ],
+            "rule": "single_displayed_price",
+            "sourceText": "9. | $9.99 $9 . 99"
+          },
+          "page": {
+            "ok": true,
+            "url": "https://www.amazon.com/dp/B0DXFB86J7",
+            "page": {
+              "success": true,
+              "url": "https://www.amazon.com/dp/B0DXFB86J7",
+              "tabId": 1541975605,
+              "frameId": "F67620B174115F706E640307A2A1E18A"
+            }
+          }
+        },
+        "record": {
+          "asin": "B0DXFB86J7",
+          "amazonDisplayedPriceUsd": 9.99,
+          "currency": "USD",
+          "source": "amazon_product_page",
+          "status": "trusted",
+          "reason": "",
+          "amazonUrl": "https://www.amazon.com/dp/B0DXFB86J7",
+          "evidenceUrl": "https://www.amazon.com/dp/B0DXFB86J7",
+          "title": "Amazon.com - BanYakong Kitchen Cutting Board Organizer Rack, 5-Slot Storage Holder for Boards, Bakeware, Cookie Sheets (1pc Black)",
+          "priceRange": {
+            "min": null,
+            "max": null
+          },
+          "capture": {
+            "rule": "single_displayed_price",
+            "selectedSelector": "#corePriceDisplay_desktop_feature_div",
+            "capturedAt": "2026-07-02T04:22:51.258Z"
+          },
+          "amazonOriginalPriceUsd": 9.99,
+          "updatedAt": "2026-07-02T04:22:51.258Z",
+          "createdAt": "2026-07-02T04:22:51.258Z"
+        },
+        "written": null,
+        "exceptionWrites": {
+          "dryRun": true,
+          "rows": []
+        }
+      }
+    },
+    {
+      "asin": "B0DPSJP47V",
+      "result": {
+        "ok": true,
+        "dryRun": true,
+        "capture": {
+          "ok": true,
+          "asin": "B0DPSJP47V",
+          "url": "https://www.amazon.com/dp/B0DPSJP47V",
+          "href": "https://www.amazon.com/dp/B0DPSJP47V?th=1",
+          "title": "Amazon.com - Paper Towel Holder Countertop, Standing Paper Roll Holder with Anti Slip Weighted Base, Stainless Steel Freestanding Paper Towel Holder for Kitchen, Black",
+          "selectedSelector": "#corePriceDisplay_desktop_feature_div",
+          "selectedText": "9. | $9.99 $9 . 99",
+          "captcha": false,
+          "unavailable": false,
+          "price": {
+            "ok": true,
+            "amazonDisplayedPriceUsd": 9.99,
+            "reason": "",
+            "candidates": [
+              {
+                "type": "single",
+                "source": "symbol",
+                "raw": "$9.99",
+                "values": [
+                  9.99
+                ],
+                "selected": 9.99
+              },
+              {
+                "type": "single",
+                "source": "symbol",
+                "raw": "$9",
+                "values": [
+                  9
+                ],
+                "selected": 9
+              }
+            ],
+            "rule": "single_displayed_price",
+            "sourceText": "9. | $9.99 $9 . 99"
+          },
+          "page": {
+            "ok": true,
+            "url": "https://www.amazon.com/dp/B0DPSJP47V",
+            "page": {
+              "success": true,
+              "url": "https://www.amazon.com/dp/B0DPSJP47V",
+              "tabId": 1541975605,
+              "frameId": "F67620B174115F706E640307A2A1E18A"
+            }
+          }
+        },
+        "record": {
+          "asin": "B0DPSJP47V",
+          "amazonDisplayedPriceUsd": 9.99,
+          "currency": "USD",
+          "source": "amazon_product_page",
+          "status": "trusted",
+          "reason": "",
+          "amazonUrl": "https://www.amazon.com/dp/B0DPSJP47V",
+          "evidenceUrl": "https://www.amazon.com/dp/B0DPSJP47V?th=1",
+          "title": "Amazon.com - Paper Towel Holder Countertop, Standing Paper Roll Holder with Anti Slip Weighted Base, Stainless Steel Freestanding Paper Towel Holder for Kitchen, Black",
+          "priceRange": {
+            "min": null,
+            "max": null
+          },
+          "capture": {
+            "rule": "single_displayed_price",
+            "selectedSelector": "#corePriceDisplay_desktop_feature_div",
+            "capturedAt": "2026-07-02T04:22:54.108Z"
+          },
+          "amazonOriginalPriceUsd": 9.99,
+          "updatedAt": "2026-07-02T04:22:54.108Z",
+          "createdAt": "2026-07-02T04:22:54.108Z"
+        },
+        "written": null,
+        "exceptionWrites": {
+          "dryRun": true,
+          "rows": []
+        }
+      }
+    },
+    {
+      "asin": "B0F1DDLKBB",
+      "result": {
+        "ok": true,
+        "dryRun": true,
+        "capture": {
+          "ok": true,
+          "asin": "B0F1DDLKBB",
+          "url": "https://www.amazon.com/dp/B0F1DDLKBB",
+          "href": "https://www.amazon.com/dp/B0F1DDLKBB?th=1",
+          "title": "亚马逊：Stylstoreazy 两件装可堆叠收纳架，适用于厨房、洗衣房、食品储藏室整理，带竹制顶盖的垃圾袋架，壁挂式垃圾袋分配器，黑色，大号和小号：家居与厨房",
+          "selectedSelector": "#desktop_buybox",
+          "selectedText": "18.99美元 | 18 | 。 | 18.99​ | （） | 18.99 | ​ | 18. | $18.99 | 18.99美元 18美元 。 99 加入亚马逊Prime会员， 享受快速免费送货服务 7月6日星期一，亚马逊配送的订单满35美元即可享受免费送货服务。 或者，Prime 会员可于明天（7 月 2 日）享受免费送货服务。请在2 小时 37 分钟内下单。立即加入 Prime 会员。 送货至 南埃尔蒙特 91733‌ 有存货 数量： 1 2 3 4 5 6 7 8 9 10 数量：1 添加到购物车 立即购买 来自 亚马逊 售卖方 渔洋通 返回 30天免费退款/换货 包装 产品包装中的船舶 查看更多 添加到列表",
+          "captcha": false,
+          "unavailable": false,
+          "price": {
+            "ok": true,
+            "amazonDisplayedPriceUsd": 18.99,
+            "reason": "",
+            "candidates": [
+              {
+                "type": "single",
+                "source": "symbol",
+                "raw": "$18.99",
+                "values": [
+                  18.99
+                ],
+                "selected": 18.99
+              },
+              {
+                "type": "single",
+                "source": "localized",
+                "raw": "18.99美元",
+                "values": [
+                  18.99
+                ],
+                "selected": 18.99
+              },
+              {
+                "type": "single",
+                "source": "localized",
+                "raw": "18.99美元",
+                "values": [
+                  18.99
+                ],
+                "selected": 18.99
+              },
+              {
+                "type": "single",
+                "source": "localized",
+                "raw": "18美元",
+                "values": [
+                  18
+                ],
+                "selected": 18
+              }
+            ],
+            "rule": "single_displayed_price",
+            "sourceText": "18.99美元 | 18 | 。 | 18.99​ | （） | 18.99 | ​ | 18. | $18.99 | 18.99美元 18美元 。 99 加入亚马逊Prime会员， 享受快速免费送货服务 7月6日星期一，亚马逊配送的订单满35美元即可享受免费送货服务。 或者，Prime 会员可于明天（7 月 2 日）享受免费送货服务。请在2 小时 37 分钟内下单。立即加入 Prime 会员。 送货至 南埃尔蒙特 91733‌ 有存货 数量： 1 2 3 4 5 6 7 8 9 10 数量：1 添加到购物车 立即购买 来自 亚马逊 售卖方 渔洋通 返回 30天免费退款/换货 包装 产品包装中的船舶 查看更多 添加到列表"
+          },
+          "page": {
+            "ok": true,
+            "url": "https://www.amazon.com/dp/B0F1DDLKBB",
+            "page": {
+              "success": true,
+              "url": "https://www.amazon.com/dp/B0F1DDLKBB",
+              "tabId": 1541975605,
+              "frameId": "F67620B174115F706E640307A2A1E18A"
+            }
+          }
+        },
+        "record": {
+          "asin": "B0F1DDLKBB",
+          "amazonDisplayedPriceUsd": 18.99,
+          "currency": "USD",
+          "source": "amazon_product_page",
+          "status": "trusted",
+          "reason": "",
+          "amazonUrl": "https://www.amazon.com/dp/B0F1DDLKBB",
+          "evidenceUrl": "https://www.amazon.com/dp/B0F1DDLKBB?th=1",
+          "title": "亚马逊：Stylstoreazy 两件装可堆叠收纳架，适用于厨房、洗衣房、食品储藏室整理，带竹制顶盖的垃圾袋架，壁挂式垃圾袋分配器，黑色，大号和小号：家居与厨房",
+          "priceRange": {
+            "min": null,
+            "max": null
+          },
+          "capture": {
+            "rule": "single_displayed_price",
+            "selectedSelector": "#desktop_buybox",
+            "capturedAt": "2026-07-02T04:23:01.265Z"
+          },
+          "amazonOriginalPriceUsd": 18.99,
+          "updatedAt": "2026-07-02T04:23:01.265Z",
+          "createdAt": "2026-07-02T04:23:01.265Z"
+        },
+        "written": null,
+        "exceptionWrites": {
+          "dryRun": true,
+          "rows": []
+        }
+      }
+    },
+    {
+      "asin": "B0CTBQCKL9",
+      "result": {
+        "ok": true,
+        "dryRun": true,
+        "capture": {
+          "ok": true,
+          "asin": "B0CTBQCKL9",
+          "url": "https://www.amazon.com/dp/B0CTBQCKL9",
+          "href": "https://www.amazon.com/dp/B0CTBQCKL9",
+          "title": "Amazon.com - LeCorner Plastic Bag Holder, Large Capacity Grocery Bag Holder, Breathable Mesh Plastic Bag Holders for Grocery Bags Storage, Lightweight Trash Bag Holder Dispenser Organizer, Black",
+          "selectedSelector": "#corePriceDisplay_desktop_feature_div",
+          "selectedText": "5. | $5.99 $5 . 99",
+          "captcha": false,
+          "unavailable": false,
+          "price": {
+            "ok": true,
+            "amazonDisplayedPriceUsd": 5.99,
+            "reason": "",
+            "candidates": [
+              {
+                "type": "single",
+                "source": "symbol",
+                "raw": "$5.99",
+                "values": [
+                  5.99
+                ],
+                "selected": 5.99
+              },
+              {
+                "type": "single",
+                "source": "symbol",
+                "raw": "$5",
+                "values": [
+                  5
+                ],
+                "selected": 5
+              }
+            ],
+            "rule": "single_displayed_price",
+            "sourceText": "5. | $5.99 $5 . 99"
+          },
+          "page": {
+            "ok": true,
+            "url": "https://www.amazon.com/dp/B0CTBQCKL9",
+            "page": {
+              "success": true,
+              "url": "https://www.amazon.com/dp/B0CTBQCKL9",
+              "tabId": 1541975605,
+              "frameId": "F67620B174115F706E640307A2A1E18A"
+            }
+          }
+        },
+        "record": {
+          "asin": "B0CTBQCKL9",
+          "amazonDisplayedPriceUsd": 5.99,
+          "currency": "USD",
+          "source": "amazon_product_page",
+          "status": "trusted",
+          "reason": "",
+          "amazonUrl": "https://www.amazon.com/dp/B0CTBQCKL9",
+          "evidenceUrl": "https://www.amazon.com/dp/B0CTBQCKL9",
+          "title": "Amazon.com - LeCorner Plastic Bag Holder, Large Capacity Grocery Bag Holder, Breathable Mesh Plastic Bag Holders for Grocery Bags Storage, Lightweight Trash Bag Holder Dispenser Organizer, Black",
+          "priceRange": {
+            "min": null,
+            "max": null
+          },
+          "capture": {
+            "rule": "single_displayed_price",
+            "selectedSelector": "#corePriceDisplay_desktop_feature_div",
+            "capturedAt": "2026-07-02T04:23:04.233Z"
+          },
+          "amazonOriginalPriceUsd": 5.99,
+          "updatedAt": "2026-07-02T04:23:04.233Z",
+          "createdAt": "2026-07-02T04:23:04.233Z"
+        },
+        "written": null,
+        "exceptionWrites": {
+          "dryRun": true,
+          "rows": []
+        }
+      }
+    },
+    {
+      "asin": "B0FH7774VK",
+      "result": {
+        "ok": true,
+        "dryRun": true,
+        "capture": {
+          "ok": true,
+          "asin": "B0FH7774VK",
+          "url": "https://www.amazon.com/dp/B0FH7774VK",
+          "href": "https://www.amazon.com/dp/B0FH7774VK?th=1",
+          "title": "Amazon.com: POUGNY 2 Pack Pull-Out Storage Organizers, Under Sink Organizer and Storage for Bathroom & Kitchen,Multi-Purpose Under Cabinet Organizers and storage Black : Home & Kitchen",
+          "selectedSelector": "#corePriceDisplay_desktop_feature_div",
+          "selectedText": "-10% | 14. | $7.01 | $15.58 | $14.02 with 10 percent savings -10% $14 . 02 $7.01 per count ( $7.01 $7.01 / count) Typical price: $15.58 Typical price: $15.58 $15.58",
+          "captcha": false,
+          "unavailable": false,
+          "price": {
+            "ok": true,
+            "amazonDisplayedPriceUsd": 15.58,
+            "reason": "",
+            "candidates": [
+              {
+                "type": "single",
+                "source": "symbol",
+                "raw": "$7.01",
+                "values": [
+                  7.01
+                ],
+                "selected": 7.01
+              },
+              {
+                "type": "single",
+                "source": "symbol",
+                "raw": "$15.58",
+                "values": [
+                  15.58
+                ],
+                "selected": 15.58
+              },
+              {
+                "type": "single",
+                "source": "symbol",
+                "raw": "$14.02",
+                "values": [
+                  14.02
+                ],
+                "selected": 14.02
+              },
+              {
+                "type": "single",
+                "source": "symbol",
+                "raw": "$14",
+                "values": [
+                  14
+                ],
+                "selected": 14
+              },
+              {
+                "type": "single",
+                "source": "symbol",
+                "raw": "$7.01",
+                "values": [
+                  7.01
+                ],
+                "selected": 7.01
+              },
+              {
+                "type": "single",
+                "source": "symbol",
+                "raw": "$7.01",
+                "values": [
+                  7.01
+                ],
+                "selected": 7.01
+              },
+              {
+                "type": "single",
+                "source": "symbol",
+                "raw": "$7.01",
+                "values": [
+                  7.01
+                ],
+                "selected": 7.01
+              },
+              {
+                "type": "single",
+                "source": "symbol",
+                "raw": "$15.58",
+                "values": [
+                  15.58
+                ],
+                "selected": 15.58
+              },
+              {
+                "type": "single",
+                "source": "symbol",
+                "raw": "$15.58",
+                "values": [
+                  15.58
+                ],
+                "selected": 15.58
+              },
+              {
+                "type": "single",
+                "source": "symbol",
+                "raw": "$15.58",
+                "values": [
+                  15.58
+                ],
+                "selected": 15.58
+              }
+            ],
+            "rule": "single_displayed_price",
+            "sourceText": "-10% | 14. | $7.01 | $15.58 | $14.02 with 10 percent savings -10% $14 . 02 $7.01 per count ( $7.01 $7.01 / count) Typical price: $15.58 Typical price: $15.58 $15.58"
+          },
+          "page": {
+            "ok": true,
+            "url": "https://www.amazon.com/dp/B0FH7774VK",
+            "page": {
+              "success": true,
+              "url": "https://www.amazon.com/dp/B0FH7774VK",
+              "tabId": 1541975605,
+              "frameId": "F67620B174115F706E640307A2A1E18A"
+            }
+          }
+        },
+        "record": {
+          "asin": "B0FH7774VK",
+          "amazonDisplayedPriceUsd": 15.58,
+          "currency": "USD",
+          "source": "amazon_product_page",
+          "status": "trusted",
+          "reason": "",
+          "amazonUrl": "https://www.amazon.com/dp/B0FH7774VK",
+          "evidenceUrl": "https://www.amazon.com/dp/B0FH7774VK?th=1",
+          "title": "Amazon.com: POUGNY 2 Pack Pull-Out Storage Organizers, Under Sink Organizer and Storage for Bathroom & Kitchen,Multi-Purpose Under Cabinet Organizers and storage Black : Home & Kitchen",
+          "priceRange": {
+            "min": null,
+            "max": null
+          },
+          "capture": {
+            "rule": "single_displayed_price",
+            "selectedSelector": "#corePriceDisplay_desktop_feature_div",
+            "capturedAt": "2026-07-02T04:23:06.973Z"
+          },
+          "amazonOriginalPriceUsd": 15.58,
+          "updatedAt": "2026-07-02T04:23:06.973Z",
+          "createdAt": "2026-07-02T04:23:06.973Z"
+        },
+        "written": null,
+        "exceptionWrites": {
+          "dryRun": true,
+          "rows": []
+        }
+      }
+    },
+    {
+      "asin": "B01E2EYG4U",
+      "result": {
+        "ok": true,
+        "dryRun": true,
+        "capture": {
+          "ok": true,
+          "asin": "B01E2EYG4U",
+          "url": "https://www.amazon.com/dp/B01E2EYG4U",
+          "href": "https://www.amazon.com/dp/B01E2EYG4U?th=1",
+          "title": "Amazon.com - Royexe Storage Cubes Pack Of 8 - Standard Size Cube Storage Bin 10.5x10.5x11 With Dual Handles For Easy Carrying- Fabric Storage Bins Collapsible (Black)",
+          "selectedSelector": "#corePriceDisplay_desktop_feature_div",
+          "selectedText": "19. | $2.50 | $19.96 $19 . 96 $2.50 per count ( $2.50 $2.50 / count)",
+          "captcha": false,
+          "unavailable": false,
+          "price": {
+            "ok": true,
+            "amazonDisplayedPriceUsd": 19.96,
+            "reason": "",
+            "candidates": [
+              {
+                "type": "single",
+                "source": "symbol",
+                "raw": "$2.50",
+                "values": [
+                  2.5
+                ],
+                "selected": 2.5
+              },
+              {
+                "type": "single",
+                "source": "symbol",
+                "raw": "$19.96",
+                "values": [
+                  19.96
+                ],
+                "selected": 19.96
+              },
+              {
+                "type": "single",
+                "source": "symbol",
+                "raw": "$19",
+                "values": [
+                  19
+                ],
+                "selected": 19
+              },
+              {
+                "type": "single",
+                "source": "symbol",
+                "raw": "$2.50",
+                "values": [
+                  2.5
+                ],
+                "selected": 2.5
+              },
+              {
+                "type": "single",
+                "source": "symbol",
+                "raw": "$2.50",
+                "values": [
+                  2.5
+                ],
+                "selected": 2.5
+              },
+              {
+                "type": "single",
+                "source": "symbol",
+                "raw": "$2.50",
+                "values": [
+                  2.5
+                ],
+                "selected": 2.5
+              }
+            ],
+            "rule": "single_displayed_price",
+            "sourceText": "19. | $2.50 | $19.96 $19 . 96 $2.50 per count ( $2.50 $2.50 / count)"
+          },
+          "page": {
+            "ok": true,
+            "url": "https://www.amazon.com/dp/B01E2EYG4U",
+            "page": {
+              "success": true,
+              "url": "https://www.amazon.com/dp/B01E2EYG4U",
+              "tabId": 1541975605,
+              "frameId": "F67620B174115F706E640307A2A1E18A"
+            }
+          }
+        },
+        "record": {
+          "asin": "B01E2EYG4U",
+          "amazonDisplayedPriceUsd": 19.96,
+          "currency": "USD",
+          "source": "amazon_product_page",
+          "status": "trusted",
+          "reason": "",
+          "amazonUrl": "https://www.amazon.com/dp/B01E2EYG4U",
+          "evidenceUrl": "https://www.amazon.com/dp/B01E2EYG4U?th=1",
+          "title": "Amazon.com - Royexe Storage Cubes Pack Of 8 - Standard Size Cube Storage Bin 10.5x10.5x11 With Dual Handles For Easy Carrying- Fabric Storage Bins Collapsible (Black)",
+          "priceRange": {
+            "min": null,
+            "max": null
+          },
+          "capture": {
+            "rule": "single_displayed_price",
+            "selectedSelector": "#corePriceDisplay_desktop_feature_div",
+            "capturedAt": "2026-07-02T04:23:09.803Z"
+          },
+          "amazonOriginalPriceUsd": 19.96,
+          "updatedAt": "2026-07-02T04:23:09.803Z",
+          "createdAt": "2026-07-02T04:23:09.803Z"
+        },
+        "written": null,
+        "exceptionWrites": {
+          "dryRun": true,
+          "rows": []
+        }
+      }
+    },
+    {
+      "asin": "B0GFV4N3K8",
+      "result": {
+        "ok": true,
+        "dryRun": true,
+        "capture": {
+          "ok": true,
+          "asin": "B0GFV4N3K8",
+          "url": "https://www.amazon.com/dp/B0GFV4N3K8",
+          "href": "https://www.amazon.com/dp/B0GFV4N3K8?th=1",
+          "title": "Amazon.com: Chair Leg Floor Protectors, 24 Pack Silicone Furniture Pads for Hardwood Floors, Anti-Scratch Furniture Sliders Felt Pads, Noise-Reducing Chair Feet Covers, Table Legs Fit Sizes to(1.3\" to 1.97\") : Tools & Home Improvement",
+          "selectedSelector": "#corePriceDisplay_desktop_feature_div",
+          "selectedText": "-23% | 9. | $0.42 | $12.99 | $9.98 with 23 percent savings -23% $9 . 98 $0.42 per count ( $0.42 $0.42 / count) List Price: $12.99 List Price: $12.99 $12.99",
+          "captcha": false,
+          "unavailable": false,
+          "price": {
+            "ok": true,
+            "amazonDisplayedPriceUsd": 12.99,
+            "reason": "",
+            "candidates": [
+              {
+                "type": "single",
+                "source": "symbol",
+                "raw": "$0.42",
+                "values": [
+                  0.42
+                ],
+                "selected": 0.42
+              },
+              {
+                "type": "single",
+                "source": "symbol",
+                "raw": "$12.99",
+                "values": [
+                  12.99
+                ],
+                "selected": 12.99
+              },
+              {
+                "type": "single",
+                "source": "symbol",
+                "raw": "$9.98",
+                "values": [
+                  9.98
+                ],
+                "selected": 9.98
+              },
+              {
+                "type": "single",
+                "source": "symbol",
+                "raw": "$9",
+                "values": [
+                  9
+                ],
+                "selected": 9
+              },
+              {
+                "type": "single",
+                "source": "symbol",
+                "raw": "$0.42",
+                "values": [
+                  0.42
+                ],
+                "selected": 0.42
+              },
+              {
+                "type": "single",
+                "source": "symbol",
+                "raw": "$0.42",
+                "values": [
+                  0.42
+                ],
+                "selected": 0.42
+              },
+              {
+                "type": "single",
+                "source": "symbol",
+                "raw": "$0.42",
+                "values": [
+                  0.42
+                ],
+                "selected": 0.42
+              },
+              {
+                "type": "single",
+                "source": "symbol",
+                "raw": "$12.99",
+                "values": [
+                  12.99
+                ],
+                "selected": 12.99
+              },
+              {
+                "type": "single",
+                "source": "symbol",
+                "raw": "$12.99",
+                "values": [
+                  12.99
+                ],
+                "selected": 12.99
+              },
+              {
+                "type": "single",
+                "source": "symbol",
+                "raw": "$12.99",
+                "values": [
+                  12.99
+                ],
+                "selected": 12.99
+              }
+            ],
+            "rule": "single_displayed_price",
+            "sourceText": "-23% | 9. | $0.42 | $12.99 | $9.98 with 23 percent savings -23% $9 . 98 $0.42 per count ( $0.42 $0.42 / count) List Price: $12.99 List Price: $12.99 $12.99"
+          },
+          "page": {
+            "ok": true,
+            "url": "https://www.amazon.com/dp/B0GFV4N3K8",
+            "page": {
+              "success": true,
+              "url": "https://www.amazon.com/dp/B0GFV4N3K8",
+              "tabId": 1541975605,
+              "frameId": "F67620B174115F706E640307A2A1E18A"
+            }
+          }
+        },
+        "record": {
+          "asin": "B0GFV4N3K8",
+          "amazonDisplayedPriceUsd": 12.99,
+          "currency": "USD",
+          "source": "amazon_product_page",
+          "status": "trusted",
+          "reason": "",
+          "amazonUrl": "https://www.amazon.com/dp/B0GFV4N3K8",
+          "evidenceUrl": "https://www.amazon.com/dp/B0GFV4N3K8?th=1",
+          "title": "Amazon.com: Chair Leg Floor Protectors, 24 Pack Silicone Furniture Pads for Hardwood Floors, Anti-Scratch Furniture Sliders Felt Pads, Noise-Reducing Chair Feet Covers, Table Legs Fit Sizes to(1.3\" to 1.97\") : Tools & Home Improvement",
+          "priceRange": {
+            "min": null,
+            "max": null
+          },
+          "capture": {
+            "rule": "single_displayed_price",
+            "selectedSelector": "#corePriceDisplay_desktop_feature_div",
+            "capturedAt": "2026-07-02T04:23:12.555Z"
+          },
+          "amazonOriginalPriceUsd": 12.99,
+          "updatedAt": "2026-07-02T04:23:12.555Z",
+          "createdAt": "2026-07-02T04:23:12.555Z"
+        },
+        "written": null,
+        "exceptionWrites": {
+          "dryRun": true,
+          "rows": []
+        }
+      }
+    },
+    {
+      "asin": "B0C1JY1C7F",
+      "result": {
+        "ok": true,
+        "dryRun": true,
+        "capture": {
+          "ok": true,
+          "asin": "B0C1JY1C7F",
+          "url": "https://www.amazon.com/dp/B0C1JY1C7F",
+          "href": "https://www.amazon.com/dp/B0C1JY1C7F?th=1",
+          "title": "Amazon.com: COVERCORNER Furniture Sliders for Carpet 8 PCS - 3 1/2 inch Furniture Moving Slider Chair Legs Floors Protectors– Move Your Furniture Easy & Safely(for Carpet) : Tools & Home Improvement",
+          "selectedSelector": "#corePriceDisplay_desktop_feature_div",
+          "selectedText": "8. | $8.99 $8 . 99",
+          "captcha": false,
+          "unavailable": false,
+          "price": {
+            "ok": true,
+            "amazonDisplayedPriceUsd": 8.99,
+            "reason": "",
+            "candidates": [
+              {
+                "type": "single",
+                "source": "symbol",
+                "raw": "$8.99",
+                "values": [
+                  8.99
+                ],
+                "selected": 8.99
+              },
+              {
+                "type": "single",
+                "source": "symbol",
+                "raw": "$8",
+                "values": [
+                  8
+                ],
+                "selected": 8
+              }
+            ],
+            "rule": "single_displayed_price",
+            "sourceText": "8. | $8.99 $8 . 99"
+          },
+          "page": {
+            "ok": true,
+            "url": "https://www.amazon.com/dp/B0C1JY1C7F",
+            "page": {
+              "success": true,
+              "url": "https://www.amazon.com/dp/B0C1JY1C7F",
+              "tabId": 1541975605,
+              "frameId": "F67620B174115F706E640307A2A1E18A"
+            }
+          }
+        },
+        "record": {
+          "asin": "B0C1JY1C7F",
+          "amazonDisplayedPriceUsd": 8.99,
+          "currency": "USD",
+          "source": "amazon_product_page",
+          "status": "trusted",
+          "reason": "",
+          "amazonUrl": "https://www.amazon.com/dp/B0C1JY1C7F",
+          "evidenceUrl": "https://www.amazon.com/dp/B0C1JY1C7F?th=1",
+          "title": "Amazon.com: COVERCORNER Furniture Sliders for Carpet 8 PCS - 3 1/2 inch Furniture Moving Slider Chair Legs Floors Protectors– Move Your Furniture Easy & Safely(for Carpet) : Tools & Home Improvement",
+          "priceRange": {
+            "min": null,
+            "max": null
+          },
+          "capture": {
+            "rule": "single_displayed_price",
+            "selectedSelector": "#corePriceDisplay_desktop_feature_div",
+            "capturedAt": "2026-07-02T04:23:15.313Z"
+          },
+          "amazonOriginalPriceUsd": 8.99,
+          "updatedAt": "2026-07-02T04:23:15.313Z",
+          "createdAt": "2026-07-02T04:23:15.313Z"
+        },
+        "written": null,
+        "exceptionWrites": {
+          "dryRun": true,
+          "rows": []
+        }
+      }
+    }
+  ],
+  "safety": [
+    "Readonly Amazon browser navigation/evaluation only.",
+    "No Dianxiaomi action, save, publish, one-click publish, Product Development draft handling, cart, order, chat, or form submit."
+  ]
+}

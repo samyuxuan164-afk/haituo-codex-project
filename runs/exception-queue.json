@@ -1,0 +1,323 @@
+{
+  "schemaVersion": "dxm-exception-queue-v1",
+  "updatedAt": "2026-07-03T09:13:51.607Z",
+  "items": {
+    "b0cz7f61xn::aliexpress_category_evidence_split": {
+      "asin": "B0CZ7F61XN",
+      "stage": "evidence_preflight",
+      "reason": "aliexpress_category_evidence_split",
+      "source": "aliexpress_evidence_batch_status",
+      "details": {
+        "asin": "B0CZ7F61XN",
+        "status": "evidence_split",
+        "verified": false,
+        "aliexpressCategoryId": "100003261",
+        "dxmCandidateCategory": "",
+        "evidenceConfidence": 0.3833,
+        "confidenceTier": "below_threshold",
+        "verificationMode": "not_verified",
+        "reason": "AliExpress category IDs are split; top category share 38%",
+        "updatedAt": "2026-07-02T06:23:00.786Z"
+      },
+      "evidence": [
+        "runs/aliexpress-evidence-store.json"
+      ],
+      "productId": "",
+      "normalizedReason": "aliexpress_category_evidence_split",
+      "category": "category_evidence",
+      "severity": "blocker",
+      "status": "resolved",
+      "retryable": false,
+      "nextAction": "manual_review_or_add_category_mapping",
+      "occurrences": 1,
+      "updatedAt": "2026-07-02T06:49:46.691Z",
+      "createdAt": "2026-07-02T06:25:33.971Z",
+      "resolvedAt": "2026-07-02T06:49:46.690Z"
+    },
+    "b0dz14l38y::aliexpress_category_evidence_split": {
+      "asin": "B0DZ14L38Y",
+      "stage": "evidence_preflight",
+      "reason": "aliexpress_category_evidence_split",
+      "source": "aliexpress_evidence_batch_status",
+      "details": {
+        "asin": "B0DZ14L38Y",
+        "status": "evidence_split",
+        "verified": false,
+        "aliexpressCategoryId": "100003327",
+        "dxmCandidateCategory": "",
+        "evidenceConfidence": 0.3333,
+        "confidenceTier": "below_threshold",
+        "verificationMode": "not_verified",
+        "reason": "AliExpress category IDs are split; top category share 33%",
+        "updatedAt": "2026-07-02T06:23:23.787Z"
+      },
+      "evidence": [
+        "runs/aliexpress-evidence-store.json"
+      ],
+      "productId": "",
+      "normalizedReason": "aliexpress_category_evidence_split",
+      "category": "category_evidence",
+      "severity": "blocker",
+      "status": "resolved",
+      "retryable": false,
+      "nextAction": "manual_review_or_add_category_mapping",
+      "occurrences": 1,
+      "updatedAt": "2026-07-02T07:13:46.436Z",
+      "createdAt": "2026-07-02T06:25:33.972Z",
+      "resolvedAt": "2026-07-02T07:13:46.435Z"
+    },
+    "b0f1ddlkbb::aliexpress_category_evidence_split": {
+      "asin": "B0F1DDLKBB",
+      "stage": "evidence_preflight",
+      "reason": "aliexpress_category_evidence_split",
+      "source": "aliexpress_evidence_batch_status",
+      "details": {
+        "asin": "B0F1DDLKBB",
+        "status": "evidence_split",
+        "verified": false,
+        "aliexpressCategoryId": "200089142",
+        "dxmCandidateCategory": "家居用品(Home & Garden)/家用储存收藏用具(Home Storage & Organization)/厨房收纳用品(Kitchen Storage & Organization)/收纳架(Racks & Holders)",
+        "evidenceConfidence": 0.1833,
+        "confidenceTier": "below_threshold",
+        "verificationMode": "not_verified",
+        "reason": "AliExpress category IDs are split; top category share 18%",
+        "updatedAt": "2026-07-02T06:23:36.037Z"
+      },
+      "evidence": [
+        "runs/aliexpress-evidence-store.json"
+      ],
+      "productId": "",
+      "normalizedReason": "aliexpress_category_evidence_split",
+      "category": "category_evidence",
+      "severity": "blocker",
+      "status": "resolved",
+      "retryable": false,
+      "nextAction": "manual_review_or_add_category_mapping",
+      "occurrences": 1,
+      "updatedAt": "2026-07-02T07:13:46.380Z",
+      "createdAt": "2026-07-02T06:25:33.972Z",
+      "resolvedAt": "2026-07-02T07:13:46.380Z"
+    },
+    "b0ctbqckl9::aliexpress_category_evidence_split": {
+      "asin": "B0CTBQCKL9",
+      "stage": "evidence_preflight",
+      "reason": "aliexpress_category_evidence_split",
+      "source": "aliexpress_evidence_batch_status",
+      "details": {
+        "asin": "B0CTBQCKL9",
+        "status": "evidence_split",
+        "verified": false,
+        "aliexpressCategoryId": "200042150",
+        "dxmCandidateCategory": "家居用品(Home & Garden)/家用储存收藏用具(Home Storage & Organization)/厨房收纳用品(Kitchen Storage & Organization)/收纳架(Racks & Holders)",
+        "evidenceConfidence": 0.5167,
+        "confidenceTier": "below_threshold",
+        "verificationMode": "not_verified",
+        "reason": "AliExpress category IDs are split; top category share 52%",
+        "updatedAt": "2026-07-02T06:23:52.839Z"
+      },
+      "evidence": [
+        "runs/aliexpress-evidence-store.json"
+      ],
+      "productId": "",
+      "normalizedReason": "aliexpress_category_evidence_split",
+      "category": "category_evidence",
+      "severity": "blocker",
+      "status": "resolved",
+      "retryable": false,
+      "nextAction": "manual_review_or_add_category_mapping",
+      "occurrences": 1,
+      "updatedAt": "2026-07-02T07:13:46.330Z",
+      "createdAt": "2026-07-02T06:25:33.972Z",
+      "resolvedAt": "2026-07-02T07:13:46.325Z"
+    },
+    "b01e2eyg4u::aliexpress_category_evidence_split": {
+      "asin": "B01E2EYG4U",
+      "stage": "evidence_preflight",
+      "reason": "aliexpress_category_evidence_split",
+      "source": "aliexpress_evidence_batch_status",
+      "details": {
+        "asin": "B01E2EYG4U",
+        "status": "evidence_split",
+        "verified": false,
+        "aliexpressCategoryId": "201222631",
+        "dxmCandidateCategory": "家居用品(Home & Garden)/家用储存收藏用具(Home Storage & Organization)/收纳盒和收纳箱(Storage Boxes & Bins)",
+        "evidenceConfidence": 0.5,
+        "confidenceTier": "below_threshold",
+        "verificationMode": "not_verified",
+        "reason": "AliExpress category IDs are split; top category share 50%",
+        "updatedAt": "2026-07-02T06:24:04.441Z"
+      },
+      "evidence": [
+        "runs/aliexpress-evidence-store.json"
+      ],
+      "productId": "",
+      "normalizedReason": "aliexpress_category_evidence_split",
+      "category": "category_evidence",
+      "severity": "blocker",
+      "status": "resolved",
+      "retryable": false,
+      "nextAction": "manual_review_or_add_category_mapping",
+      "occurrences": 1,
+      "updatedAt": "2026-07-02T11:48:16.472Z",
+      "createdAt": "2026-07-02T06:25:33.972Z",
+      "resolvedAt": "2026-07-02T11:48:16.471Z"
+    },
+    "b0gfv4n3k8::aliexpress_category_evidence_split": {
+      "asin": "B0GFV4N3K8",
+      "stage": "evidence_preflight",
+      "reason": "aliexpress_category_evidence_split",
+      "source": "aliexpress_evidence_batch_status",
+      "details": {
+        "asin": "B0GFV4N3K8",
+        "status": "evidence_split",
+        "verified": false,
+        "aliexpressCategoryId": "370803",
+        "dxmCandidateCategory": "",
+        "evidenceConfidence": 0.4167,
+        "confidenceTier": "below_threshold",
+        "verificationMode": "not_verified",
+        "reason": "AliExpress category IDs are split; top category share 42%",
+        "updatedAt": "2026-07-02T06:24:16.111Z"
+      },
+      "evidence": [
+        "runs/aliexpress-evidence-store.json"
+      ],
+      "productId": "",
+      "normalizedReason": "aliexpress_category_evidence_split",
+      "category": "category_evidence",
+      "severity": "blocker",
+      "status": "open",
+      "retryable": false,
+      "nextAction": "manual_review_or_add_category_mapping",
+      "occurrences": 1,
+      "updatedAt": "2026-07-02T06:25:33.974Z",
+      "createdAt": "2026-07-02T06:25:33.972Z"
+    },
+    "b0c1jy1c7f::aliexpress_category_evidence_split": {
+      "asin": "B0C1JY1C7F",
+      "stage": "evidence_preflight",
+      "reason": "aliexpress_category_evidence_split",
+      "source": "aliexpress_evidence_batch_status",
+      "details": {
+        "asin": "B0C1JY1C7F",
+        "status": "evidence_split",
+        "verified": false,
+        "aliexpressCategoryId": "370803",
+        "dxmCandidateCategory": "",
+        "evidenceConfidence": 0.3833,
+        "confidenceTier": "below_threshold",
+        "verificationMode": "not_verified",
+        "reason": "AliExpress category IDs are split; top category share 38%",
+        "updatedAt": "2026-07-02T06:24:28.537Z"
+      },
+      "evidence": [
+        "runs/aliexpress-evidence-store.json"
+      ],
+      "productId": "",
+      "normalizedReason": "aliexpress_category_evidence_split",
+      "category": "category_evidence",
+      "severity": "blocker",
+      "status": "open",
+      "retryable": false,
+      "nextAction": "manual_review_or_add_category_mapping",
+      "occurrences": 1,
+      "updatedAt": "2026-07-02T06:25:33.974Z",
+      "createdAt": "2026-07-02T06:25:33.972Z"
+    },
+    "b0cz7f61xn::aliexpress_dxm_category_map_missing": {
+      "asin": "B0CZ7F61XN",
+      "stage": "evidence_preflight",
+      "reason": "aliexpress_dxm_category_map_missing",
+      "source": "aliexpress_evidence_batch_status",
+      "details": {
+        "asin": "B0CZ7F61XN",
+        "status": "semantic_consensus_needs_dxm_mapping",
+        "verified": false,
+        "aliexpressCategoryId": "100003261",
+        "dxmCandidateCategory": "",
+        "evidenceConfidence": 0.4167,
+        "confidenceTier": "semantic_consensus",
+        "verificationMode": "needs_dxm_mapping",
+        "reason": "AliExpress titles have semantic consensus (faucet-mat-splash-guard) despite split category IDs; DXM candidate category is missing",
+        "updatedAt": "2026-07-02T06:49:38.994Z"
+      },
+      "evidence": [
+        "runs/aliexpress-evidence-store.json"
+      ],
+      "productId": "",
+      "normalizedReason": "aliexpress_dxm_category_map_missing",
+      "category": "category_mapping",
+      "severity": "blocker",
+      "status": "resolved",
+      "retryable": false,
+      "nextAction": "validate_and_add_aliexpress_dxm_category_mapping",
+      "occurrences": 2,
+      "updatedAt": "2026-07-02T10:41:59.201Z",
+      "createdAt": "2026-07-02T06:49:46.976Z",
+      "resolvedAt": "2026-07-02T10:41:59.200Z"
+    },
+    "b0dz14l38y::aliexpress_dxm_category_map_missing": {
+      "asin": "B0DZ14L38Y",
+      "stage": "evidence_preflight",
+      "reason": "aliexpress_dxm_category_map_missing",
+      "source": "aliexpress_evidence_batch_status",
+      "details": {
+        "asin": "B0DZ14L38Y",
+        "status": "semantic_consensus_needs_dxm_mapping",
+        "verified": false,
+        "aliexpressCategoryId": "100003261",
+        "dxmCandidateCategory": "",
+        "evidenceConfidence": 0.3833,
+        "confidenceTier": "semantic_consensus",
+        "verificationMode": "needs_dxm_mapping",
+        "reason": "AliExpress titles have semantic consensus (faucet-mat-splash-guard) despite split category IDs; DXM candidate category is missing",
+        "updatedAt": "2026-07-02T07:13:23.164Z"
+      },
+      "evidence": [
+        "runs/aliexpress-evidence-store.json"
+      ],
+      "productId": "",
+      "normalizedReason": "aliexpress_dxm_category_map_missing",
+      "category": "category_mapping",
+      "severity": "blocker",
+      "status": "resolved",
+      "retryable": false,
+      "nextAction": "validate_and_add_aliexpress_dxm_category_mapping",
+      "occurrences": 1,
+      "updatedAt": "2026-07-03T09:13:51.607Z",
+      "createdAt": "2026-07-02T07:13:55.105Z",
+      "resolvedAt": "2026-07-03T09:13:51.606Z"
+    },
+    "b0dz14l38y::aliexpress_category_confirmed_but_dxm_mapping_missing": {
+      "asin": "B0DZ14L38Y",
+      "stage": "evidence_preflight",
+      "reason": "aliexpress_category_confirmed_but_dxm_mapping_missing",
+      "source": "aliexpress_evidence_batch_status",
+      "details": {
+        "asin": "B0DZ14L38Y",
+        "status": "semantic_consensus_needs_dxm_mapping",
+        "verified": false,
+        "aliexpressCategoryId": "100003327",
+        "dxmCandidateCategory": "",
+        "evidenceConfidence": 0.5,
+        "confidenceTier": "platform_category_mapping_required",
+        "verificationMode": "aliexpress_category_confirmed_dxm_mapping_required",
+        "reason": "aliexpress_category_confirmed_but_dxm_mapping_missing",
+        "updatedAt": "2026-07-03T09:13:17.486Z"
+      },
+      "evidence": [
+        "runs/aliexpress-evidence-store.json"
+      ],
+      "productId": "",
+      "normalizedReason": "aliexpress_category_confirmed_but_dxm_mapping_missing",
+      "category": "category_mapping",
+      "severity": "blocker",
+      "status": "open",
+      "retryable": false,
+      "nextAction": "validate_and_add_aliexpress_dxm_category_mapping",
+      "occurrences": 1,
+      "updatedAt": "2026-07-03T09:13:43.420Z",
+      "createdAt": "2026-07-03T09:13:43.419Z"
+    }
+  }
+}

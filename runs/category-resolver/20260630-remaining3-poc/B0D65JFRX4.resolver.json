@@ -1,0 +1,49 @@
+{
+  "asin": "B0D65JFRX4",
+  "productId": "167487782006920301",
+  "source": "aliexpress-search-result-structured-data",
+  "query": "sink drain strainer kitchen sink stopper basket",
+  "targetPlatform": "AliExpress",
+  "resultCount": 20,
+  "postCategoryIdCounts": {
+    "200231151": 11,
+    "1302": 2,
+    "100003246": 2,
+    "100007091": 2,
+    "200228146": 2,
+    "201511301": 1
+  },
+  "recommended": {
+    "postCategoryId": "200231151",
+    "confidence": 0.86,
+    "status": "high_confidence_dxm_path_validated",
+    "semanticFamily": "kitchen-sink-strainer",
+    "dxmVisibleCategoryPath": "家装（硬装）(Home Improvement)/厨房设施(Kitchen Fixture)/厨房水槽配件(Kitchen Sink Accessories)/厨房水槽水漏、过滤网(Kitchen Drains & Strainers)",
+    "allowEnterDxmEditPageForCategoryValidation": true,
+    "allowAutoSave": false
+  },
+  "evidenceTitles": [
+    "2PCS 3-in-1 Stainless Steel Kitchen Sink Strainer Pop-Up Stopper with Anti-Clogging Basket Odor Filter",
+    "Kitchen Sink Drain Strainer Sink Drain Assembly Stopper with Deep Basket Cover Lid Rustfree SUS 304 Stainless Steel",
+    "3Pcs Kitchen Sink Drain Strainer Stopper Stainless Steel Garbage Disposal Plug Anti-Clogging Kitchen Sink Filter Sieve Basket",
+    "Kitchen sink pop-up drain strainer, vegetable washing basin leak stopper, clog cover, dishwashing sink basket, pop-up core"
+  ],
+  "blockedWrongCategories": [
+    "商用餐厨操作类电器（带电）(Commercial Kitchen Operation Appliances)"
+  ],
+  "dxmValidation": {
+    "date": "2026-06-30",
+    "method": "Dianxiaomi edit-page category modal read-only search",
+    "matchedSearchTerms": [
+      "水槽",
+      "过滤",
+      "滤网",
+      "Sink",
+      "Drain",
+      "Strainer"
+    ],
+    "saved": false,
+    "published": false
+  },
+  "nextAction": "Connect resolver category path to Dianxiaomi category selection only; still require full edit-page preflight before save."
+}

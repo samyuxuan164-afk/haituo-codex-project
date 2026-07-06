@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "aliexpress-entry-v1",
+  "updatedAt": "2026-07-01T00:00:00.000Z",
+  "entryMode": "configured_url",
+  "primaryUrl": "https://www.aliexpress.com/",
+  "browser": "Google Chrome",
+  "requiresExistingLoginState": true,
+  "manualFallback": {
+    "type": "chrome_bookmark_bar",
+    "label": "速卖通",
+    "purpose": "Manual fallback only when configured URL or login state cannot be verified."
+  },
+  "allowedActions": [
+    "open_home",
+    "search",
+    "image_search",
+    "read_category_evidence",
+    "read_similar_product_evidence"
+  ],
+  "forbiddenActions": [
+    "order",
+    "cart",
+    "favorite",
+    "chat",
+    "account_settings",
+    "payment",
+    "address_change",
+    "message_seller",
+    "submit_form_with_personal_data"
+  ],
+  "failureStatuses": {
+    "entryUnavailable": "aliexpress_entry_unavailable",
+    "loginStateUnavailable": "aliexpress_login_state_unavailable",
+    "toolbarFallbackRequired": "aliexpress_toolbar_fallback_required"
+  }
+}

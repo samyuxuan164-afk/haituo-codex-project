@@ -1,0 +1,36 @@
+{
+  "asin": "B0C9ZHWC9K",
+  "productId": "167487782006886749",
+  "source": "aliexpress-search-result-structured-data",
+  "query": "rotating plastic desk pen organizer 5 slots",
+  "targetPlatform": "AliExpress",
+  "resultCount": 20,
+  "postCategoryIdCounts": {
+    "211114": 8,
+    "100003309": 2,
+    "200043145": 2,
+    "200254142": 2,
+    "201531504": 2,
+    "142001": 1,
+    "200000453": 1,
+    "200672001": 1,
+    "202184012": 1
+  },
+  "recommended": {
+    "postCategoryId": "211114",
+    "confidence": 0.74,
+    "status": "category_direction_confirmed_existing_dxm_category",
+    "semanticFamily": "desk-pen-holder",
+    "dxmVisibleCategory": "笔筒(Pen Holders)",
+    "allowEnterDxmEditPageForCategoryValidation": true,
+    "allowAutoSave": false
+  },
+  "evidenceTitles": [
+    "Desktop Stationery Organizer 5 Slots Stationery Storage Box 360 Degree Rotating Cute Pencil Cup Pot for Home Office School",
+    "Marbrasse Desk Organizer, 360° Rotating Pen Holder, 5 Compartments Pencil Caddy for Office Home, White",
+    "360 Rotating Desk Pen Organizer with 5 Slots for Office School Home",
+    "Rotating Pen Holder for Desk, 5 Slots Pencil Organizer with Smooth 360° Base, White"
+  ],
+  "remainingBlocker": "Dianxiaomi edit preflight fails only on Material because the material field container is not visible/readable for Pen Holders.",
+  "nextAction": "Fix Pen Holders material fallback/readback; category does not need AliExpress detail-page confirmation."
+}

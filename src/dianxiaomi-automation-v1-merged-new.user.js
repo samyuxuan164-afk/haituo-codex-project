@@ -1,7 +1,7 @@
 ﻿// ==UserScript==
-// @name         DXM Automation V1 - NEW v1.1.49
+// @name         DXM Automation V1 - NEW v2.1.75
 // @namespace    https://codex.local/dianxiaomi-automation-v1
-// @version      1.1.49
+// @version      2.1.75
 // @description  DXM listing automation: edit.json, choiceSave payload, dry-run, save validation, run bundle.
 // @author       Codex
 // @match        https://*.dianxiaomi.com/*
@@ -16,8 +16,9 @@
   'use strict';
 
   const APP_NAME = 'DXM Automation V1';
-  const VERSION = '1.1.49';
+  const VERSION = '2.1.75';
   const PANEL_ID = 'dxm-automation-v1-new-panel';
+  const READONLY_PREFLIGHT_NODE_ID = 'dxm-automation-v1-readonly-preflight-json';
   const POS_KEY = 'dxm-automation-v1-new-position';
   const COLLAPSED_KEY = 'dxm-automation-v1-new-collapsed';
   const DEFAULT_POSTAGE_ID_KEY = 'dxm-single-submit-default-postage-id';
@@ -36,6 +37,10 @@
   const DEFAULT_HEIGHT_KEY = 'dxm-single-submit-default-height';
   const AMAZON_PUBLIC_BATCH_KEY = 'dxm_amazon_crawlbox_public_batch_v1';
   const AMAZON_SOURCE_ASIN_KEY = 'dxm-automation-amazon-source-asin';
+  const AMAZON_PRICE_STORE_KEY = 'dxm_amazon_price_store_v1';
+  const ALIEXPRESS_EVIDENCE_STORE_KEY = 'dxm_aliexpress_evidence_store_v1';
+  const ALIEXPRESS_EVIDENCE_STORE_SCHEMA_VERSION = 'aliexpress-evidence-store-v1';
+  const AMAZON_PRICE_STORE_SCHEMA_VERSION = 'amazon-price-store-v1';
   const CURRENT_PUBLISH_TEST = Object.freeze({
     productId: '167487782002154045',
     asin: 'B09D5Y5HBW',
@@ -57,8 +62,17 @@
     flow: 'Amazon -> collection box -> claim -> edit page -> save -> collection box -> publish',
     forbiddenEditPageAction: 'publish from edit page',
   });
+  const EDIT_PAGE_EXCLUSIVE_SAMPLE_ID = '167487782006885971';
+  const EDIT_PAGE_MINIMAL_EXCLUSIVE_MODE = false;
   let visibleEditRulesAutoAppliedUrl = '';
   let visibleEditRulesWatcherStarted = false;
+  let visibleEditRulesPipelineRunning = false;
+  const editFieldLocks = {
+    active: false,
+    fields: {},
+    scrollBlocked: 0,
+    lockViolations: [],
+  };
   const FORBIDDEN_COMMERCE_TERMS = [
     'amazon',
     'amazon.com',
@@ -94,7 +108,9 @@
   }
 
   function getDefaultSourcePrice() {
-    return getPanelInputValue('defaultSourcePrice', localStorage.getItem(DEFAULT_SOURCE_PRICE_KEY) || '');
+    const stored = localStorage.getItem(DEFAULT_SOURCE_PRICE_KEY) || '';
+    if (positiveNumber(stored)) return stored;
+    return getPanelInputValue('defaultSourcePrice', stored);
   }
 
   function getDefaultStock() {
@@ -221,26 +237,116 @@
   };
 
   const CATEGORY_RESOLVER_AUTO_APPLY_CONFIDENCE = 0.85;
+  const REQUIRE_ALIEXPRESS_CATEGORY_EVIDENCE = true;
+  const CATEGORY_EVIDENCE_STATUS = {
+    CLEAR: 'clear',
+    SPLIT: 'split',
+    MISSING: 'missing',
+    UNAVAILABLE: 'unavailable',
+  };
   // CATEGORY_RESOLVER_RULES is generated from skills/category-resolver/learned_rules.json.
   const CATEGORY_RESOLVER_RULES = [
       {
+          "id": "pen-holders-visible-dxm",
+          "status": "active",
+          "type": "categoryMapping",
+          "scope": "desk-stationery-storage-only",
+          "categoryId": "",
+          "categoryPath": "Office & School Supplies > Desk Accessories & Organizer > Pen Holders",
+          "match": {
+              "anyTitleTerms": [
+                  "pen holder",
+                  "pen holders",
+                  "pencil holder",
+                  "pencil holders",
+                  "pencil cup",
+                  "desk pen holder",
+                  "desk pen organizer",
+                  "rotating pen organizer",
+                  "rotating pencil organizer",
+                  "rotating pencil cup",
+                  "rotating organizer for pencils",
+                  "rotating organizer for office supplies",
+                  "desktop stationery storage",
+                  "桌面文具收纳",
+                  "笔筒"
+              ],
+              "anySourceCategoryTerms": [
+                  "pen holders",
+                  "desk accessories",
+                  "office supplies"
+              ],
+              "negativeTitleTerms": [
+                  "cable organizer",
+                  "makeup organizer",
+                  "bathroom organizer",
+                  "kitchen organizer",
+                  "drawer organizer",
+                  "clothing organizer",
+                  "wardrobe organizer",
+                  "letter organizer",
+                  "file organizer"
+              ]
+          },
+          "defaults": {},
+          "visibleCategorySearchTerms": [
+              "Pen Holders",
+              "笔筒",
+              "Pencil Holders",
+              "Pencil Cup",
+              "Desk Pen Holder"
+          ],
+          "principles": [
+              "Amazon original category is only auxiliary and cannot be copied as the DXM category.",
+              "DXM category must be judged by actual use, physical form, title semantics, and image content.",
+              "Generic Organizer alone must not match Pen Holders.",
+              "If Amazon category and DXM category differ but DXM category better matches actual use, use the DXM category."
+          ],
+          "evidence": [
+              "manual confirmation 2026-06-25: DXM visible category path 办公、文化及教育用品 > 桌上收纳用品 > 笔筒(Pen Holders)"
+          ]
+      },
+      {
           "id": "bumpers-200291142",
           "status": "active",
+          "type": "categoryMapping",
+          "scope": "cabinet-door-furniture-bumper-pads-only",
           "categoryId": "200291142",
-          "categoryPath": "Home Improvement > Hardware > Furniture Hardware > Cabinet Bumpers",
+          "categoryPath": "家装（硬装）(Home Improvement)/五金(Hardware)/家具五金(Furniture Hardware)/柜门消音垫(Cabinet Bumpers)",
           "match": {
               "anyTitleTerms": [
                   "bumper",
                   "bumpers",
                   "rubber bumper",
                   "cabinet bumper",
+                  "cabinet bumpers",
+                  "cabinet door bumper",
+                  "cabinet door bumpers",
+                  "clear cabinet door bumpers",
+                  "self-adhesive silicone pads",
+                  "sound-dampening protectors",
                   "door stopper",
                   "furniture pad",
-                  "self adhesive bumper"
+                  "furniture pads",
+                  "self adhesive bumper",
+                  "self adhesive bumpers"
               ],
               "anySourceCategoryTerms": [
                   "cabinet bumpers",
-                  "rubber bumpers"
+                  "rubber bumpers",
+                  "furniture hardware",
+                  "hardware"
+              ],
+              "negativeTitleTerms": [
+                  "car bumper",
+                  "bumper case",
+                  "phone bumper",
+                  "baby bumper",
+                  "crib bumper",
+                  "wall hook",
+                  "coat hook",
+                  "sink strainer",
+                  "soap dish"
               ]
           },
           "defaults": {
@@ -258,21 +364,454 @@
                       "attr_name_id": "400000603",
                       "attr_name": "High-concerned chemical",
                       "attr_value_id": "23399591357",
-                      "attr_value": "\u5929\u7136\u672a\u5904\u7406(None)"
+                      "attr_value": "天然未处理(None)"
                   },
                   {
                       "attr_name_id": "219",
                       "attr_name": "Origin",
                       "attr_value_id": "9442295690",
-                      "attr_value": "\u7f8e\u56fd(Origin)(US(Origin))",
+                      "attr_value": "美国(Origin)(US(Origin))",
                       "attr_value_unit": null,
                       "attr_value_start": null,
                       "attr_value_end": null
                   }
               ]
           },
+          "visibleCategorySearchTerms": [
+              "Cabinet Bumpers",
+              "柜门消音垫",
+              "Furniture Hardware",
+              "家具五金",
+              "Hardware"
+          ],
+          "principles": [
+              "For self-adhesive silicone/rubber pads used on cabinet doors, drawers, furniture, walls, or door handles, prefer Cabinet Bumpers under Home Improvement > Hardware > Furniture Hardware.",
+              "Do not use broad furniture pads if the exact Cabinet Bumpers leaf is visible.",
+              "Do not mix cabinet bumpers with wall hooks, automotive bumpers, phone bumpers, or sink/bathroom products."
+          ],
           "evidence": [
-              "analysis/save-json-3/choiceSave.pretty.json"
+              "analysis/save-json-3/choiceSave.pretty.json",
+              "2026-06-30 recovery: DXM visible category modal found 家装（硬装） > 五金 > 家具五金 > 柜门消音垫(Cabinet Bumpers) for B0GDRKKWRC"
+          ]
+      },
+      {
+          "id": "portable-soap-dishes-visible-dxm",
+          "status": "active",
+          "type": "categoryMapping",
+          "scope": "bathroom-portable-soap-dish-only",
+          "categoryId": "",
+          "categoryPath": "家居用品(Home & Garden)/家居日用品(Home Products)/浴室用品(Bathroom Products)/便携肥皂盒（非安装，非金属）(Portable Soap Dishes)",
+          "match": {
+              "anyTitleTerms": [
+                  "soap dish",
+                  "soap dishes",
+                  "soap holder",
+                  "soap tray",
+                  "soap saver",
+                  "self draining soap dish",
+                  "self draining sink organizer tray",
+                  "silicone soap dish",
+                  "portable soap dish",
+                  "便携肥皂盒",
+                  "肥皂盒"
+              ],
+              "anySourceCategoryTerms": [
+                  "soap dishes",
+                  "bathroom products",
+                  "bathroom accessories"
+              ],
+              "negativeTitleTerms": [
+                  "soap dispenser",
+                  "liquid soap",
+                  "bath basket",
+                  "bathroom accessories set",
+                  "soap box"
+              ]
+          },
+          "defaults": {},
+          "visibleCategorySearchTerms": [
+              "浴室",
+              "Bathroom Products",
+              "Soap Dish",
+              "Portable Soap Dishes",
+              "便携肥皂盒"
+          ],
+          "principles": [
+              "For non-mounted non-metal soap dishes and self-draining soap trays, prefer Portable Soap Dishes.",
+              "Do not use Soap Box, Bath Baskets, or broad Bathroom Accessories Sets for this product family."
+          ],
+          "evidence": [
+              "2026-06-30 live DXM v1.1.85 sample B0BPS66NC3 saved with category 便携肥皂盒（非安装，非金属）(Portable Soap Dishes)",
+              "2026-06-30 20-category batch: B0DYZQHGM5 saved to wait-to-publish with category 便携肥皂盒（非安装，非金属）(Portable Soap Dishes), CNY 64.99, stock 15"
+          ]
+      },
+      {
+          "id": "drawer-organizer-storage-boxes-visible-dxm",
+          "status": "active",
+          "type": "categoryMapping",
+          "scope": "desk-drawer-storage-trays-only",
+          "categoryId": "",
+          "categoryPath": "家居用品(Home & Garden)/家用储存收藏用具(Home Storage & Organization)/收纳盒和收纳箱(Storage Boxes & Bins)",
+          "match": {
+              "anyTitleTerms": [
+                  "desk drawer organizer",
+                  "drawer organizer tray",
+                  "drawer organizer",
+                  "desk organizer with drawers",
+                  "office drawer organizer",
+                  "stationery organizer tray",
+                  "makeup drawer organizer",
+                  "抽屉收纳盒",
+                  "桌面收纳",
+                  "收纳盒"
+              ],
+              "anySourceCategoryTerms": [
+                  "storage boxes",
+                  "storage bins",
+                  "home storage",
+                  "drawer organizer"
+              ],
+              "negativeTitleTerms": [
+                  "pen holder",
+                  "cable organizer",
+                  "soap dish",
+                  "sink strainer",
+                  "wall hook"
+              ]
+          },
+          "defaults": {},
+          "visibleCategorySearchTerms": [
+              "Storage Boxes & Bins",
+              "收纳盒和收纳箱",
+              "Home Storage & Organization",
+              "Storage Boxes",
+              "收纳盒",
+              "Drawer Organizers",
+              "Home Storage"
+          ],
+          "principles": [
+              "For desk/drawer organizer trays used for office, stationery, makeup, or home storage, prefer Storage Boxes & Bins when no more specific visible office category exists.",
+              "Search the exact leaf text Storage Boxes & Bins / 收纳盒和收纳箱 before broad 收纳盒, because broad 收纳盒 can incorrectly hit 电池收纳盒(Battery Storage Boxes).",
+              "Do not map pen cups, cable organizers, soap dishes, sink strainers, wall hooks, or battery storage boxes into this category."
+          ],
+          "evidence": [
+              "2026-06-30 20-category recovery: B0DQ3X91R7 verified as desk/drawer organizer storage; DXM visible category selected 收纳盒和收纳箱(Storage Boxes & Bins)."
+          ]
+      },
+      {
+          "id": "qtip-makeup-organizers-visible-dxm",
+          "status": "active",
+          "type": "categoryMapping",
+          "scope": "cotton-swab-bathroom-vanity-organizer-only",
+          "categoryId": "",
+          "categoryPath": "家居用品(Home & Garden)/家用储存收藏用具(Home Storage & Organization)/浴室收纳(非五金材质，非打孔安装）(Bathroom Storage & Organization)/化妆品收纳盒(Makeup Organizers)",
+          "match": {
+              "anyTitleTerms": [
+                  "qtip holder",
+                  "q-tip holder",
+                  "cotton swab holder",
+                  "cotton swab dispenser",
+                  "cotton balls pads floss picks",
+                  "bathroom vanity organizer",
+                  "makeup storage organizer",
+                  "apothecary jar",
+                  "棉签盒",
+                  "化妆品收纳盒"
+              ],
+              "anySourceCategoryTerms": [
+                  "makeup organizers",
+                  "bathroom storage",
+                  "home storage"
+              ],
+              "negativeTitleTerms": [
+                  "kitchen utensil holder",
+                  "paper towel holder",
+                  "toothbrush holder",
+                  "shower caddy",
+                  "drawer organizer tray"
+              ]
+          },
+          "defaults": {},
+          "visibleCategorySearchTerms": [
+              "化妆品收纳盒",
+              "Makeup Organizers",
+              "Bathroom Storage & Organization",
+              "棉签盒",
+              "Bathroom Storage",
+              "Vanity Organizer"
+          ],
+          "principles": [
+              "For acrylic cotton swab, cotton ball, floss pick, and vanity jar organizers, prefer Makeup Organizers under Bathroom Storage & Organization.",
+              "Search 化妆品收纳盒 / Makeup Organizers before 棉签盒 when selecting DXM visible categories, because 棉签盒 may return no exact visible category even when Makeup Organizers exists.",
+              "Do not map kitchen, paper towel, toothbrush, shower, or generic drawer organizers into this category."
+          ],
+          "evidence": [
+              "2026-06-30 20-category recovery: B08PB79YXV verified as cotton-swab/bathroom vanity makeup organizer; DXM visible category selected 化妆品收纳盒(Makeup Organizers)."
+          ]
+      },
+      {
+          "id": "silicone-trivet-placemats-adjacent-dxm",
+          "status": "active",
+          "type": "categoryMapping",
+          "scope": "silicone-trivet-pot-holder-hot-pad-only",
+          "categoryId": "",
+          "categoryPath": "家居用品(Home & Garden)/家纺成品(Home Textile)/餐桌布艺(Table Linen)/餐垫(Placemats)",
+          "match": {
+              "anyTitleTerms": [
+                  "silicone pot holder",
+                  "silicone pot holders",
+                  "pot holder",
+                  "pot holders",
+                  "hot pad",
+                  "hot pads",
+                  "trivet",
+                  "trivets",
+                  "silicone trivet",
+                  "silicone trivet mat",
+                  "heat resistant mat",
+                  "heat resistant pads",
+                  "kitchen trivet",
+                  "jar opener",
+                  "spoon rest",
+                  "隔热垫",
+                  "锅垫",
+                  "防烫垫",
+                  "餐垫"
+              ],
+              "anySourceCategoryTerms": [
+                  "pot holders",
+                  "trivets",
+                  "hot pads",
+                  "kitchen mats",
+                  "placemats",
+                  "table linen"
+              ],
+              "negativeTitleTerms": [
+                  "teapot",
+                  "tea pot",
+                  "coaster set",
+                  "cup coaster",
+                  "placemat set",
+                  "tablecloth",
+                  "oven mitt",
+                  "glove",
+                  "tea warmer"
+              ]
+          },
+          "defaults": {},
+          "visibleCategorySearchTerms": [
+              "餐垫",
+              "Placemats",
+              "Table Linen",
+              "Home Textile",
+              "家纺成品"
+          ],
+          "principles": [
+              "AliExpress evidence only constrains the product family; Dianxiaomi does not need the exact same leaf text when no exact Pot Holders/Trivets category is visible.",
+              "For flat silicone heat-resistant pot holders, hot pads, and trivets, use the safe adjacent Placemats category when exact 隔热垫/锅垫/Pot Holders/Trivets searches are unavailable in Dianxiaomi.",
+              "Prefer 餐垫(Placemats) over 杯垫(Coaster) or 茶壶底座(Teapot Trivets) unless the product is clearly cup-only or teapot-only."
+          ],
+          "evidence": [
+              "2026-07-01 recovery: B0DFPHVNHG AliExpress evidence showed silicone heat-resistant trivet mat / pot holder / hot pad family; DXM exact searches 隔热垫, 锅垫, Pot Holders did not expose a safe exact leaf, while 餐垫(Placemats) was visible as a safe adjacent table-linen category."
+          ]
+      },
+      {
+          "id": "coat-hooks-visible-dxm",
+          "status": "active",
+          "type": "categoryMapping",
+          "scope": "adhesive-wall-heavy-duty-hooks-only",
+          "categoryId": "",
+          "categoryPath": "家居用品(Home & Garden)/家用储存收藏用具(Home Storage & Organization)/钩子和导轨(Hooks & Rails)/衣帽挂钩(Coat Hooks)",
+          "match": {
+              "anyTitleTerms": [
+                  "coat hook",
+                  "coat hooks",
+                  "wall hook",
+                  "wall hooks",
+                  "adhesive hook",
+                  "adhesive hooks",
+                  "heavy duty hook",
+                  "heavy duty hooks",
+                  "hooks for hanging",
+                  "wall hangers without nails",
+                  "衣帽挂钩",
+                  "挂钩"
+              ],
+              "anySourceCategoryTerms": [
+                  "hooks",
+                  "hooks & rails",
+                  "home storage"
+              ],
+              "negativeTitleTerms": [
+                  "cable",
+                  "wire",
+                  "fishing hook",
+                  "carabiner",
+                  "faucet"
+              ]
+          },
+          "defaults": {},
+          "visibleCategorySearchTerms": [
+              "挂钩",
+              "Hooks",
+              "Coat Hooks",
+              "Wall Hooks",
+              "Hooks & Rails"
+          ],
+          "principles": [
+              "For adhesive heavy-duty wall hooks or no-nail wall hangers, prefer Coat Hooks under Hooks & Rails.",
+              "Do not mix wall hooks with cable organizers or faucet hardware."
+          ],
+          "evidence": [
+              "2026-06-30 remaining batch: B09PFW8WRQ saved to wait-to-publish with category 衣帽挂钩(Coat Hooks)",
+              "2026-06-30 20-category batch: B0FWKSDJZ5 saved to wait-to-publish with category 衣帽挂钩(Coat Hooks), CNY 64.99, stock 15"
+          ]
+      },
+      {
+          "id": "cable-organizers-visible-dxm",
+          "status": "active",
+          "type": "categoryMapping",
+          "scope": "desktop-office-adhesive-cable-holder-only",
+          "categoryId": "",
+          "categoryPath": "办公、文化及教育用品(Office & School Supplies)/桌上收纳用品(Desk Accessories & Organizer)/桌面理线器(Cable Organizers)",
+          "match": {
+              "anyTitleTerms": [
+                  "cable holder",
+                  "cable holders",
+                  "cord holder",
+                  "cord holders",
+                  "wire holder",
+                  "wire holders",
+                  "cable clip",
+                  "cable clips",
+                  "wire clip",
+                  "wire clips",
+                  "cord organizer",
+                  "cord organizers",
+                  "cable organizer",
+                  "cable organizers",
+                  "wire management",
+                  "cord management",
+                  "desk cable organizer",
+                  "adhesive cable clips",
+                  "self adhesive cable clips",
+                  "桌面理线器",
+                  "理线器",
+                  "理线夹",
+                  "线夹"
+              ],
+              "anySourceCategoryTerms": [
+                  "cable management",
+                  "desk accessories",
+                  "office supplies"
+              ],
+              "negativeTitleTerms": [
+                  "conductive",
+                  "glue paste",
+                  "conductive wire glue",
+                  "electrical cable tool",
+                  "wire crimping",
+                  "network cabling tool",
+                  "导电线胶膏",
+                  "线缆工具"
+              ]
+          },
+          "defaults": {},
+          "visibleCategorySearchTerms": [
+              "办公",
+              "Office & School Supplies",
+              "Desk Accessories",
+              "Cable Organizers",
+              "桌面理线器"
+          ],
+          "principles": [
+              "For adhesive cable clips used on desks, nightstands, offices, mouse/charger cables, prefer Desk Accessories > Cable Organizers.",
+              "Do not use Cable Tools when the product is a passive adhesive desk cable holder rather than a tool.",
+              "Do not use Conductive Wire Glue Pastes for physical cable clips."
+          ],
+          "evidence": [
+              "2026-06-30 live DXM edit recovery for B0CNSYPZBQ selected 桌面理线器(Cable Organizers) and saved to wait-to-publish",
+              "runs/category-resolver/20260630-remaining3-poc/B0CNSYPZBQ.resolver.json"
+          ]
+      },
+      {
+          "id": "kitchen-drains-strainers-200231151",
+          "status": "active",
+          "type": "categoryMapping",
+          "scope": "kitchen-sink-drain-strainer-only",
+          "categoryId": "200231151",
+          "categoryPath": "家装（硬装）(Home Improvement)/厨房设施(Kitchen Fixture)/厨房水槽配件(Kitchen Sink Accessories)/厨房水槽水漏、过滤网(Kitchen Drains & Strainers)",
+          "match": {
+              "anyTitleTerms": [
+                  "sink strainer",
+                  "sink strainers",
+                  "kitchen sink strainer",
+                  "sink drain strainer",
+                  "drain strainer",
+                  "drain basket",
+                  "sink stopper",
+                  "sink drain stopper",
+                  "sink filter",
+                  "水槽滤网",
+                  "水槽过滤",
+                  "水槽下水"
+              ],
+              "anySourceCategoryTerms": [
+                  "kitchen sink accessories",
+                  "drains & strainers",
+                  "kitchen drains & strainers"
+              ],
+              "negativeTitleTerms": [
+                  "faucet",
+                  "sprayer",
+                  "pump",
+                  "commercial kitchen appliance",
+                  "electric appliance",
+                  "soap dish"
+              ]
+          },
+          "defaults": {
+              "productPropertyListJson": [
+                  {
+                      "attr_name_id": "2",
+                      "attr_name": "Brand Name",
+                      "attr_value_id": "201512802",
+                      "attr_value": "NONE",
+                      "attr_value_unit": null,
+                      "attr_value_start": null,
+                      "attr_value_end": null
+                  },
+                  {
+                      "attr_name_id": "400000603",
+                      "attr_name": "High-concerned chemical",
+                      "attr_value_id": "23399591357",
+                      "attr_value": "天然未处理(None)"
+                  },
+                  {
+                      "attr_name_id": "219",
+                      "attr_name": "Origin",
+                      "attr_value_id": "9442295690",
+                      "attr_value": "美国(Origin)(US(Origin))",
+                      "attr_value_unit": null,
+                      "attr_value_start": null,
+                      "attr_value_end": null
+                  }
+              ]
+          },
+          "visibleCategorySearchTerms": [
+              "水槽",
+              "Sink",
+              "Drain",
+              "Strainer",
+              "厨房水槽水漏、过滤网",
+              "Kitchen Drains & Strainers"
+          ],
+          "principles": [],
+          "evidence": [
+              "runs/category-resolver/20260630-remaining3-poc/B0D65JFRX4.resolver.json",
+              "runs/category-resolver/20260630-remaining3-poc/summary.md",
+              "runs/op1-20260624-011902/20260624-011902-50169732817/dry-run-report.json",
+              "2026-06-30 20-category batch: B0B4QZD77M saved to wait-to-publish with category 厨房水槽水漏、过滤网(Kitchen Drains & Strainers), CNY 63.91, stock 15"
           ]
       }
   ];
@@ -327,6 +866,399 @@
       confidence,
       matchedTerms: [...titleMatches, ...sourceMatches],
     };
+  }
+
+  function ruleHasNegativeCategorySignal(rule, haystack) {
+    const match = rule && rule.match ? rule.match : {};
+    return (match.negativeTitleTerms || []).some((term) => {
+      const normalized = normalizeCategoryText(term);
+      return normalized && haystack.includes(normalized);
+    });
+  }
+
+  function getActiveVisibleCategoryRules() {
+    return CATEGORY_RESOLVER_RULES.filter((rule) => (
+      rule.status === 'active'
+      && Array.isArray(rule.evidence)
+      && rule.evidence.length
+      && Array.isArray(rule.visibleCategorySearchTerms)
+      && rule.visibleCategorySearchTerms.length
+      && rule.categoryPath
+    ));
+  }
+
+  function buildCategoryEvidenceFromRule(rule, extra = {}) {
+    return {
+      status: CATEGORY_EVIDENCE_STATUS.CLEAR,
+      source: 'success_verified_or_aliexpress_learned_rule',
+      ruleId: rule && rule.id ? rule.id : '',
+      categoryPath: rule && rule.categoryPath ? rule.categoryPath : '',
+      candidateCategories: rule && rule.categoryPath ? [rule.categoryPath] : [],
+      dxmSearchTerms: rule && Array.isArray(rule.visibleCategorySearchTerms) ? rule.visibleCategorySearchTerms : [],
+      evidence: rule && Array.isArray(rule.evidence) ? rule.evidence : [],
+      matchedTerms: extra.matchedTerms || [],
+      confidence: extra.confidence || 0,
+    };
+  }
+
+  function buildMissingCategoryEvidence(titleText, currentCategoryText = '') {
+    return {
+      status: CATEGORY_EVIDENCE_STATUS.MISSING,
+      source: 'missing',
+      title: String(titleText || '').trim(),
+      currentCategoryText: String(currentCategoryText || '').trim(),
+      candidateCategories: [],
+      dxmSearchTerms: [],
+      evidence: [],
+      legalNextStep: 'run_aliexpress_category_verification',
+      failureReason: 'category_evidence_missing',
+    };
+  }
+
+  function readAliExpressEvidenceStore() {
+    const rawSources = [
+      typeof window !== 'undefined' ? window.__DXM_ALIEXPRESS_EVIDENCE_STORE__ : null,
+      localStorage.getItem(ALIEXPRESS_EVIDENCE_STORE_KEY),
+      document.getElementById('dxm-aliexpress-evidence-store-json')?.textContent || '',
+    ].filter((value) => value !== undefined && value !== null && value !== '');
+    for (const raw of rawSources) {
+      const store = parseMaybeJson(raw, null);
+      if (
+        store
+        && store.schemaVersion === ALIEXPRESS_EVIDENCE_STORE_SCHEMA_VERSION
+        && store.records
+        && typeof store.records === 'object'
+        && !Array.isArray(store.records)
+      ) {
+        return { ok: true, store };
+      }
+    }
+    return {
+      ok: false,
+      reason: `AliExpress evidence store missing in localStorage key ${ALIEXPRESS_EVIDENCE_STORE_KEY}`,
+    };
+  }
+
+  function getCurrentEditAsinForEvidence(titleText = '', product = null) {
+    const sourceProduct = product || getProductFromEdit(state.editData) || {};
+    return extractAsin([
+      sourceProduct.sourceUrl,
+      sourceProduct.url,
+      extractSourceUrlFromCurrentEditPage(),
+      sourceProduct.asin,
+      sourceProduct.sourceId,
+      sourceProduct.platformProductId,
+      sourceProduct.subject,
+      titleText,
+      getAmazonSourceAsin(),
+      location.href,
+    ].filter(Boolean).join(' '));
+  }
+
+  function getAliExpressEvidenceRecordForAsin(asin) {
+    const normalizedAsin = extractAsin(asin);
+    if (!normalizedAsin) return { ok: false, reason: 'missing_asin_for_evidence_lookup', asin: '' };
+    const storeStatus = readAliExpressEvidenceStore();
+    if (!storeStatus.ok) return { ok: false, reason: storeStatus.reason, asin: normalizedAsin };
+    const record = storeStatus.store.records[normalizedAsin] || null;
+    if (!record) return { ok: false, reason: 'category_evidence_missing', asin: normalizedAsin, storeUpdatedAt: storeStatus.store.updatedAt || '' };
+    return { ok: true, asin: normalizedAsin, record, storeUpdatedAt: storeStatus.store.updatedAt || '' };
+  }
+
+  function isVerifiedAliExpressEvidenceStatus(status) {
+    return status === 'aliexpress_verified' || status === 'conditional_verified' || status === 'detail_verified' || status === 'learned_rule_matched';
+  }
+
+  function getAliExpressDxmSearchTerms(record) {
+    return [];
+  }
+
+  function isAliExpressEvidenceUsableForDxmAutoMapping(record) {
+    if (!record) return false;
+    return Boolean(
+      isVerifiedAliExpressEvidenceStatus(record.status)
+      && String(record.dxmCandidateCategory || '').trim()
+    );
+  }
+
+  function getAliExpressEvidencePreflightStatus(titleText = '', currentCategoryText = '') {
+    const product = getProductFromEdit(state.editData) || {};
+    const asin = getCurrentEditAsinForEvidence(titleText, product);
+    const found = getAliExpressEvidenceRecordForAsin(asin);
+    const base = {
+      required: REQUIRE_ALIEXPRESS_CATEGORY_EVIDENCE,
+      cacheKey: ALIEXPRESS_EVIDENCE_STORE_KEY,
+      asin,
+      currentCategoryText: String(currentCategoryText || '').trim(),
+    };
+    if (!found.ok) return { ...base, ok: false, reason: found.reason, storeUpdatedAt: found.storeUpdatedAt || '' };
+    const record = found.record || {};
+    const dxmCandidateCategory = String(record.dxmCandidateCategory || '').trim();
+    const detailUniqueCategoryConfirmed = Boolean(record.aliexpressUniqueCategoryConfirmed || record.aliexpressDetailCategoryPath || record.aliexpressCategoryId);
+    if (detailUniqueCategoryConfirmed && !dxmCandidateCategory) {
+      return {
+        ...base,
+        ok: false,
+        reason: 'aliexpress_category_confirmed_but_dxm_mapping_missing',
+        recordStatus: record.status || '',
+        recordSource: record.source || '',
+        aliexpressCategoryId: String(record.aliexpressCategoryId || '').trim(),
+        aliexpressMatchedCategory: String(record.aliexpressMatchedCategory || '').trim(),
+        aliexpressDetailCategoryName: String(record.aliexpressDetailCategoryName || '').trim(),
+        aliexpressDetailCategoryPath: String(record.aliexpressDetailCategoryPath || '').trim(),
+        storeUpdatedAt: found.storeUpdatedAt || '',
+      };
+    }
+    if (!isAliExpressEvidenceUsableForDxmAutoMapping(record)) {
+      return {
+        ...base,
+        ok: false,
+        reason: `AliExpress evidence is not usable for DXM auto mapping: ${record.status || 'missing'}`,
+        recordStatus: record.status || '',
+        recordSource: record.source || '',
+        storeUpdatedAt: found.storeUpdatedAt || '',
+      };
+    }
+    const dxmSearchTerms = getAliExpressDxmSearchTerms(record);
+    if (!dxmCandidateCategory) {
+      return {
+        ...base,
+        ok: false,
+        reason: 'aliexpress_category_confirmed_but_dxm_mapping_missing',
+        recordStatus: record.status || '',
+        recordSource: record.source || '',
+        aliexpressCategoryId: String(record.aliexpressCategoryId || '').trim(),
+        aliexpressMatchedCategory: String(record.aliexpressMatchedCategory || '').trim(),
+        aliexpressDetailCategoryName: String(record.aliexpressDetailCategoryName || '').trim(),
+        aliexpressDetailCategoryPath: String(record.aliexpressDetailCategoryPath || '').trim(),
+        storeUpdatedAt: found.storeUpdatedAt || '',
+      };
+    }
+    return {
+      ...base,
+      ok: true,
+      reason: '',
+      recordStatus: record.status,
+      recordSource: record.source || '',
+      safeAdjacentUsed: Boolean(record.safeAdjacentUsed),
+      dxmCandidateCategory,
+      dxmSearchTerms,
+      dxmAutoMappingRequired: !dxmCandidateCategory && dxmSearchTerms.length > 0,
+      aliexpressMatchedCategory: String(record.aliexpressMatchedCategory || '').trim(),
+      aliexpressCategoryId: String(record.aliexpressCategoryId || '').trim(),
+      evidenceSummary: String(record.evidenceSummary || record.reason || '').trim(),
+      storeUpdatedAt: found.storeUpdatedAt || '',
+      updatedAt: record.updatedAt || '',
+    };
+  }
+
+  function buildCategoryEvidenceFromAliExpressRecord(asin, record, extra = {}) {
+    const dxmSearchTerms = getAliExpressDxmSearchTerms(record);
+    const categoryPath = String(record.dxmCandidateCategory || '').trim();
+    return {
+      status: CATEGORY_EVIDENCE_STATUS.CLEAR,
+      source: 'asin_aliexpress_evidence_store',
+      asin,
+      recordStatus: record.status || '',
+      recordSource: record.source || '',
+      safeAdjacentUsed: Boolean(record.safeAdjacentUsed),
+      categoryPath,
+      candidateCategories: [
+        record.dxmCandidateCategory,
+        record.aliexpressMatchedCategory,
+      ].map((item) => String(item || '').trim()).filter(Boolean),
+      dxmSearchTerms,
+      dxmAutoMappingRequired: !categoryPath && dxmSearchTerms.length > 0,
+      platformCategoryConfirmed: Boolean(record.platformCategoryConfirmed),
+      platformCategoryIntent: String(record.platformCategoryIntent || '').trim(),
+      platformCategoryTerms: Array.isArray(record.platformCategoryTerms)
+        ? record.platformCategoryTerms.map((item) => String(item || '').trim()).filter(Boolean)
+        : [],
+      aliexpressCategoryId: String(record.aliexpressCategoryId || '').trim(),
+      aliexpressEvidenceUrl: String(record.aliexpressEvidenceUrl || '').trim(),
+      evidence: [
+        record.evidenceSummary,
+        record.reason,
+        record.aliexpressEvidenceUrl,
+      ].map((item) => String(item || '').trim()).filter(Boolean),
+      matchedTerms: extra.matchedTerms || [],
+      confidence: extra.confidence || 1,
+    };
+  }
+
+  function buildCategoryModalPlanFromAliExpressEvidenceStore(titleText, product = {}) {
+    const asin = getCurrentEditAsinForEvidence(titleText, product);
+    const found = getAliExpressEvidenceRecordForAsin(asin);
+    if (!found.ok) return null;
+    const record = found.record || {};
+    if (!isAliExpressEvidenceUsableForDxmAutoMapping(record)) return null;
+    const candidatePath = String(record.dxmCandidateCategory || '').trim();
+    if (!candidatePath) return null;
+    const pathTerms = splitCategoryPathTerms(candidatePath);
+    const leaf = pathTerms[pathTerms.length - 1] || candidatePath || '';
+    const topTerms = [
+      pathTerms[0],
+      leaf,
+      candidatePath,
+    ];
+    const columnTerms = [
+      ...pathTerms,
+    ];
+    const leafTerms = buildStrictDxmLeafTerms(leaf);
+    return {
+      id: `asin-evidence-${asin}`,
+      source: 'asin-aliexpress-evidence-store',
+      asin,
+      categoryEvidence: buildCategoryEvidenceFromAliExpressRecord(asin, record),
+      dxmAutoMappingRequired: false,
+      exactDxmOnly: false,
+      strictDxmCandidateOnly: true,
+      expectedCategoryPath: candidatePath,
+      evidence: [
+        record.evidenceSummary,
+        record.reason,
+        record.aliexpressEvidenceUrl,
+      ].map((item) => String(item || '').trim()).filter(Boolean),
+      topTerms: [...new Set(topTerms.map((item) => String(item || '').trim()).filter(Boolean))],
+      columnTerms: [...new Set(columnTerms.map((item) => String(item || '').trim()).filter(Boolean))],
+      leafTerms: [...new Set(leafTerms.map((item) => String(item || '').trim()).filter(Boolean))],
+      rejectTerms: [
+        'Conductive Wire Glue Pastes',
+        '\u5bfc\u7535\u7ebf\u80f6\u818f',
+        'Cable Tools',
+        '\u7ebf\u7f06\u5de5\u5177',
+      ],
+    };
+  }
+
+  function splitCategoryPathTerms(pathText) {
+    return String(pathText || '')
+      .split(/[/>]/)
+      .map((item) => item.replace(/\s+/g, ' ').trim())
+      .filter(Boolean);
+  }
+
+  function isGenericDxmAutoMappingLeafTerm(term) {
+    const text = normalizeCategoryText(term);
+    if (!text) return true;
+    return /\baccessories\b|\bparts\b|\bfittings\b|\bkitchen\s+sink\s+accessories\b|\bfaucet\s+accessories\b|\bsink\s+accessories\b|\u914d\u4ef6|\u53a8\u623f\u6c34\u69fd|\u6c34\u69fd\u914d\u4ef6|\u6c34\u9f99\u5934\u914d\u4ef6/i.test(text);
+  }
+
+  function getDxmAutoMappingLeafTerms(dxmSearchTerms) {
+    const precise = (dxmSearchTerms || [])
+      .map((item) => String(item || '').trim())
+      .filter(Boolean)
+      .filter((item) => !isGenericDxmAutoMappingLeafTerm(item));
+    return precise.length ? precise : [];
+  }
+
+  function getDxmAutoMappingRejectTerms(dxmSearchTerms) {
+    const context = normalizeCategoryText((dxmSearchTerms || []).join(' '));
+    const terms = [];
+    const push = (value) => {
+      const text = String(value || '').trim();
+      if (text && !terms.some((item) => item.toLowerCase() === text.toLowerCase())) terms.push(text);
+    };
+    if (/\bfaucet\s+mat\b|\bsink\s+splash\s+guard\b|\bfaucet\s+splash\b|\u6c34\u9f99\u5934.{0,12}\u9632\u6e85|\u6c34\u69fd.{0,12}(\u9632\u6e85|\u63a5\u6c34)/i.test(context)) {
+      [
+        'Glass Rinser',
+        'Cup Rinser',
+        'Cup Washer',
+        'Bottle Washer',
+        '\u676f\u6d17\u5668',
+        '\u6d17\u676f\u5668',
+        '\u6d17\u74f6\u5668',
+        'Drain Augers',
+        'Drain Auger',
+        'Drain Snake',
+        'Drain Cleaning Tools',
+        'Kitchen Drains & Strainers',
+        'Kitchen Drains',
+        'Sink Strainer',
+        'Drain Strainer',
+        'Sink Stopper',
+        'Sink Plug',
+        '\u6392\u6c34\u87ba\u65cb\u5668',
+        '\u6392\u6c34\u87ba\u65cb',
+        '\u7ba1\u9053\u758f\u901a',
+        '\u6c34\u69fd\u6c34\u6f0f',
+        '\u6c34\u6f0f',
+        '\u8fc7\u6ee4\u7f51',
+        '\u6ee4\u7f51',
+      ].forEach(push);
+    }
+    return terms;
+  }
+
+  function getLeafTermsFromCategoryRule(rule) {
+    const pathTerms = splitCategoryPathTerms(rule.categoryPath || '');
+    const leaf = pathTerms[pathTerms.length - 1] || '';
+    const terms = [
+      leaf,
+      ...(rule.visibleCategorySearchTerms || []),
+      ...((rule.match && rule.match.anySourceCategoryTerms) || []),
+    ];
+    return [...new Set(terms.map((item) => String(item || '').trim()).filter(Boolean))];
+  }
+
+  function buildCategoryModalPlanFromRule(rule) {
+    const pathTerms = splitCategoryPathTerms(rule.categoryPath || '');
+    const leafTerms = getLeafTermsFromCategoryRule(rule);
+    const topTerms = [
+      ...(rule.visibleCategorySearchTerms || []),
+      pathTerms[0],
+      leafTerms[0],
+    ].filter(Boolean);
+    const rejectTerms = [
+      ...((rule.match && rule.match.negativeTitleTerms) || []),
+      'Conductive Wire Glue Pastes',
+      '\u5bfc\u7535\u7ebf\u80f6\u818f',
+      'Cable Tools',
+      '\u7ebf\u7f06\u5de5\u5177',
+    ];
+    return {
+      id: rule.id,
+      source: 'aliexpress-evidence-learned-rule',
+      categoryEvidence: buildCategoryEvidenceFromRule(rule),
+      evidence: rule.evidence || [],
+      topTerms: [...new Set(topTerms.map((item) => String(item || '').trim()).filter(Boolean))],
+      columnTerms: [...new Set([...pathTerms, ...(rule.visibleCategorySearchTerms || [])].map((item) => String(item || '').trim()).filter(Boolean))],
+      leafTerms,
+      rejectTerms: [...new Set(rejectTerms.map((item) => String(item || '').trim()).filter(Boolean))],
+    };
+  }
+
+  function buildCategoryModalPlanFromEvidence(titleText, product = {}) {
+    const haystack = normalizeCategoryText([
+      titleText,
+      product.subject,
+      product.title,
+      product.productTitle,
+      product.categoryName,
+      product.categoryNameZh,
+      product.sourceCategoryName,
+      product.sourceCategoryNameZh,
+      product.sourceUrl,
+    ].filter(Boolean).join(' '));
+    let best = null;
+    for (const rule of getActiveVisibleCategoryRules()) {
+      if (ruleHasNegativeCategorySignal(rule, haystack)) continue;
+      const scored = scoreCategoryRule(rule, haystack, extractAsin(haystack));
+      if (!scored.matchedTerms.length) continue;
+      const confidence = Math.min(0.99, scored.confidence + 0.08);
+      if (!best || confidence > best.confidence) {
+        best = { rule, confidence, matchedTerms: scored.matchedTerms };
+      }
+    }
+    if (!best || best.confidence < 0.72) return null;
+    const plan = buildCategoryModalPlanFromRule(best.rule);
+    plan.confidence = best.confidence;
+    plan.matchedTerms = best.matchedTerms;
+    plan.categoryEvidence = buildCategoryEvidenceFromRule(best.rule, {
+      confidence: best.confidence,
+      matchedTerms: best.matchedTerms,
+    });
+    return plan;
   }
 
   function resolveCategoryForProduct(payload, product) {
@@ -569,8 +1501,8 @@
     },
     {
       id: 'kitchen-sink-strainers',
-      dxmCategoryPath: 'Home & Garden > Kitchen Fixtures > Sink Strainers',
-      searchTerms: ['Sink Strainer', 'Kitchen Sink Strainer', 'Drain Strainer', 'Sink Drain Strainer', 'Sink Filter'],
+      dxmCategoryPath: 'Home Improvement > Kitchen Fixture > Kitchen Sink Accessories > Kitchen Drains & Strainers',
+      searchTerms: ['Kitchen Drains & Strainers', '\u53a8\u623f\u6c34\u69fd\u6c34\u6f0f\u3001\u8fc7\u6ee4\u7f51', 'Sink Strainer', 'Kitchen Sink Strainer', 'Drain Strainer', 'Sink Drain Strainer', 'Sink Filter', '\u6c34\u69fd', '\u6ee4\u7f51'],
       positivePatterns: [
         /\b(?:sink|drain)\s+(?:strainer|strainers|filter|filters|catcher|catchers|stopper|stoppers)\b/i,
         /\bkitchen\s+sink\b.*\b(?:strainer|filter|drain)\b/i,
@@ -713,10 +1645,82 @@
     ].filter(Boolean).join(' '));
   }
 
+  const CATEGORY_FAMILY_SCORING_RULES = [
+    {
+      id: 'desk-pen-holder',
+      evidence: /\b(?:rotating\s+)?(?:pen|pencil)\s+(?:holder|organizer|cup)|\bdesk\s+(?:pen|pencil)|\bart\s+supply\s+pencil|\u7b14\u7b52/i,
+      allow: /\bpen\s+holders?\b|\bpencil\s+holders?\b|\bdesk\s+(?:accessories|organizer)|\boffice\s+supplies\b|\u7b14\u7b52|\u684c\u4e0a\u6536\u7eb3|\u529e\u516c/i,
+      reject: /\bcable|wire|cord|hook|kitchen|bathroom|sink|soap|faucet\b|\u7ebf\u7f06|\u7535\u7ebf|\u6302\u94a9|\u53a8\u623f|\u6d74\u5ba4|\u6c34\u69fd|\u80a5\u7682/i,
+    },
+    {
+      id: 'adhesive-cable-clips',
+      evidence: /\b(?:cable|cord|wire)\s+(?:clip|clips|holder|holders|organizer|organizers)|\badhesive\s+(?:cable|cord|wire)|\u7ebf\u5939|\u7406\u7ebf/i,
+      allow: /\bcable\s+(?:clip|clips|holder|holders|management)|\bwire\s+(?:clip|clips)|\bcord\s+(?:holder|clips)|\u7ebf\u5939|\u7406\u7ebf|\u7ebf\u7f06/i,
+      reject: /\bconductive\b|\bglue\b|\bpaste\b|\bcream\b|\bpen\b|\bhook\b|\bfaucet\b|\bsoap\b|\u5bfc\u7535|\u80f6\u818f|\u80f6\u7c98|\u7b14\u7b52|\u6302\u94a9|\u6c34\u9f99\u5934|\u80a5\u7682/i,
+    },
+    {
+      id: 'kitchen-sink-strainer',
+      evidence: /\b(?:sink|drain)\s+(?:strainer|filter|catcher|stopper)|\bkitchen\s+sink|\u6c34\u69fd|\u6ee4\u7f51/i,
+      allow: /\bsink\s+(?:strainer|filter|drain)|\bdrain\s+(?:strainer|filter|catcher|stopper)|\bkitchen\s+sink|\u6c34\u69fd|\u6ee4\u7f51|\u8fc7\u6ee4/i,
+      reject: /\bfaucet\b|\bsprayer\b|\bpump\b|\bappliance\b|\belectric\b|\bcommercial\s+kitchen\b|\bsoap\b|\u6c34\u9f99\u5934|\u55b7\u5934|\u6cf5|\u7535\u5668|\u5546\u7528\u9910\u53a8|\u80a5\u7682/i,
+    },
+    {
+      id: 'faucet-mat-splash-guard',
+      evidence: /\bfaucet\s+mat\b|\bsink\s+splash\s+guard\b|\bfaucet\s+splash\b|\bfaucet\s+accessories\b|\bkitchen\s+sink\s+accessories\b|\u6c34\u9f99\u5934.{0,12}\u9632\u6e85|\u6c34\u69fd.{0,12}(\u9632\u6e85|\u63a5\u6c34)|\u6c34\u69fd\u914d\u4ef6|\u6c34\u9f99\u5934\u914d\u4ef6/i,
+      allow: /\bfaucet\s+accessories\b|\bkitchen\s+sink\s+accessories\b|\bsink\s+accessories\b|\bfaucet\s+mat\b|\bsink\s+splash\s+guard\b|\bfaucet\s+splash\b|\u6c34\u9f99\u5934\u914d\u4ef6|\u6c34\u69fd\u914d\u4ef6|\u6c34\u9f99\u5934.{0,12}\u9632\u6e85|\u6c34\u69fd.{0,12}(\u9632\u6e85|\u63a5\u6c34)/i,
+      reject: /\boil\s*(?:absorbing|proof)?\s*paper\b|\bgrease\s*paper\b|\bmosquito\b|\bincense\b|\bbattery\b|\bdrains?\s*&\s*strainers?\b|\bdrain\s+(?:augers?|cleaner|cleaning|snake|snakes?|tools?)\b|\bsink\s+(?:strainer|drain|stopper|plug|fixture)\b|\bfilter\b|\bglass\s+rinser\b|\bcup\s+(?:rinser|washer)\b|\bbottle\s+washer\b|\bkitchen\s+fixture\b|\u5438\u6cb9\u7eb8|\u9632\u6cb9\u7eb8|\u868a\u9999|\u7535\u6c60|\u8fc7\u6ee4\u7f51|\u6ee4\u7f51|\u6c34\u6f0f|\u6392\u6c34\u87ba\u65cb|\u7ba1\u9053\u758f\u901a|\u4e0b\u6c34\u9053|\u676f\u6d17\u5668|\u6d17\u676f\u5668|\u6d17\u74f6\u5668|\u53a8\u623f\u8bbe\u65bd/i,
+    },
+    {
+      id: 'storage-boxes-bins',
+      evidence: /\bstorage\s+(?:boxes?|bins?|cubes?)\b|\bstorage\s+boxes?\s*&\s*bins?\b|\bhome\s+storage\b|\u6536\u7eb3\u76d2|\u6536\u7eb3\u7bb1|\u6536\u7eb3\u76d2\u548c\u6536\u7eb3\u7bb1/i,
+      allow: /\bstorage\s+boxes?\s*&\s*bins?\b|\bstorage\s+(?:boxes?|bins?)\b|\bhome\s+storage\s*&?\s*organization\b|\u6536\u7eb3\u76d2\u548c\u6536\u7eb3\u7bb1|\u6536\u7eb3\u76d2|\u6536\u7eb3\u7bb1|\u5bb6\u7528\u50a8\u5b58/i,
+      reject: /\bbattery\b|\bmosquito\b|\bincense\b|\bcable\b|\bwire\b|\bfaucet\b|\bsink\b|\bsoap\b|\bhook\b|\u7535\u6c60|\u868a\u9999|\u7ebf\u7f06|\u7535\u7ebf|\u6c34\u9f99\u5934|\u6c34\u69fd|\u80a5\u7682|\u6302\u94a9/i,
+    },
+    {
+      id: 'silicone-trivet-placemat-adjacent',
+      evidence: /\b(?:silicone\s+)?(?:pot\s+holders?|hot\s+pads?|trivets?|heat\s+resistant\s+(?:mat|pad|pads))\b|\bjar\s+opener\b|\bspoon\s+rest\b|\u9694\u70ed\u57ab|\u9505\u57ab|\u9632\u70eb\u57ab/i,
+      allow: /\bplacemats?\b|\btable\s+linen\b|\bhome\s+textile\b|\u9910\u57ab|\u9910\u684c\u5e03\u827a|\u5bb6\u7eba/i,
+      reject: /\bcoasters?\b|\bteapot\b|\btea\s+pot\b|\btablecloth\b|\boven\s+mitts?\b|\bgloves?\b|\u676f\u57ab|\u8336\u58f6|\u684c\u5e03|\u624b\u5957/i,
+    },
+    {
+      id: 'adhesive-wall-hooks',
+      evidence: /\b(?:adhesive|wall|utility|coat|towel)\s+hooks?|\bhooks?\b.*\b(?:wall|adhesive|towel|coat)|\u6302\u94a9/i,
+      allow: /\bwall\s+hooks?|\badhesive\s+hooks?|\bcoat\s+hooks?|\btowel\s+hooks?|\bhooks?\s*&\s*rails|\u6302\u94a9|\u8863\u5e3d\u6302\u94a9|\u5899\u6302/i,
+      reject: /\bcable|wire|cord|fishing|carabiner|pen|sink|faucet\b|\u7ebf\u7f06|\u7535\u7ebf|\u7b14\u7b52|\u6c34\u69fd|\u6c34\u9f99\u5934/i,
+    },
+  ];
+
+  function getCategoryFamilyScoringRule(contextText) {
+    const context = String(contextText || '');
+    return CATEGORY_FAMILY_SCORING_RULES.find((rule) => rule.evidence.test(context)) || null;
+  }
+
+  function scoreCategoryFamilyCandidateText(candidateText, contextText) {
+    const rule = getCategoryFamilyScoringRule(contextText);
+    if (!rule) return { familyId: '', blocked: false, bonus: 0, penalty: 0, reason: '' };
+    const text = String(candidateText || '');
+    if (rule.reject.test(text)) {
+      return { familyId: rule.id, blocked: true, bonus: 0, penalty: 0.8, reason: `family_reject:${rule.id}` };
+    }
+    if (rule.allow.test(text)) {
+      return { familyId: rule.id, blocked: false, bonus: 0.45, penalty: 0, reason: `family_allow:${rule.id}` };
+    }
+    return { familyId: rule.id, blocked: false, bonus: 0, penalty: 0.18, reason: `family_unconfirmed:${rule.id}` };
+  }
+
   function getCategoryPathSemanticPenalty(candidate, payload, product, searchTerm) {
     const amazonItem = getAmazonBatchItem(product || {});
     const context = buildCategorySemanticContext(payload, product, amazonItem);
     const pathText = normalizeCategoryText(`${candidate.categoryName || ''} ${candidate.categoryPath || ''}`);
+    const familyScore = scoreCategoryFamilyCandidateText(pathText, context);
+    if (familyScore.blocked) {
+      return {
+        penalty: familyScore.penalty,
+        reason: familyScore.reason,
+        searchTerm,
+        familyId: familyScore.familyId,
+      };
+    }
     const isClothingStoragePath = /衣物|内衣|clothing|wardrobe|underwear|lingerie/.test(pathText);
     const hasClothingSignal = /\b(?:bra|bras|panty|panties|underwear|lingerie|sock|socks|clothing|wardrobe|closet|drawer\s+divider\s+for\s+clothes)\b|衣物|内衣|袜|衣柜/.test(context);
     const hasBroadOrganizerSignal = /\b(?:drawer\s+organizer|organizer\s+tray|storage\s+tray|storage\s+bin|makeup|cosmetic|office supplies|desk|bathroom|kitchen|pantry|plastic|acrylic)\b/.test(context);
@@ -733,6 +1737,8 @@
   function scoreDxmCategoryCandidate(candidate, payload, product, searchTerm) {
     const title = normalizeCategoryText(firstNonEmpty(payload.subject, product.subject, product.title, product.productTitle, ''));
     const categoryText = normalizeCategoryText(`${candidate.categoryName || ''} ${candidate.categoryPath || ''}`);
+    const amazonItem = getAmazonBatchItem(product || {});
+    const familyScore = scoreCategoryFamilyCandidateText(categoryText, buildCategorySemanticContext(payload, product, amazonItem));
     const tokens = tokenizeCategoryTitle(title);
     const uniqueTokens = [...new Set(tokens)];
     const matchedCount = uniqueTokens.filter((token) => categoryText.includes(token)).length;
@@ -742,6 +1748,13 @@
     if (normalizedTerm && categoryText.includes(normalizedTerm)) score += 0.35;
     if (candidate.isLeaf) score += 0.12;
     if (normalizeCategoryText(candidate.categoryName) === normalizedTerm) score += 0.18;
+    if (familyScore.bonus) {
+      candidate.familyScore = familyScore;
+      score += familyScore.bonus;
+    } else if (familyScore.penalty && !familyScore.blocked) {
+      candidate.familyScore = familyScore;
+      score -= familyScore.penalty;
+    }
     const semantic = getCategoryPathSemanticPenalty(candidate, payload, product, searchTerm);
     if (semantic.penalty) {
       candidate.semanticPenalty = semantic;
@@ -1031,6 +2044,7 @@
             categoryName: candidate.categoryName,
             categoryPath: candidate.categoryPath,
             confidence: candidate.confidence,
+            familyScore: candidate.familyScore || null,
             semanticPenalty: candidate.semanticPenalty || null,
           })),
         });
@@ -1058,6 +2072,7 @@
             categoryName: best.categoryName,
             categoryPath: best.categoryPath,
             isLeaf: best.isLeaf,
+            familyScore: best.familyScore || null,
             semanticPenalty: best.semanticPenalty || null,
           },
         }
@@ -1077,6 +2092,7 @@
                 categoryName: best.categoryName,
                 categoryPath: best.categoryPath,
                 isLeaf: best.isLeaf,
+                familyScore: best.familyScore || null,
                 semanticPenalty: best.semanticPenalty || null,
               }
             : null,
@@ -1231,7 +2247,7 @@
   function updateUi() {
     setText('productId', state.productId || '\u672a\u8bfb\u53d6');
     setText('dryRun', state.report ? (state.report.pass ? '\u901a\u8fc7' : '\u672a\u901a\u8fc7') : '\u672a\u6267\u884c');
-    setText('riskCount', state.report ? state.report.risks.length : 0);
+    setText('riskCount', state.report && Array.isArray(state.report.risks) ? state.report.risks.length : 0);
     setText('publishStatus', state.publishResult ? state.publishResult.status : '未执行');
     setText(
       'op1Persistence',
@@ -1411,11 +2427,10 @@
   function extractEditPageSkuSnapshot(sourceUrl, subject) {
     const asin = extractAsin(`${sourceUrl} ${subject}`);
     const values = getVisibleInputValues();
-    const numericValues = values
-      .map((item) => Number(String(item.text).replace(/[^\d.]/g, '')))
-      .filter((value) => Number.isFinite(value) && value > 0);
-    const price = numericValues.find((value) => value >= 5 && value <= 1000) || '';
-    const stock = numericValues.find((value) => value > 0 && value <= 9999 && value !== price) || Number(getDefaultStock() || 15);
+    const storePrice = getAmazonDisplayedPriceFromStore(asin);
+    const sourcePriceUsd = storePrice.ok ? storePrice.sourcePriceUsd : positiveNumber(getDefaultSourcePrice());
+    const price = sourcePriceUsd ? calculateSupplyPriceCny(sourcePriceUsd) : '';
+    const stock = Number(getDefaultStock() || 15);
     const skuText = values.map((item) => item.text).find((text) => /^[A-Z0-9][A-Z0-9 -]{1,40}$/i.test(text) && !/请输入|please enter/i.test(text));
     const skuCode = asin || skuText || extractProductIdFromCurrentPage();
     return [{
@@ -1650,6 +2665,15 @@
     if (/^[A-Z][A-Z0-9&.-]{1,20}$/.test(firstTitleToken) && /^[A-Z0-9][A-Z0-9.-]{1,20}$/i.test(secondTitleToken)) {
       candidates.push(`${firstTitleToken} ${secondTitleToken}`);
     }
+    const genericLeadingWords = /^(home|kitchen|bathroom|office|desk|drawer|sink|soap|silicone|plastic|metal|wood|acrylic|glass|clear|black|white|wall|cable|cord|wire|adhesive|rotating|adjustable|foldable|portable)$/i;
+    const productDescriptorAfterBrand = /^(silicone|plastic|metal|wood|acrylic|glass|soap|sink|drain|drawer|desk|pen|pencil|wall|adhesive|cable|cord|wire|hook|hooks|organizer|storage|tray|holder|dish|strainer)$/i;
+    if (
+      /^[A-Z][a-z0-9][A-Za-z0-9&.-]{2,24}$/.test(firstTitleToken)
+      && !genericLeadingWords.test(firstTitleToken)
+      && productDescriptorAfterBrand.test(secondTitleToken)
+    ) {
+      candidates.push(firstTitleToken);
+    }
     const detailSource = `${item.detailTextSample || ''}\n${item.rawText || ''}`;
     const brandMatch = detailSource.match(/\bbrand\s*(?:name)?\s*[:：]\s*([^\n,;|]+)/i);
     if (brandMatch && brandMatch[1]) candidates.push(brandMatch[1]);
@@ -1772,6 +2796,21 @@
     return Array.from(new Set(urls.map((url) => String(url || '').trim()).filter(Boolean)));
   }
 
+  function getCurrentEditMainImageUrls() {
+    const product = getProductFromEdit(state.editData) || {};
+    return normalizeImageList([
+      product.mainImageListJson,
+      product.mainImageList,
+      product.imgList,
+      product.imageList,
+      product.mainImages,
+      product.imgUrl,
+      extractMainImagesFromCurrentEditPage(),
+    ])
+      .filter((url) => /^https?:\/\//i.test(url))
+      .filter((url) => !/loading|addImg|logo|avatar|icon|sprite|data:image/i.test(url));
+  }
+
   function selectMarketingImages(product, mainImages) {
     const generatedImages = normalizeImageList([
       product && product.marketImage1,
@@ -1795,8 +2834,8 @@
 
   function buildAmazonVariationList(item) {
     const asin = extractAsin(`${item.asin || ''} ${item.url || ''} ${item.rawUrl || ''}`);
-    const sourcePrice = firstNonEmpty(positiveNumber(getDefaultSourcePrice()), positiveNumber(item.price));
-    const supplyPrice = firstNonEmpty(getDefaultSupplyPrice(), calculateSupplyPriceCny(sourcePrice));
+    const priceState = getStrictPriceState();
+    const supplyPrice = priceState.ok ? priceState.supplyPrice : '';
     const dimensionsCm = item.dimensionsCm || dimensionsInToCm(item.dimensionsIn);
     const length = firstNonEmpty(dimensionsCm && dimensionsCm.length, inchToCm(getDefaultLengthIn()), getDefaultLength());
     const width = firstNonEmpty(dimensionsCm && dimensionsCm.width, inchToCm(getDefaultWidthIn()), getDefaultWidth());
@@ -1853,8 +2892,8 @@
       categoryName: item.categoryTerm || '',
       dxmState: 'draft',
       currencyCode: 'USD',
-      minPrice: item.price,
-      maxPrice: item.price,
+      minPrice: '',
+      maxPrice: '',
       mainImageListJson: JSON.stringify(images),
       marketImage1: marketingSelection.images[0] || '',
       marketImage2: marketingSelection.images[1] || '',
@@ -1955,26 +2994,114 @@
     if (price == null) return '';
     const exchangeRate = toNumber(getTaskExchangeRate());
     const taskMultiplier = toNumber(getTaskPriceMultiplier());
-    if (exchangeRate != null && taskMultiplier != null) {
-      return String(round2(price * exchangeRate * taskMultiplier));
+    if (exchangeRate == null || taskMultiplier == null) return '';
+    return String(round2(price * exchangeRate * taskMultiplier));
+  }
+
+  function readAmazonPriceStoreFromBrowser() {
+    const rawSources = [
+      localStorage.getItem(AMAZON_PRICE_STORE_KEY) || '',
+      window.__DXM_AMAZON_PRICE_STORE__ || '',
+      document.getElementById('dxm-amazon-price-store-json')?.textContent || '',
+    ].filter((value) => value !== undefined && value !== null && value !== '');
+    for (const raw of rawSources) {
+      const store = parseMaybeJson(raw, null);
+      if (
+        store
+        && store.schemaVersion === AMAZON_PRICE_STORE_SCHEMA_VERSION
+        && store.records
+        && typeof store.records === 'object'
+        && !Array.isArray(store.records)
+      ) {
+        return { ok: true, store };
+      }
     }
-    let multiplier = null;
-    if (price >= 5 && price <= 20) multiplier = 1.55;
-    if (price >= 21 && price <= 45) multiplier = 1.6;
-    if (price >= 50 && price <= 250) multiplier = 1.1;
-    if (multiplier == null) return '';
-    return String(round2(price * 7 * multiplier));
+    return { ok: false, reason: `Amazon price store missing in localStorage key ${AMAZON_PRICE_STORE_KEY}` };
+  }
+
+  function getCurrentEditAsinForPrice(product = null) {
+    const rawData = state.editData && state.editData.data ? state.editData.data : state.editData;
+    const sourceProduct = product || (
+      rawData &&
+      (rawData.product || rawData.smtLocalProduct || rawData.localProduct || rawData)
+    ) || {};
+    const titleInput = findProductTitleInput();
+    const titleText = titleInput ? getInputText(titleInput) : '';
+    return extractAsin([
+      sourceProduct.sourceUrl,
+      sourceProduct.url,
+      extractSourceUrlFromCurrentEditPage(),
+      sourceProduct.asin,
+      sourceProduct.sourceId,
+      sourceProduct.platformProductId,
+      sourceProduct.subject,
+      titleText,
+      getAmazonSourceAsin(),
+      location.href,
+    ].filter(Boolean).join(' '));
+  }
+
+  function getAmazonDisplayedPriceFromStore(asin) {
+    const normalized = extractAsin(asin);
+    if (!normalized) return { ok: false, reason: 'missing_asin_for_price_lookup', asin: '' };
+    const storeStatus = readAmazonPriceStoreFromBrowser();
+    if (!storeStatus.ok) return { ok: false, reason: storeStatus.reason, asin: normalized };
+    const record = storeStatus.store.records[normalized] || null;
+    const price = positiveNumber(record && (record.amazonDisplayedPriceUsd || record.amazonOriginalPriceUsd));
+    if (!record) return { ok: false, reason: 'amazon_displayed_price_missing', asin: normalized, storeUpdatedAt: storeStatus.store.updatedAt || '' };
+    if (record.status !== 'trusted' || !price) {
+      return { ok: false, reason: `amazon_displayed_price_not_trusted: ${record.status || 'missing'}`, asin: normalized, storeUpdatedAt: storeStatus.store.updatedAt || '' };
+    }
+    return { ok: true, asin: normalized, sourcePriceUsd: price, record, storeUpdatedAt: storeStatus.store.updatedAt || '' };
   }
 
   function inferSourcePrice(product, amazonItem = null) {
-    return firstNonEmpty(
-      positiveNumber(getDefaultSourcePrice()),
-      positiveNumber(amazonItem && amazonItem.price),
-      positiveNumber(product.sourcePrice),
-      positiveNumber(product.price),
-      positiveNumber(product.minPrice),
-      positiveNumber(product.maxPrice)
-    );
+    return positiveNumber(getDefaultSourcePrice());
+  }
+
+  function getStrictPriceState() {
+    const asin = getCurrentEditAsinForPrice();
+    const storePrice = getAmazonDisplayedPriceFromStore(asin);
+    const sourcePriceUsd = storePrice.ok ? storePrice.sourcePriceUsd : positiveNumber(getDefaultSourcePrice());
+    const exchangeRate = positiveNumber(getTaskExchangeRate());
+    const multiplier = positiveNumber(getTaskPriceMultiplier());
+    const supplyPrice = sourcePriceUsd && exchangeRate && multiplier
+      ? String(round2(sourcePriceUsd * exchangeRate * multiplier))
+      : '';
+    const missing = [];
+    if (!sourcePriceUsd) missing.push('Amazon 页面展示价格 USD');
+    if (!exchangeRate) missing.push('任务汇率');
+    if (!multiplier) missing.push('任务倍率');
+    return {
+      ok: Boolean(sourcePriceUsd && exchangeRate && multiplier && supplyPrice),
+      source: storePrice.ok ? 'amazon_price_store_displayed_price' : 'task_amazon_displayed_price_usd_fallback',
+      asin,
+      sourcePriceUsd,
+      exchangeRate,
+      multiplier,
+      supplyPrice,
+      formula: 'Amazon 页面展示价格 × 任务汇率 × 任务倍率',
+      blockedSources: [
+        'dianxiaomi_edit_page_price',
+        'minPrice',
+        'maxPrice',
+        'ui_display_price',
+        'page_cache_price',
+        'manual_supply_price_override',
+      ],
+      priceStore: {
+        ok: storePrice.ok,
+        reason: storePrice.reason || '',
+        updatedAt: storePrice.storeUpdatedAt || '',
+      },
+      reason: missing.length ? `缺少${missing.join('/')}` : '',
+    };
+  }
+
+  function priceEqualsExpected(value, expected) {
+    const actual = toNumber(value);
+    const target = toNumber(expected);
+    return actual != null && target != null && Math.abs(actual - target) < 0.01;
   }
 
   function inferAmazonDimensionsCm(product, amazonItem = null) {
@@ -2365,8 +3492,8 @@
     payload.marketImage1 = marketingSelection.images[0] || '';
     payload.marketImage2 = marketingSelection.images[1] || '';
     payload.productUnit = firstNonEmpty(product.productUnit, product.unit, '100000015');
-    payload.packageType = firstNonEmpty(product.packageType, 0);
-    payload.lotNum = firstNonEmpty(product.lotNum, 0);
+    payload.packageType = 0;
+    payload.lotNum = '';
     payload.supportCountrySupplyPrice = firstNonEmpty(product.supportCountrySupplyPrice, 0);
     payload.sizeChartId = firstNonEmpty(product.sizeChartId, '');
     payload.detailMobile = normalizeJsonString(found.detailMobile.value, {});
@@ -2433,17 +3560,18 @@
     const inferredAmazonDimensionsCm = inferAmazonDimensionsCm(product, amazonItem);
     const defaultWeightKg = firstNonEmpty(inferredAmazonWeightKg, getDefaultWeightKg());
     const defaultPostageId = getDefaultPostageId();
-    const defaultSupplyPrice = getDefaultSupplyPrice();
     const defaultStock = getDefaultStock();
     const inferredSourcePrice = inferSourcePrice(product, amazonItem);
     const calculatedSupplyPrice = calculateSupplyPriceCny(inferredSourcePrice);
-    const effectiveSupplyPrice = firstNonEmpty(defaultSupplyPrice, calculatedSupplyPrice);
+    const priceState = getStrictPriceState();
+    const effectiveSupplyPrice = priceState.ok ? calculatedSupplyPrice : '';
     const defaultLength = firstNonEmpty(inferredAmazonDimensionsCm && inferredAmazonDimensionsCm.length, inchToCm(getDefaultLengthIn()), getDefaultLength());
     const defaultWidth = firstNonEmpty(inferredAmazonDimensionsCm && inferredAmazonDimensionsCm.width, inchToCm(getDefaultWidthIn()), getDefaultWidth());
     const defaultHeight = firstNonEmpty(inferredAmazonDimensionsCm && inferredAmazonDimensionsCm.height, inchToCm(getDefaultHeightIn()), getDefaultHeight());
     const valueSources = {
-      sourcePriceUsd: getDefaultSourcePrice() ? 'task_override' : amazonItem && positiveNumber(amazonItem.price) ? 'amazon_crawlbox_batch' : 'edit_nonzero_price',
-      supplyPriceCny: getDefaultSupplyPrice() ? 'task_manual_override' : 'task_formula',
+      sourcePriceUsd: priceState.ok ? 'task_amazon_original_price_usd' : 'blocked_missing_task_amazon_original_price',
+      supplyPriceCny: priceState.ok ? 'task_formula_only' : 'blocked',
+      blockedPriceSources: priceState.blockedSources,
       stock: 'task_config',
       skuCode: asin ? 'amazon_asin' : 'fallback_product_id',
       weight: inferredAmazonWeightKg ? 'amazon_detail_or_edit_metadata' : 'default_missing_amazon_weight',
@@ -2551,6 +3679,7 @@
           sourcePriceUsd: inferredSourcePrice,
           calculatedSupplyPriceCny: calculatedSupplyPrice,
           effectiveSupplyPriceCny: effectiveSupplyPrice,
+          priceState,
           amazonBatchItem: amazonItem ? {
             asin: amazonItem.asin,
             price: amazonItem.price,
@@ -2684,17 +3813,32 @@
     if (payload.__diagnostics && payload.__diagnostics.derived && payload.__diagnostics.derived.valueSources) {
       const sources = payload.__diagnostics.derived.valueSources;
       warnings.push(`\u4efb\u52a1\u4ef7\u683c\u516c\u5f0f\uff1aAmazon\u539f\u4ef7 \u00d7 ${sources.taskFormula.exchangeRate} \u00d7 ${sources.taskFormula.multiplier}`);
+      const priceState = payload.__diagnostics.derived.priceState || {};
+      if (!priceState.ok) {
+        risks.push(`SKU 价格缺少可信来源：${priceState.reason || '必须填写当前商品 Amazon 原价 USD 后按任务公式计算'}`);
+      }
       if (sources.weight === 'default_missing_amazon_weight') warnings.push('\u91cd\u91cf\u4f7f\u7528\u9ed8\u8ba4 0.1kg\uff1aAmazon \u91cd\u91cf\u7f3a\u5931\u6216\u672a\u6293\u53d6');
       if (sources.dimensions === 'default_or_task_cm') warnings.push('\u5c3a\u5bf8\u4f7f\u7528\u4efb\u52a1/\u9ed8\u8ba4 cm\uff1aAmazon \u5c3a\u5bf8\u7f3a\u5931\u6216\u672a\u6293\u53d6');
     }
 
     if (Array.isArray(variations)) {
+      const expectedSupplyPrice = diagnostics.priceState && diagnostics.priceState.ok
+        ? diagnostics.priceState.supplyPrice
+        : '';
       const firstSku = variations[0] || {};
       if (!firstSku.skuCode) warnings.push('SKU \u4e3a\u7a7a\uff0c\u53ef\u80fd\u5f71\u54cd\u8ffd\u8e2a');
       if (firstSku.skuCode && !/^B0[A-Z0-9]{8}(?:-\d+)?$/i.test(String(firstSku.skuCode))) {
         warnings.push('SKU \u7f16\u7801\u4e0d\u662f Amazon ASIN \u683c\u5f0f\uff0c\u63d2\u4ef6\u5c06\u6309 ASIN \u89c4\u5219\u8986\u76d6');
       }
       if (!firstSku.supplyPrice && !firstSku.gloGoodsValue) risks.push('SKU \u4ef7\u683c\u4e3a\u7a7a');
+      if (expectedSupplyPrice) {
+        const mismatchedSkuPrices = variations.filter((sku) => {
+          return !priceEqualsExpected(firstNonEmpty(sku.supplyPrice, sku.gloGoodsValue, sku.goodsValue), expectedSupplyPrice);
+        }).length;
+        if (mismatchedSkuPrices) {
+          risks.push(`SKU 价格与任务公式不一致：${mismatchedSkuPrices} 条 SKU 未等于 ${expectedSupplyPrice}`);
+        }
+      }
       if (!firstSku.packageWeight) risks.push('SKU \u91cd\u91cf\u4e3a\u7a7a');
       if (!firstSku.packageLength || !firstSku.packageWidth || !firstSku.packageHeight) {
         risks.push('SKU \u5c3a\u5bf8\u4e0d\u5b8c\u6574');
@@ -2920,14 +4064,6 @@
     state.inputEditData = json;
     state.afterOp1EditData = null;
     log(`\u5df2\u8bfb\u53d6 edit.json\uff1a${productId}`);
-    if (/\/web\/smtlocalProduct\/edit/i.test(location.pathname)) {
-      try {
-        const visibleFill = fillVisibleVariationFields();
-        log(`\u5df2\u81ea\u52a8\u8865\u7f16\u8f91\u9875\u53ef\u89c1\u53d8\u79cd\u5b57\u6bb5\uff1a${visibleFill.rows} \u884c`);
-      } catch (error) {
-        log(`\u7f16\u8f91\u9875\u53ef\u89c1\u5b57\u6bb5\u81ea\u52a8\u8865\u5168\u672a\u6267\u884c\uff1a${error.message}`);
-      }
-    }
     updateUi();
     return json;
   }
@@ -3403,8 +4539,12 @@
   }
 
   function dispatchInputEvents(input) {
-    input.dispatchEvent(new Event('input', { bubbles: true }));
+    if (typeof input.focus === 'function') input.focus();
+    input.dispatchEvent(new KeyboardEvent('keydown', { key: 'a', bubbles: true, cancelable: true }));
+    input.dispatchEvent(new InputEvent('beforeinput', { bubbles: true, cancelable: true, inputType: 'insertText', data: String(input.value || '') }));
+    input.dispatchEvent(new InputEvent('input', { bubbles: true, cancelable: true, inputType: 'insertText', data: String(input.value || '') }));
     input.dispatchEvent(new Event('change', { bubbles: true }));
+    input.dispatchEvent(new KeyboardEvent('keyup', { key: 'a', bubbles: true, cancelable: true }));
     input.dispatchEvent(new Event('blur', { bubbles: true }));
   }
 
@@ -3418,12 +4558,72 @@
     return true;
   }
 
+  function setSelectSearchInputValue(input, value) {
+    if (!input || value === null || value === undefined) return false;
+    const descriptor = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value');
+    if (descriptor && descriptor.set) descriptor.set.call(input, String(value));
+    else input.value = String(value);
+    if (typeof input.focus === 'function') input.focus();
+    input.dispatchEvent(new InputEvent('input', { bubbles: true, cancelable: true, inputType: 'insertText', data: String(value) }));
+    return true;
+  }
+
+  function dispatchKeyboardEvent(element, type, key) {
+    if (!element) return;
+    const keyMap = {
+      Enter: { code: 'Enter', keyCode: 13, which: 13 },
+      ArrowDown: { code: 'ArrowDown', keyCode: 40, which: 40 },
+      ArrowUp: { code: 'ArrowUp', keyCode: 38, which: 38 },
+      Escape: { code: 'Escape', keyCode: 27, which: 27 },
+      Tab: { code: 'Tab', keyCode: 9, which: 9 },
+    };
+    const meta = keyMap[key] || { code: key, keyCode: 0, which: 0 };
+    element.dispatchEvent(new KeyboardEvent(type, {
+      key,
+      code: meta.code,
+      keyCode: meta.keyCode,
+      which: meta.which,
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+    }));
+  }
+
   function sleep(ms) {
     return new Promise((resolve) => window.setTimeout(resolve, ms));
   }
 
   function isEditPage() {
     return /\/web\/smtlocalProduct\/edit/i.test(location.pathname);
+  }
+
+  async function withExclusiveEditExecution(task) {
+    const originals = {
+      scrollIntoView: window.Element && window.Element.prototype ? window.Element.prototype.scrollIntoView : null,
+      scrollTo: window.scrollTo,
+      scrollBy: window.scrollBy,
+    };
+    const scrollBlocker = function blockedEditScroll() {
+      editFieldLocks.scrollBlocked += 1;
+    };
+    editFieldLocks.active = true;
+    editFieldLocks.scrollBlocked = 0;
+    editFieldLocks.lockViolations = [];
+    try {
+      if (window.Element && window.Element.prototype && originals.scrollIntoView) {
+        window.Element.prototype.scrollIntoView = scrollBlocker;
+      }
+      window.scrollTo = scrollBlocker;
+      window.scrollBy = scrollBlocker;
+      return await task();
+    } finally {
+      if (window.Element && window.Element.prototype && originals.scrollIntoView) {
+        window.Element.prototype.scrollIntoView = originals.scrollIntoView;
+      }
+      window.scrollTo = originals.scrollTo;
+      window.scrollBy = originals.scrollBy;
+      editFieldLocks.active = false;
+    }
   }
 
   function setEditableHtml(element, html) {
@@ -3556,6 +4756,7 @@
   }
 
   function getDescriptionImageUrls() {
+    const mainImages = selectPcDetailImages(getCurrentEditMainImageUrls());
     const all = Array.from(document.querySelectorAll('img'))
       .filter((img) => {
         const src = img.currentSrc || img.src || img.getAttribute('data-src') || '';
@@ -3570,7 +4771,7 @@
     const unique = Array.from(new Set(all));
     const generated = unique.filter((url) => /wxalbum|dianxiaomi/i.test(url));
     const product = unique.filter((url) => !/wxalbum|dianxiaomi/i.test(url));
-    return [...generated, ...product].slice(0, 4);
+    return Array.from(new Set([...mainImages, ...generated, ...product])).slice(0, EDIT_PAGE_RULES.pcDescriptionMaxImages);
   }
 
   function buildPcDescriptionHtml(text, imageUrls) {
@@ -3593,6 +4794,7 @@
     const description = buildCompliantPcDescription(source, titleValue);
     const imageUrls = getDescriptionImageUrls();
     const html = buildPcDescriptionHtml(description, imageUrls);
+    const imageState = analyzePcDetailWebImages(html, getCurrentEditMainImageUrls());
     const target = findVisiblePcDescriptionTarget();
     const hiddenCount = syncHiddenDetailFields(html);
     const ckeditorCount = syncCkeditorDescription(html);
@@ -3603,6 +4805,7 @@
         hiddenCount,
         ckeditorCount,
         imageCount: imageUrls.length,
+        imageState,
         chars: description.length,
       };
     }
@@ -3614,6 +4817,7 @@
       hiddenCount,
       ckeditorCount,
       imageCount: imageUrls.length,
+      imageState,
       chars: description.length,
     };
   }
@@ -3692,7 +4896,7 @@
 
   function clickElement(element) {
     if (!element) return false;
-    element.scrollIntoView({ block: 'center', inline: 'nearest' });
+    if (!isEditPage()) element.scrollIntoView({ block: 'center', inline: 'nearest' });
     if (typeof element.focus === 'function') element.focus();
     element.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true }));
     element.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, cancelable: true }));
@@ -3703,7 +4907,7 @@
   function clickSelectOption(element) {
     const option = element && (element.closest('.ant-select-item-option,[role="option"]') || element);
     if (!option) return false;
-    option.scrollIntoView({ block: 'center', inline: 'nearest' });
+    if (!isEditPage()) option.scrollIntoView({ block: 'center', inline: 'nearest' });
     const rect = option.getBoundingClientRect();
     const init = {
       bubbles: true,
@@ -3725,6 +4929,29 @@
     option.dispatchEvent(new MouseEvent('mousedown', init));
     option.dispatchEvent(new MouseEvent('mouseup', { ...init, buttons: 0 }));
     option.dispatchEvent(new MouseEvent('click', { ...init, buttons: 0 }));
+    return true;
+  }
+
+  function hoverSelectOption(element) {
+    const option = element && (element.closest('.ant-select-item-option,[role="option"]') || element);
+    if (!option) return false;
+    const rect = option.getBoundingClientRect();
+    const init = {
+      bubbles: true,
+      cancelable: true,
+      view: window,
+      clientX: Math.round(rect.left + rect.width / 2),
+      clientY: Math.round(rect.top + rect.height / 2),
+      button: 0,
+      buttons: 0,
+    };
+    if (window.PointerEvent) {
+      option.dispatchEvent(new PointerEvent('pointerover', init));
+      option.dispatchEvent(new PointerEvent('pointermove', init));
+    }
+    option.dispatchEvent(new MouseEvent('mouseover', init));
+    option.dispatchEvent(new MouseEvent('mousemove', init));
+    option.dispatchEvent(new MouseEvent('mouseenter', init));
     return true;
   }
 
@@ -3759,9 +4986,9 @@
   }
 
   function forceSelectOption(element) {
-    const option = element && (element.closest('.ant-select-item-option,[role="option"]') || element);
+    const option = element && (element.closest('.ant-select-item-option,.ant-select-dropdown-menu-item,.select2-results__option,[role="option"]') || element);
     if (!option) return false;
-    const content = option.querySelector('.ant-select-item-option-content') || element || option;
+    const content = option.querySelector('.ant-select-item-option-content,.select2-results__option') || element || option;
     let handled = false;
     handled = callReactHandler(option, 'onMouseMove', content) || handled;
     handled = callReactHandler(option, 'onMouseDown', content) || handled;
@@ -3771,15 +4998,355 @@
     return clickSelectOption(option) || handled;
   }
 
-  function pressKey(element, key) {
-    if (!element) return;
-    element.dispatchEvent(new KeyboardEvent('keydown', { key, code: key, bubbles: true, cancelable: true }));
-    element.dispatchEvent(new KeyboardEvent('keypress', { key, code: key, bubbles: true, cancelable: true }));
-    element.dispatchEvent(new KeyboardEvent('keyup', { key, code: key, bubbles: true, cancelable: true }));
+  function forceOpenSelectControl(container) {
+    if (!container) return false;
+    const candidates = Array.from(container.querySelectorAll('.ant-select-selector,.ant-select-selection,.ant-select,input[role="combobox"],input[type="search"],input[type="text"]'))
+      .filter(visibleElement);
+    const target = candidates.find((node) => /ant-select-selector|ant-select-selection/.test(String(node.className || '')))
+      || candidates.find((node) => node.closest('.ant-select'))
+      || candidates[0];
+    if (!target) return false;
+    const selectRoot = target.closest('.ant-select') || target;
+    let handled = false;
+    [selectRoot, target].forEach((node) => {
+      handled = callReactHandler(node, 'onMouseDown', target) || handled;
+      handled = callReactHandler(node, 'onClick', target) || handled;
+      clickElement(node);
+    });
+    return handled || true;
   }
 
-  function findFieldContainerByText(text) {
-    const nodes = Array.from(document.querySelectorAll('label,.ant-form-item,.form-group,.row,div,td,th')).filter(visibleElement);
+  function dispatchPointerMouseClickAt(element, clientX, clientY) {
+    if (!element || !Number.isFinite(clientX) || !Number.isFinite(clientY)) return false;
+    const target = document.elementFromPoint(clientX, clientY) || element;
+    if (typeof target.focus === 'function') target.focus();
+    const init = {
+      bubbles: true,
+      cancelable: true,
+      view: window,
+      clientX: Math.round(clientX),
+      clientY: Math.round(clientY),
+      button: 0,
+      buttons: 1,
+    };
+    if (window.PointerEvent) {
+      target.dispatchEvent(new PointerEvent('pointerover', init));
+      target.dispatchEvent(new PointerEvent('pointermove', init));
+      target.dispatchEvent(new PointerEvent('pointerdown', init));
+      target.dispatchEvent(new PointerEvent('pointerup', { ...init, buttons: 0 }));
+    }
+    target.dispatchEvent(new MouseEvent('mouseover', init));
+    target.dispatchEvent(new MouseEvent('mousemove', init));
+    target.dispatchEvent(new MouseEvent('mousedown', init));
+    target.dispatchEvent(new MouseEvent('mouseup', { ...init, buttons: 0 }));
+    target.dispatchEvent(new MouseEvent('click', { ...init, buttons: 0 }));
+    return true;
+  }
+
+  function openPostageTemplateDropdownByArrow(container) {
+    if (!container) return { ok: false, reason: 'postage container not found' };
+    const selectRoot = Array.from(container.querySelectorAll('.ant-select,.select2-container,.ant-select-selector,.ant-select-selection'))
+      .filter(visibleElement)
+      .map((node) => node.closest('.ant-select,.select2-container') || node)
+      .find(visibleElement);
+    if (!selectRoot) return { ok: false, reason: 'postage select root not found' };
+    const opener = selectRoot.querySelector('.ant-select-selector,.ant-select-selection,.select2-selection') || selectRoot;
+    const arrow = Array.from(selectRoot.querySelectorAll('.ant-select-arrow,.ant-select-selection__arrow,.select2-selection__arrow,[class*="arrow"],[class*="caret"]'))
+      .filter(visibleElement)
+      .sort((a, b) => b.getBoundingClientRect().right - a.getBoundingClientRect().right)[0];
+    if (arrow) {
+      const rect = arrow.getBoundingClientRect();
+      const x = rect.left + rect.width / 2;
+      const y = rect.top + rect.height / 2;
+      const handled = callReactHandler(selectRoot, 'onMouseDown', arrow) || callReactHandler(opener, 'onMouseDown', arrow);
+      dispatchPointerMouseClickAt(arrow, x, y);
+      return { ok: true, mode: 'postage-arrow-element', opener, handled };
+    }
+    const rect = opener.getBoundingClientRect();
+    if (!rect.width || !rect.height) return { ok: false, reason: 'postage opener has empty rect', opener };
+    const x = Math.max(rect.left + 1, rect.right - Math.min(34, Math.max(22, rect.width * 0.08)));
+    const y = rect.top + rect.height / 2;
+    const handled = callReactHandler(selectRoot, 'onMouseDown', opener) || callReactHandler(opener, 'onMouseDown', opener);
+    dispatchPointerMouseClickAt(opener, x, y);
+    return { ok: true, mode: 'postage-arrow-coordinate', opener, handled };
+  }
+
+  function dispatchPointerMouseClick(element) {
+    if (!element) return false;
+    const rect = element.getBoundingClientRect();
+    const init = {
+      bubbles: true,
+      cancelable: true,
+      view: window,
+      clientX: Math.round(rect.left + rect.width / 2),
+      clientY: Math.round(rect.top + rect.height / 2),
+      button: 0,
+      buttons: 1,
+    };
+    if (window.PointerEvent) {
+      element.dispatchEvent(new PointerEvent('pointerover', init));
+      element.dispatchEvent(new PointerEvent('pointermove', init));
+      element.dispatchEvent(new PointerEvent('pointerdown', init));
+      element.dispatchEvent(new PointerEvent('pointerup', { ...init, buttons: 0 }));
+    }
+    element.dispatchEvent(new MouseEvent('mouseover', init));
+    element.dispatchEvent(new MouseEvent('mousemove', init));
+    element.dispatchEvent(new MouseEvent('mousedown', init));
+    element.dispatchEvent(new MouseEvent('mouseup', { ...init, buttons: 0 }));
+    element.dispatchEvent(new MouseEvent('click', { ...init, buttons: 0 }));
+    return true;
+  }
+
+  function getVisibleSelectDropdowns() {
+    return Array.from(document.querySelectorAll(
+      '.ant-select-dropdown,.ant-select-dropdown-menu,.select2-dropdown,.rc-virtual-list'
+    ))
+      .filter((node) => visibleElement(node))
+      .filter((node) => {
+        const className = String(node.className || '');
+        if (className.includes('ant-select-dropdown-hidden')) return false;
+        if (/ant-slide-up-leave|ant-slide-up-enter-start/i.test(className)) return false;
+        return true;
+      });
+  }
+
+  function getElementCenterDistance(a, b) {
+    if (!a || !b || !a.getBoundingClientRect || !b.getBoundingClientRect) return Number.MAX_SAFE_INTEGER;
+    const ar = a.getBoundingClientRect();
+    const br = b.getBoundingClientRect();
+    const ax = ar.left + ar.width / 2;
+    const ay = ar.top + ar.height / 2;
+    const bx = br.left + br.width / 2;
+    const by = br.top + br.height / 2;
+    return Math.hypot(ax - bx, ay - by);
+  }
+
+  function getActiveSelectDropdowns(opener) {
+    const dropdowns = getVisibleSelectDropdowns();
+    const input = opener && (opener.matches && opener.matches('input[role="combobox"],input[type="search"],input[type="text"]')
+      ? opener
+      : opener.querySelector && opener.querySelector('input[role="combobox"],input[type="search"],input[type="text"]'));
+    const controls = input && (input.getAttribute('aria-controls') || input.getAttribute('aria-owns'));
+    if (controls) {
+      const matched = dropdowns.filter((node) => node.id === controls || node.querySelector(`#${controls}`) || node.getAttribute('id') === `${controls}_list`);
+      if (matched.length) return matched;
+      const byId = document.getElementById(controls);
+      if (byId) {
+        const root = byId.closest('.ant-select-dropdown,.ant-select-dropdown-menu,.select2-dropdown,.rc-virtual-list') || byId;
+        if (visibleElement(root)) return [root];
+      }
+    }
+    if (!opener || !dropdowns.length) return dropdowns;
+    const openerRoot = opener.closest && (opener.closest('.ant-select') || opener);
+    const anchor = openerRoot || opener;
+    return dropdowns
+      .map((node) => ({ node, distance: getElementCenterDistance(anchor, node) }))
+      .sort((a, b) => a.distance - b.distance)
+      .slice(0, 1)
+      .map((item) => item.node);
+  }
+
+  function getActiveSelectScrollContainers(opener) {
+    const roots = getActiveSelectDropdowns(opener);
+    const holders = roots.flatMap((root) => Array.from(root.querySelectorAll(
+      '.rc-virtual-list-holder,.ant-select-dropdown-menu,.ant-select-dropdown-menu-root'
+    )));
+    return Array.from(new Set(holders.concat(roots)))
+      .filter((node) => visibleElement(node) && node.scrollHeight > node.clientHeight + 5);
+  }
+
+  function isSafeRequiredAttributeBlankTarget(node) {
+    if (!node || node === document.documentElement) return false;
+    if (node.closest && node.closest(`#${PANEL_ID},.ant-select-dropdown,.select2-dropdown,.rc-virtual-list`)) return false;
+    const interactive = node.closest && node.closest([
+      'button',
+      'a',
+      'input',
+      'textarea',
+      'select',
+      '[role="button"]',
+      '[contenteditable="true"]',
+      '.ant-btn',
+      '.ant-select',
+      '.ant-checkbox',
+      '.ant-radio',
+      '.ant-upload',
+    ].join(','));
+    if (interactive) return false;
+    const text = elementText(node).slice(0, 80);
+    if (/保存|发布|一键生成|同步|展开|添加|删除|上传|导出/.test(text)) return false;
+    return true;
+  }
+
+  function getRequiredAttributeBlankConfirmPoint(container) {
+    const selectRoot = container && Array.from(container.querySelectorAll('.ant-select,.ant-select-selector,.ant-select-selection'))
+      .filter(visibleElement)[0];
+    const selectRect = selectRoot && selectRoot.getBoundingClientRect();
+    const containerRect = container && container.getBoundingClientRect && container.getBoundingClientRect();
+    const y = selectRect && selectRect.height ? selectRect.top + selectRect.height / 2 : (containerRect ? containerRect.top + Math.min(28, Math.max(12, containerRect.height / 2)) : window.innerHeight / 2);
+    const candidates = [];
+    if (selectRect && selectRect.width) {
+      candidates.push(
+        [selectRect.right + 80, y],
+        [selectRect.right + 180, y],
+        [selectRect.right + 320, y],
+      );
+    }
+    if (containerRect && containerRect.width) {
+      candidates.push(
+        [containerRect.right - 80, y],
+        [containerRect.left + containerRect.width * 0.72, y],
+        [containerRect.left + containerRect.width * 0.86, y],
+      );
+    }
+    candidates.push(
+      [window.innerWidth * 0.72, y],
+      [window.innerWidth * 0.82, y],
+      [window.innerWidth * 0.58, Math.min(window.innerHeight - 40, Math.max(40, y + 54))],
+    );
+    return candidates
+      .map(([x, pointY]) => ({
+        x: Math.round(Math.min(window.innerWidth - 24, Math.max(24, x))),
+        y: Math.round(Math.min(window.innerHeight - 24, Math.max(24, pointY))),
+      }))
+      .find((point) => isSafeRequiredAttributeBlankTarget(document.elementFromPoint(point.x, point.y))) || null;
+  }
+
+  async function waitForRequiredAttributeDropdownToClose(opener, timeoutMs = 1200, deadlineAt = 0) {
+    const start = Date.now();
+    while (Date.now() - start < timeoutMs) {
+      if (deadlineAt && isDeadlineExceeded(deadlineAt)) return false;
+      if (!getActiveSelectDropdowns(opener).length) return true;
+      await sleep(120);
+    }
+    return !getActiveSelectDropdowns(opener).length;
+  }
+
+  async function confirmRequiredAttributeSelection(container, opener, input, deadlineAt) {
+    await sleep(180);
+    if (input) {
+      input.dispatchEvent(new Event('change', { bubbles: true }));
+      if (typeof input.blur === 'function') input.blur();
+      input.dispatchEvent(new Event('blur', { bubbles: true }));
+    }
+    const point = getRequiredAttributeBlankConfirmPoint(container);
+    let clickedBlank = false;
+    if (point) {
+      clickedBlank = dispatchPointerMouseClickAt(document.body, point.x, point.y);
+      await sleep(260);
+    }
+    let closed = await waitForRequiredAttributeDropdownToClose(opener, 900, deadlineAt);
+    if (!closed) {
+      const target = input || opener || document.body;
+      dispatchKeyboardEvent(target, 'keydown', 'Escape');
+      dispatchKeyboardEvent(target, 'keyup', 'Escape');
+      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', code: 'Escape', bubbles: true, cancelable: true }));
+      document.dispatchEvent(new KeyboardEvent('keyup', { key: 'Escape', code: 'Escape', bubbles: true, cancelable: true }));
+      await sleep(260);
+      closed = await waitForRequiredAttributeDropdownToClose(opener, 700, deadlineAt);
+    }
+    return { clickedBlank, closed, point };
+  }
+
+  function normalizeSelectMatchText(value) {
+    return normalizeCategoryText(value)
+      .replace(/[*_\-()[\]{}]+/g, ' ')
+      .replace(/\bae存量\b/g, ' ')
+      .replace(/\bdefault\s*\d+\b/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  function isUnsafeSelectDisplayText(value) {
+    const text = String(value || '').replace(/\s+/g, ' ').trim();
+    if (!text) return true;
+    if (/^(?:\d{6,}|[a-z]?\d{6,})$/i.test(text)) return true;
+    if (/\u8bf7\u9009\u62e9|please\s*select/i.test(text)) return true;
+    return false;
+  }
+
+  function findSelectSearchInputForOpenDropdown(opener) {
+    const dropdownInputs = getActiveSelectDropdowns(opener)
+      .flatMap((root) => Array.from(root.querySelectorAll('input[role="combobox"],input[type="search"],input[type="text"]')))
+      .filter((node) => visibleElement(node) && !node.closest(`#${PANEL_ID}`));
+    if (dropdownInputs[0]) return dropdownInputs[0];
+    const localInput = opener && opener.querySelector
+      ? Array.from(opener.querySelectorAll('input[role="combobox"],input[type="search"],input[type="text"]')).filter(visibleElement)[0]
+      : null;
+    if (localInput) return localInput;
+    const selectRootInput = opener && opener.closest
+      ? Array.from((opener.closest('.ant-select') || opener).querySelectorAll('input[role="combobox"],input[type="search"],input[type="text"]')).filter(visibleElement)[0]
+      : null;
+    if (selectRootInput) return selectRootInput;
+    if (opener && opener.matches && opener.matches('input[role="combobox"],input[type="search"],input[type="text"]')) return opener;
+    return null;
+  }
+
+  function pressSelectAcceptKeys(input) {
+    if (!input) return;
+    if (typeof input.focus === 'function') input.focus();
+    ['ArrowDown', 'Enter'].forEach((key) => {
+      dispatchKeyboardEvent(input, 'keydown', key);
+      dispatchKeyboardEvent(input, 'keypress', key);
+      dispatchKeyboardEvent(input, 'keyup', key);
+    });
+  }
+
+  async function pressSelectAcceptKeysSlow(input) {
+    if (!input) return;
+    if (typeof input.focus === 'function') input.focus();
+    for (const key of ['ArrowDown', 'Enter']) {
+      dispatchKeyboardEvent(input, 'keydown', key);
+      dispatchKeyboardEvent(input, 'keypress', key);
+      dispatchKeyboardEvent(input, 'keyup', key);
+      await sleep(280);
+    }
+  }
+
+  function commitSelectControl(container, input) {
+    const target = input
+      || Array.from((container || document).querySelectorAll('input[role="combobox"],input[type="search"],input[type="text"]')).filter(visibleElement)[0]
+      || (document.activeElement && document.activeElement.matches && document.activeElement.matches('input') ? document.activeElement : null);
+    if (!target) return false;
+    if (typeof target.focus === 'function') target.focus();
+    ['Enter', 'Tab'].forEach((key) => {
+      dispatchKeyboardEvent(target, 'keydown', key);
+      dispatchKeyboardEvent(target, 'keypress', key);
+      dispatchKeyboardEvent(target, 'keyup', key);
+    });
+    target.dispatchEvent(new Event('change', { bubbles: true }));
+    if (typeof target.blur === 'function') target.blur();
+    target.dispatchEvent(new Event('blur', { bubbles: true }));
+    return true;
+  }
+
+  function pressKey(element, key) {
+    dispatchKeyboardEvent(element, 'keydown', key);
+    dispatchKeyboardEvent(element, 'keypress', key);
+    dispatchKeyboardEvent(element, 'keyup', key);
+  }
+
+  function getEditFormScope() {
+    const anchors = ['productBasicInfo', 'attrInfo', 'packageInfo']
+      .map((id) => document.getElementById(id))
+      .filter(Boolean);
+    if (!anchors.length) return document.body;
+    let scope = anchors[0];
+    while (scope && scope !== document.body) {
+      const text = elementText(scope);
+      if (
+        anchors.every((anchor) => scope.contains(anchor))
+        || (/基本信息/.test(text) && /属性信息/.test(text) && /物流设置/.test(text))
+      ) {
+        return scope;
+      }
+      scope = scope.parentElement;
+    }
+    return document.body;
+  }
+
+  function findFieldContainerByText(text, scope = getEditFormScope()) {
+    const nodes = Array.from(scope.querySelectorAll('label,.ant-form-item,.form-group,.row,div,td,th')).filter(visibleElement);
     const matches = nodes
       .filter((node) => elementText(node).includes(text) && node.querySelector('input,.ant-select,button'))
       .map((node) => ({ node, length: elementText(node).length, area: node.getBoundingClientRect().width * node.getBoundingClientRect().height }))
@@ -3787,15 +5354,29 @@
     return matches[0] ? matches[0].node : null;
   }
 
+  function findAntFormItemByLabelText(text, scope = getEditFormScope()) {
+    const labels = Array.from(scope.querySelectorAll('label,.ant-form-item-label'))
+      .filter((node) => !node.closest(`#${PANEL_ID}`) && visibleElement(node))
+      .map((node) => ({ node, text: elementText(node), title: String(node.getAttribute('title') || '').trim() }))
+      .filter((item) => item.text === text || item.title === text || elementText(item.node.querySelector && item.node.querySelector('label')).trim() === text);
+    for (const item of labels) {
+      const root = item.node.closest('.ant-form-item,.form-group,.row,tr,td');
+      if (root && root.querySelector('input,.ant-select,select,button')) return root;
+    }
+    return null;
+  }
+
+  function findPostageTemplateContainer() {
+    return findAntFormItemByLabelText('\u8fd0\u8d39\u6a21\u677f') || findFieldContainerByText('\u8fd0\u8d39\u6a21\u677f') || getEditFormScope();
+  }
+
   function findVisibleSelectOptionExact(value) {
     const textValue = String(value);
-    const visibleDropdowns = Array.from(document.querySelectorAll('.ant-select-dropdown')).filter((node) => {
-      if (!visibleElement(node)) return false;
-      return !String(node.className || '').includes('ant-select-dropdown-hidden');
-    });
+    const visibleDropdowns = getVisibleSelectDropdowns();
     const roots = visibleDropdowns.length ? visibleDropdowns : [document];
     for (const root of roots) {
-      const options = Array.from(root.querySelectorAll('.ant-select-item-option,[role="option"]')).filter(visibleElement);
+      const options = Array.from(root.querySelectorAll('.ant-select-item-option,.ant-select-dropdown-menu-item,.select2-results__option,[role="option"],li'))
+        .filter(visibleElement);
       const exact = options.find((node) => elementText(node) === textValue || String(node.getAttribute('title') || '').trim() === textValue);
       if (exact) return exact;
       const contentExact = Array.from(root.querySelectorAll('.ant-select-item-option-content'))
@@ -3820,10 +5401,147 @@
     });
   }
 
-  async function selectPostageTemplate111() {
-    const container = findFieldContainerByText('\u8fd0\u8d39\u6a21\u677f') || document.body;
+  function getAntSelectValueInfo(container) {
+    if (!container) return { selectedText: '', itemTitle: '', inputValue: '', okText: '', hasCommittedOption: false };
+    const selectedNodes = Array.from(container.querySelectorAll(
+      '.ant-select-selection-item,.ant-select-selection-selected-value,.ant-select-selection__choice__content,.select2-selection__rendered'
+    ))
+      .filter(visibleElement);
+    const selectedText = selectedNodes.map((node) => elementText(node)).find(Boolean) || '';
+    const itemTitle = selectedNodes.map((node) => String(node.getAttribute('title') || '').trim()).find(Boolean) || '';
+    const input = Array.from(container.querySelectorAll('input[role="combobox"],input[type="search"],input[type="text"]'))
+      .filter(visibleElement)[0];
+    const inputValue = input ? getInputText(input) : '';
+    const hasCommittedOption = Boolean(selectedText || itemTitle);
+    const okText = firstNonEmpty(selectedText, itemTitle, inputValue, getSelectedTextInContainer(container));
+    return { selectedText, itemTitle, inputValue, okText, hasCommittedOption };
+  }
+
+  function getSelectValidationIssue(container) {
+    if (!container) return '';
+    const formItem = container.closest && container.closest('.ant-form-item') ? container.closest('.ant-form-item') : container;
+    const classText = String(`${formItem.className || ''} ${container.className || ''} ${Array.from(container.querySelectorAll('.ant-select-status-error')).map((node) => node.className).join(' ')}`);
+    if (!/ant-form-item-has-error|ant-select-status-error/i.test(classText)) return '';
+    const text = elementText(formItem);
+    if (/\u8bf7\u9009\u62e9|\u5fc5\u586b|required|select|product attribute|\u4ea7\u54c1\u5c5e\u6027/i.test(text)) return text.slice(0, 180);
+    return 'field validation error';
+  }
+
+  function verifySelectContainerValue(container, values, options = {}) {
+    const info = getAntSelectValueInfo(container);
+    const validationIssue = getSelectValidationIssue(container);
+    const committedOk = !options.requireCommittedOption || info.hasCommittedOption;
+    const unsafeDisplay = isUnsafeSelectDisplayText(info.okText);
+    return {
+      ...info,
+      validationIssue,
+      unsafeDisplay,
+      ok: committedOk && (!validationIssue || options.allowValidationIssue) && !unsafeDisplay && selectedTextMatchesCandidateValues(info.okText, values),
+    };
+  }
+
+  async function waitForSelectContainerValue(container, values, timeoutMs = 1200, options = {}) {
+    const start = Date.now();
+    const deadlineAt = getDeadlineAt(options);
+    let last = verifySelectContainerValue(container, values, options);
+    while (Date.now() - start < timeoutMs && !isDeadlineExceeded(deadlineAt)) {
+      if (last.ok) return last;
+      await sleep(120);
+      last = verifySelectContainerValue(container, values, options);
+    }
+    if (isDeadlineExceeded(deadlineAt)) {
+      return { ...last, timedOut: true, reason: 'select value wait timed out' };
+    }
+    return last;
+  }
+
+  function getDeadlineAt(options = {}) {
+    const value = Number(options.deadlineAt || 0);
+    return Number.isFinite(value) && value > 0 ? value : 0;
+  }
+
+  function isDeadlineExceeded(deadlineAt) {
+    return Boolean(deadlineAt && Date.now() >= deadlineAt);
+  }
+
+  function makeDeadlineAt(timeoutMs) {
+    const value = Number(timeoutMs || 0);
+    return Number.isFinite(value) && value > 0 ? Date.now() + value : 0;
+  }
+
+  function getRecoverStageTimeoutMs(options = {}, fallback = 0) {
+    const value = Number(options.stageTimeoutMs || options.timeoutMs || fallback || 0);
+    return Number.isFinite(value) && value > 0 ? value : 0;
+  }
+
+  function buildStageTimeoutResult(stageId, deadlineAt, extra = {}) {
+    return {
+      ...extra,
+      changed: Boolean(extra.changed),
+      ok: false,
+      locked: Boolean(extra.locked),
+      timedOut: true,
+      stoppedAt: stageId,
+      reason: `stage timeout: ${stageId}`,
+      timeoutDetail: extra.reason || extra.timeoutDetail || '',
+      deadlineAt: deadlineAt ? new Date(deadlineAt).toISOString() : '',
+    };
+  }
+
+  async function clearMismatchedSelectValue(container, values) {
+    const info = getAntSelectValueInfo(container);
+    if (isBlankSelectionText(info.okText) || (!isUnsafeSelectDisplayText(info.okText) && selectedTextMatchesCandidateValues(info.okText, values))) return false;
+    const controls = Array.from(container.querySelectorAll('.ant-select-selection-item-remove,.ant-select-clear,.select2-selection__clear'))
+      .filter(visibleElement);
+    let changed = false;
+    for (const control of controls) {
+      clickElement(control);
+      changed = true;
+      await sleep(180);
+    }
+    const input = Array.from(container.querySelectorAll('input[role="combobox"],input[type="search"],input[type="text"]'))
+      .filter(visibleElement)[0];
+    if (input && getInputText(input)) {
+      setSelectSearchInputValue(input, '');
+      input.dispatchEvent(new Event('change', { bubbles: true }));
+      changed = true;
+    }
+    if (changed) await sleep(350);
+    return changed;
+  }
+
+  async function selectAntLikeValue(container, values, options = {}) {
+    return selectLockedDropdownOption(container, values, {
+      confirmWithKeyboard: options.confirmWithKeyboard !== false,
+      hoverKeyboardOnly: options.hoverKeyboardOnly,
+      skipKeyboardCommit: options.skipKeyboardCommit,
+      prefilterFirstValue: false,
+      requireCommittedOption: true,
+      allowSafeVisibleOptionFallback: Boolean(options.allowSafeVisibleOptionFallback),
+      safeFallbackKind: options.safeFallbackKind || 'generic',
+      deadlineAt: options.deadlineAt,
+      timeoutStage: options.timeoutStage,
+    });
+  }
+
+  async function selectPostageTemplate111(options = {}) {
+    const deadlineAt = getDeadlineAt(options);
+    const timeoutStage = options.timeoutStage || 'shipping-postage';
+    const timeout = (extra = {}) => buildStageTimeoutResult(timeoutStage, deadlineAt, extra);
+    const container = findPostageTemplateContainer();
+    if (isDeadlineExceeded(deadlineAt)) return timeout({ reason: 'postage stage timeout before start' });
+    const nativeSelect = Array.from(container.querySelectorAll('select')).find(visibleElement);
+    if (nativeSelect) {
+      const option = Array.from(nativeSelect.options || []).find((item) => String(item.value || '').trim() === EDIT_PAGE_RULES.postageTemplateId || String(item.text || '').includes(EDIT_PAGE_RULES.postageTemplateId));
+      if (option) {
+        nativeSelect.value = option.value;
+        dispatchInputEvents(nativeSelect);
+        return { changed: true, ok: true, value: EDIT_PAGE_RULES.postageTemplateId, selectedText: option.text, mode: 'native-select' };
+      }
+    }
     const selectors = [
       '.ant-select-selector',
+      '.ant-select-selection',
       '.ant-select',
       'input[role="combobox"]',
       'input[type="search"]',
@@ -3834,53 +5552,118 @@
       opener = Array.from(container.querySelectorAll(selector)).find(visibleElement);
       if (opener) break;
     }
-    if (!opener) return { changed: false, reason: 'postage selector not found' };
+    if (!opener) return { changed: false, ok: false, reason: 'postage selector not found' };
     const getSelectedText = () => {
       return getSelectedTextInContainer(container);
     };
-    for (let attempt = 0; attempt < 5; attempt += 1) {
+    const antResult = await selectAntLikeValue(container, [EDIT_PAGE_RULES.postageTemplateId], { maxAttempts: 3, deadlineAt, timeoutStage });
+    if (antResult.ok) return { ...antResult, value: EDIT_PAGE_RULES.postageTemplateId, mode: `postage-${antResult.mode}` };
+    if (antResult.timedOut || isDeadlineExceeded(deadlineAt)) return timeout({ changed: Boolean(antResult.changed), antResult });
+    for (let attempt = 0; attempt < 3; attempt += 1) {
+      if (isDeadlineExceeded(deadlineAt)) return timeout({ changed: false, attempts: attempt, antResult });
       clearSelectSearchValue(container);
-      clickElement(opener);
+      forceOpenSelectControl(container) || clickElement(opener);
       await sleep(400);
-      const searchInput = Array.from(document.querySelectorAll('.ant-select-dropdown input[role="combobox"],.ant-select-dropdown input[type="search"],input[role="combobox"],input[type="search"],input[type="text"]'))
-        .filter((node) => visibleElement(node) && !node.closest(`#${PANEL_ID}`))
-        .sort((a, b) => a.getBoundingClientRect().top - b.getBoundingClientRect().top)[0];
+      if (isDeadlineExceeded(deadlineAt)) return timeout({ changed: false, attempts: attempt + 1, antResult });
+      const searchInput = findSelectSearchInputForOpenDropdown(opener);
       if (searchInput) {
-        setInputValue(searchInput, EDIT_PAGE_RULES.postageTemplateId);
-        pressKey(searchInput, 'Enter');
+        setSelectSearchInputValue(searchInput, EDIT_PAGE_RULES.postageTemplateId);
+        dispatchKeyboardEvent(searchInput, 'keydown', EDIT_PAGE_RULES.postageTemplateId);
         await sleep(500);
+        if (isDeadlineExceeded(deadlineAt)) return timeout({ changed: false, attempts: attempt + 1, antResult });
       }
-      let option = findVisibleSelectOptionExact(EDIT_PAGE_RULES.postageTemplateId);
+      let option = findExactOptionInActiveDropdown(opener, [EDIT_PAGE_RULES.postageTemplateId]);
       if (option) {
         forceSelectOption(option);
         await sleep(500);
         const selectedText = getSelectedText();
         if (selectedText === EDIT_PAGE_RULES.postageTemplateId || selectedText.includes(EDIT_PAGE_RULES.postageTemplateId)) {
-          return { changed: true, value: EDIT_PAGE_RULES.postageTemplateId, selectedText, attempts: attempt + 1, mode: 'direct-option' };
+          return { changed: true, ok: true, value: EDIT_PAGE_RULES.postageTemplateId, selectedText, attempts: attempt + 1, mode: 'direct-option' };
         }
       }
       await sleep(600);
-      option = findVisibleSelectOptionExact(EDIT_PAGE_RULES.postageTemplateId);
+      if (isDeadlineExceeded(deadlineAt)) return timeout({ changed: false, attempts: attempt + 1, antResult });
+      option = await findExactOptionInActiveDropdownWithListScroll(opener, [EDIT_PAGE_RULES.postageTemplateId], { deadlineAt });
+      if (isDeadlineExceeded(deadlineAt)) return timeout({ changed: false, attempts: attempt + 1, antResult });
       if (option) {
         forceSelectOption(option);
         await sleep(500);
       }
       const selectedText = getSelectedText();
       if (selectedText === EDIT_PAGE_RULES.postageTemplateId || selectedText.includes(EDIT_PAGE_RULES.postageTemplateId)) {
-        return { changed: true, value: EDIT_PAGE_RULES.postageTemplateId, selectedText, attempts: attempt + 1 };
+        return { changed: true, ok: true, value: EDIT_PAGE_RULES.postageTemplateId, selectedText, attempts: attempt + 1 };
       }
     }
     clearSelectSearchValue(container);
-    return { changed: false, reason: 'postage option 111 not selected', selectedText: getSelectedText(), attempts: 3 };
+    return { changed: false, ok: false, reason: 'postage option 111 not selected', selectedText: getSelectedText(), attempts: 3, antResult };
+  }
+
+  async function selectPostageTemplate111FastPath(options = {}) {
+    const deadlineAt = getDeadlineAt(options);
+    const timeout = (extra = {}) => buildStageTimeoutResult(options.timeoutStage || 'shipping-postage.fast-postage', deadlineAt, extra);
+    const container = findPostageTemplateContainer();
+    const selectedBefore = getSelectedTextInContainer(container);
+    if (selectedBefore === EDIT_PAGE_RULES.postageTemplateId || selectedBefore.includes(EDIT_PAGE_RULES.postageTemplateId)) {
+      return { changed: false, ok: true, value: EDIT_PAGE_RULES.postageTemplateId, selectedText: selectedBefore, mode: 'fast-already-selected' };
+    }
+    if (isDeadlineExceeded(deadlineAt)) return timeout({ changed: false, reason: 'fast postage timeout before start', selectedText: selectedBefore });
+    const nativeSelect = Array.from(container.querySelectorAll('select')).find(visibleElement);
+    if (nativeSelect) {
+      const option = Array.from(nativeSelect.options || []).find((item) => String(item.value || '').trim() === EDIT_PAGE_RULES.postageTemplateId || String(item.text || '').includes(EDIT_PAGE_RULES.postageTemplateId));
+      if (option) {
+        nativeSelect.value = option.value;
+        dispatchInputEvents(nativeSelect);
+        const selectedText = getSelectedTextInContainer(container);
+        return { changed: true, ok: selectedText.includes(EDIT_PAGE_RULES.postageTemplateId), value: EDIT_PAGE_RULES.postageTemplateId, selectedText, mode: 'fast-native-select' };
+      }
+    }
+    const opener = Array.from(container.querySelectorAll('.ant-select-selector,.ant-select-selection,.ant-select,input[role="combobox"],input[type="search"],input[type="text"]'))
+      .find(visibleElement);
+    if (!opener) return { changed: false, ok: false, reason: 'postage selector not found', selectedText: selectedBefore };
+    const openResult = openPostageTemplateDropdownByArrow(container);
+    if (!openResult.ok) clickElement(opener);
+    await sleep(250);
+    if (isDeadlineExceeded(deadlineAt)) return timeout({ changed: false, reason: 'fast postage timeout after open', selectedText: getSelectedTextInContainer(container) });
+    const dropdownOpener = (openResult && openResult.opener) || opener;
+    let option = findExactOptionInActiveDropdown(dropdownOpener, [EDIT_PAGE_RULES.postageTemplateId]);
+    if (!option) {
+      const searchInput = findSelectSearchInputForOpenDropdown(dropdownOpener);
+      if (searchInput) {
+        setSelectSearchInputValue(searchInput, EDIT_PAGE_RULES.postageTemplateId);
+        await sleep(250);
+        option = findExactOptionInActiveDropdown(dropdownOpener, [EDIT_PAGE_RULES.postageTemplateId]);
+      }
+    }
+    if (!option) {
+      const selectedText = getSelectedTextInContainer(container);
+      return { changed: false, ok: false, reason: 'postage option 111 not visible in fast path', selectedText, mode: 'fast-option-not-visible', openResult };
+    }
+    forceSelectOption(option);
+    await sleep(350);
+    const selectedText = getSelectedTextInContainer(container);
+    return {
+      changed: true,
+      ok: selectedText === EDIT_PAGE_RULES.postageTemplateId || selectedText.includes(EDIT_PAGE_RULES.postageTemplateId),
+      value: EDIT_PAGE_RULES.postageTemplateId,
+      selectedText,
+      mode: 'fast-visible-option',
+      openResult,
+      reason: selectedText.includes(EDIT_PAGE_RULES.postageTemplateId) ? '' : 'fast postage did not read back 111',
+    };
   }
 
   function getSelectedTextInContainer(container) {
     if (!container) return '';
     const selected = Array.from(container.querySelectorAll('.ant-select-selection-item,.ant-select-selection-selected-value,.ant-select-selection__choice__content,.ant-select-selection-placeholder,.select2-selection__rendered,input[type="text"]'))
       .filter(visibleElement)
-      .map((node) => elementText(node))
+      .map((node) => elementText(node) || getInputText(node))
       .find(Boolean);
-    return String(selected || '').trim();
+    if (selected) return String(selected).trim();
+    const comboboxValue = Array.from(container.querySelectorAll('input[role="combobox"],input[type="search"]'))
+      .filter(visibleElement)
+      .map((node) => getInputText(node))
+      .find(Boolean);
+    return String(comboboxValue || '').trim();
   }
 
   function isBlankSelectionText(text) {
@@ -3890,6 +5673,8 @@
   }
 
   function isDrawerStorageProductText(text) {
+    const planned = buildCategoryModalSearchPlan(text);
+    if (planned && planned.id === 'bathroom-soap-dish') return false;
     return /drawer\s+organizer|drawer\s+organizers|organizer\s+tray|storage\s+tray|storage\s+bin|acrylic\s+organizer|plastic\s+drawer/i.test(String(text || ''));
   }
 
@@ -3902,6 +5687,241 @@
     return /\u5bb6\u5c45\u7528\u54c1|home\s*&\s*garden|\u5bb6\u7528\u50a8\u5b58|\u6536\u7eb3|home\s+storage|home\s+office\s+storage|storage\s+box/i.test(value) && !isWrongDrawerStorageCategory(value);
   }
 
+  function buildCategoryModalSearchPlan(titleText) {
+    const source = String(titleText || '');
+    const product = getProductFromEdit(state.editData) || {};
+    const asinEvidencePlan = buildCategoryModalPlanFromAliExpressEvidenceStore(source, product);
+    if (asinEvidencePlan) return asinEvidencePlan;
+    const evidencePlan = buildCategoryModalPlanFromEvidence(source, product);
+    if (evidencePlan) return evidencePlan;
+    if (REQUIRE_ALIEXPRESS_CATEGORY_EVIDENCE) return null;
+    const plans = [
+      {
+        id: 'bathroom-soap-dish',
+        pattern: /\bsoap\s+(?:dish|dishes|holder|holders|tray|trays|saver|savers)\b|\bself\s+draining\s+sink\s+organizer\s+tray\b/i,
+        topTerms: ['\u6d74\u5ba4', 'Bathroom Products', 'Soap Dish'],
+        columnTerms: ['\u6d74\u5ba4\u7528\u54c1', 'Bathroom Products', '\u6d74\u5ba4\u914d\u4ef6', 'Bathroom Accessories', '\u80a5\u7682\u76d2', 'Soap Dish'],
+        leafTerms: ['\u4fbf\u643a\u80a5\u7682\u76d2', 'Portable Soap Dishes', 'Portable Soap Dish', '\u80a5\u7682\u76d2'],
+        rejectTerms: ['Bath Baskets', '\u6c90\u6d74\u7bee', 'Bathroom Accessories Sets', '\u6d74\u5ba4\u914d\u4ef6\u5957\u88c5', 'Soap Box'],
+      },
+      {
+        id: 'desk-pen-holder',
+        pattern: /\b(?:pen|pencil)\s+(?:holder|holders|cup|cups|organizer|organizers)\b|\bdesk\s+pen\b|\bart\s+supply\s+pencil\b/i,
+        topTerms: ['\u529e\u516c', '\u7b14\u7b52', 'Office Supplies'],
+        columnTerms: ['\u529e\u516c', '\u684c\u4e0a\u6536\u7eb3', '\u7b14\u7b52', 'Desk Accessories', 'Pen Holders'],
+        leafTerms: ['Pen Holders', '\u7b14\u7b52', 'Pencil Holders', 'Desk Pen Holder'],
+        rejectTerms: ['Cable', '\u7ebf\u7f06', '\u53a8\u623f', '\u6d74\u5ba4'],
+      },
+      {
+        id: 'adhesive-wall-hooks',
+        pattern: /\b(?:adhesive|wall|utility)\s+hooks?\b|\bhooks?\b.*\b(?:wall|adhesive|towel|coat)\b/i,
+        topTerms: ['\u6302\u94a9', '\u5bb6\u5c45', 'Hooks'],
+        columnTerms: ['\u6302\u94a9', '\u5899\u6302', '\u6d74\u5ba4\u6302\u94a9', 'Hooks', 'Wall Hooks', 'Bathroom Hooks'],
+        leafTerms: ['Hooks', '\u6302\u94a9', 'Bathroom Hooks', 'Wall Hooks'],
+        rejectTerms: ['Faucet', '\u6c34\u9f99\u5934', 'Cable'],
+      },
+      {
+        id: 'kitchen-sink-strainer',
+        pattern: /\b(?:sink|drain)\s+(?:strainer|filter|catcher|stopper)s?\b|\bkitchen\s+sink\b/i,
+        topTerms: ['\u6c34\u69fd', 'Sink', 'Drain', 'Strainer', '\u6ee4\u7f51'],
+        columnTerms: ['\u6c34\u69fd', '\u53a8\u623f\u8bbe\u65bd', '\u53a8\u623f\u6c34\u69fd\u914d\u4ef6', '\u8fc7\u6ee4', '\u6ee4\u7f51', 'Kitchen Fixture', 'Kitchen Sink Accessories', 'Kitchen Drains'],
+        leafTerms: ['\u53a8\u623f\u6c34\u69fd\u6c34\u6f0f\u3001\u8fc7\u6ee4\u7f51', 'Kitchen Drains & Strainers', 'Kitchen Sink Accessories', 'Sink Strainer', 'Drain Strainer', 'Kitchen Sink Strainer', '\u6c34\u69fd\u8fc7\u6ee4', '\u6c34\u69fd\u6ee4\u7f51'],
+        rejectTerms: ['Faucet', '\u6c34\u9f99\u5934', 'Soap Dish', '\u80a5\u7682', 'Commercial Kitchen', 'Appliance', '\u5546\u7528\u9910\u53a8', '\u7535\u5668', 'Bathroom', '\u6d74\u5ba4', 'Colanders', '\u6f0f\u52fa'],
+      },
+      {
+        id: 'adhesive-cable-clips',
+        pattern: /\b(?:cable|cord|wire)\b.{0,40}\b(?:clip|clips|holder|holders|organizer|organizers|management)\b|\b(?:clip|clips|holder|holders|organizer|organizers)\b.{0,40}\b(?:cable|cord|wire)\b/i,
+        topTerms: ['\u529e\u516c', 'Office & School Supplies', 'Cable Organizers'],
+        columnTerms: ['\u529e\u516c', '\u684c\u4e0a\u6536\u7eb3', '\u684c\u9762\u7406\u7ebf\u5668', 'Desk Accessories', 'Cable Organizers'],
+        leafTerms: ['\u684c\u9762\u7406\u7ebf\u5668', 'Cable Organizers'],
+        rejectTerms: ['Pen', '\u7b14\u7b52', 'Hooks', '\u6302\u94a9', 'Conductive', 'Glue Paste', '\u5bfc\u7535', '\u80f6\u818f', 'Cable Tools', '\u7ebf\u7f06\u5de5\u5177'],
+      },
+      {
+        id: 'cabinet-bumpers',
+        pattern: /\b(?:cabinet|cupboard|drawer|door|furniture)\b.{0,50}\b(?:bumper|bumpers|pad|pads|buffer|buffers)\b|\b(?:bumper|bumpers)\b.{0,50}\b(?:cabinet|cupboard|drawer|door|furniture)\b/i,
+        topTerms: ['\u5bb6\u88c5', 'Home Improvement', 'Cabinet Bumpers'],
+        columnTerms: ['\u4e94\u91d1', '\u5bb6\u5177\u4e94\u91d1', 'Hardware', 'Furniture Hardware', 'Cabinet Bumpers'],
+        leafTerms: ['\u67dc\u95e8\u6d88\u97f3\u57ab', 'Cabinet Bumpers'],
+        rejectTerms: ['Pen', '\u7b14\u7b52', 'Cable', '\u7ebf\u7f06', 'Soap', '\u80a5\u7682'],
+      },
+      {
+        id: 'toothbrush-holder',
+        pattern: /\btooth\s*brush\b.{0,50}\b(holder|holders|stand|stands|organizer|organizers)\b|\btoothpaste\b.{0,40}\b(holder|holders|stand|stands)\b/i,
+        topTerms: ['\u5bb6\u5c45', 'Home & Garden', 'Bathroom Products'],
+        columnTerms: ['\u6d74\u5ba4\u7528\u54c1', 'Bathroom Products', 'Toothbrush'],
+        leafTerms: ['\u7259\u818f\u67b6/\u7259\u5237\u67b6', 'Toothbrush & Toothpaste Holders'],
+        rejectTerms: ['Soap Dish', '\u80a5\u7682', 'Bath Baskets', '\u6c90\u6d74\u7bee'],
+      },
+      {
+        id: 'shower-caddy-bath-basket',
+        pattern: /\b(?:shower|bath|bathroom)\b.{0,40}\b(?:caddy|caddies|basket|baskets|shelf|shelves)\b|\b(?:caddy|caddies)\b.{0,40}\b(?:shower|bath|bathroom)\b/i,
+        topTerms: ['\u5bb6\u5c45', 'Home & Garden', 'Bathroom Products'],
+        columnTerms: ['\u6d74\u5ba4\u7528\u54c1', 'Bathroom Products', 'Bath Baskets'],
+        leafTerms: ['\u6c90\u6d74\u7bee', 'Bath Baskets'],
+        rejectTerms: ['Soap Dish', '\u80a5\u7682', 'Toothbrush', '\u7259\u5237'],
+      },
+      {
+        id: 'kitchen-racks-holders',
+        pattern: /\b(?:kitchen|utensil|paper\s+towel)\b.{0,50}\b(?:holder|holders|rack|racks|stand|stands|organizer|organizers)\b/i,
+        topTerms: ['\u5bb6\u5c45', 'Home & Garden', 'Kitchen Storage'],
+        columnTerms: ['\u5bb6\u7528\u50a8\u5b58', '\u53a8\u623f\u6536\u7eb3', 'Kitchen Storage', 'Racks & Holders'],
+        leafTerms: ['\u6536\u7eb3\u67b6', 'Racks & Holders'],
+        rejectTerms: ['Toothbrush', '\u7259\u5237', 'Bath Baskets', '\u6c90\u6d74\u7bee', 'Cabinet Bumpers', '\u67dc\u95e8\u6d88\u97f3\u57ab'],
+      },
+    ];
+    return plans.find((plan) => plan.pattern.test(source)) || null;
+  }
+
+  function categoryTextMatchesModalPlan(text, plan) {
+    if (!text || !plan) return false;
+    const normalized = normalizeCategoryText(text);
+    if (categoryTextRejectedByModalPlan(text, plan)) return false;
+    if (isStrictDxmCandidatePlan(plan)) return Boolean(scoreStrictDxmCategoryCandidate(text, plan.leafTerms || []));
+    if (plan.exactDxmOnly) return Boolean(scoreExactDxmCategoryCandidate(text, plan.leafTerms || []));
+    return (plan.leafTerms || []).some((term) => {
+      const wanted = normalizeCategoryText(term);
+      const match = scoreCategoryModalWantedMatch(normalized, wanted);
+      return match && match.safe;
+    });
+  }
+
+  function categoryTextRejectedByModalPlan(text, plan) {
+    if (!text || !plan) return false;
+    const normalized = normalizeCategoryText(text);
+    return (plan.rejectTerms || []).some((term) => {
+      const rejected = normalizeCategoryText(term);
+      return rejected && normalized.includes(rejected);
+    });
+  }
+
+  function splitCategoryCandidateSegments(text) {
+    return String(text || '')
+      .split(/[>/|｜、，,]/)
+      .map((item) => normalizeCategoryText(item))
+      .filter(Boolean);
+  }
+
+  function isStrictDxmCandidatePlan(plan) {
+    return Boolean(plan && plan.strictDxmCandidateOnly);
+  }
+
+  function buildStrictDxmLeafTerms(leafText) {
+    const raw = String(leafText || '').replace(/\s+/g, ' ').trim();
+    if (!raw) return [];
+    const terms = [raw];
+    const withoutParen = raw.replace(/[\(（][^\)）]+[\)）]/g, ' ').replace(/\s+/g, ' ').trim();
+    if (withoutParen) terms.push(withoutParen);
+    raw.replace(/[\(（]([^\)）]+)[\)）]/g, (_, inner) => {
+      const text = String(inner || '').replace(/\s+/g, ' ').trim();
+      if (text) terms.push(text);
+      return '';
+    });
+    return [...new Set(terms.map((item) => normalizeCategoryText(item)).filter((item) => item && !isGenericCategoryModalText(item)))];
+  }
+
+  function scoreStrictDxmCategoryCandidate(candidateText, wantedTerms) {
+    const candidate = normalizeCategoryText(candidateText);
+    if (!candidate) return null;
+    const segments = splitCategoryCandidateSegments(candidateText);
+    const wanted = (wantedTerms || []).flatMap(buildStrictDxmLeafTerms).filter(Boolean);
+    for (let index = 0; index < wanted.length; index += 1) {
+      const term = wanted[index];
+      if (candidate === term) return { safe: true, score: 1.75, kind: 'strict-dxm-leaf-exact', wantedIndex: index };
+      if (candidate.includes(term)) return { safe: true, score: 1.55, kind: 'strict-dxm-leaf-contained', wantedIndex: index };
+      const segmentMatch = segments.find((segment) => segment === term || segment.includes(term));
+      if (segmentMatch) return { safe: true, score: 1.45, kind: 'strict-dxm-leaf-segment', wantedIndex: index };
+    }
+    return null;
+  }
+
+  function scoreExactDxmCategoryCandidate(candidateText, wantedTerms) {
+    const candidate = normalizeCategoryText(candidateText);
+    if (!candidate) return null;
+    const segments = splitCategoryCandidateSegments(candidateText);
+    const wanted = (wantedTerms || []).map((term) => normalizeCategoryText(term)).filter(Boolean);
+    for (let index = 0; index < wanted.length; index += 1) {
+      const term = wanted[index];
+      if (candidate === term) return { safe: true, score: 1.6, kind: 'exact-dxm-full', wantedIndex: index };
+      const segmentMatch = segments.find((segment) => (
+        segment === term
+        || (segment.includes(term) && segment.length <= term.length + 32)
+        || (term.includes(segment) && segment.length >= Math.min(6, term.length))
+      ));
+      if (segmentMatch) return { safe: true, score: 1.45, kind: 'exact-dxm-leaf', wantedIndex: index };
+    }
+    return null;
+  }
+
+  function isGenericCategoryModalText(normalized) {
+    const text = normalizeCategoryText(normalized);
+    if (!text) return true;
+    if (/^(home\s*&\s*garden|home improvement|office\s*&\s*school supplies|consumer electronics|tools|hardware|kitchen|bathroom|storage|organization|accessories|home products|home storage|家居用品|家装|办公、文化及教育用品|厨房|浴室|收纳|配件|五金)$/.test(text)) return true;
+    return text.length <= 3 && !/[a-z]/i.test(text);
+  }
+
+  function scoreCategoryModalWantedMatch(candidateNormalized, wantedNormalized) {
+    const candidate = normalizeCategoryText(candidateNormalized);
+    const wanted = normalizeCategoryText(wantedNormalized);
+    if (!candidate || !wanted) return null;
+    if (candidate === wanted) return { safe: true, score: 1.35, kind: 'exact' };
+    if (candidate.includes(wanted)) return { safe: true, score: 1.12, kind: 'candidate-contains-wanted' };
+    if (wanted.includes(candidate)) {
+      if (isGenericCategoryModalText(candidate)) return { safe: false, score: 0, kind: 'generic-prefix' };
+      if (candidate.length < 6 && !/[a-z]/i.test(candidate)) return { safe: false, score: 0, kind: 'too-short-prefix' };
+      return { safe: true, score: 0.72, kind: 'candidate-contained-by-wanted' };
+    }
+    return null;
+  }
+
+  function scoreCategoryModalListCandidate(item, wanted, plan) {
+    if (plan && categoryTextRejectedByModalPlan(item.text, plan)) return null;
+    if (isStrictDxmCandidatePlan(plan)) {
+      const strict = scoreStrictDxmCategoryCandidate(item.text, plan.leafTerms || []);
+      if (!strict) return null;
+      return {
+        ...item,
+        wantedIndex: strict.wantedIndex,
+        matchKind: strict.kind,
+        score: strict.score + Math.max(0, 220 - item.text.length) / 1600,
+        familyScore: { familyId: '', blocked: false, bonus: 0, penalty: 0, reason: '' },
+      };
+    }
+    if (plan && plan.exactDxmOnly) {
+      const exact = scoreExactDxmCategoryCandidate(item.text, plan.leafTerms || []);
+      if (!exact) return null;
+      return {
+        ...item,
+        wantedIndex: exact.wantedIndex,
+        matchKind: exact.kind,
+        score: exact.score + Math.max(0, 220 - item.text.length) / 1600,
+        familyScore: { familyId: '', blocked: false, bonus: 0, penalty: 0, reason: '' },
+      };
+    }
+    const matched = wanted
+      .map((value, index) => ({ index, match: scoreCategoryModalWantedMatch(item.normalized, value) }))
+      .filter((entry) => entry.match && entry.match.safe)
+      .sort((a, b) => b.match.score - a.match.score || a.index - b.index)[0];
+    if (!matched) return null;
+    const familyContext = plan
+      ? `${plan.id || ''} ${(plan.topTerms || []).join(' ')} ${(plan.columnTerms || []).join(' ')} ${(plan.leafTerms || []).join(' ')}`
+      : '';
+    const familyScore = scoreCategoryFamilyCandidateText(item.text, familyContext);
+    if (familyScore.blocked) return null;
+    let score = matched.match.score - matched.index * 0.06;
+    score += Math.max(0, 260 - item.text.length) / 1300;
+    if (familyScore.bonus) score += familyScore.bonus;
+    if (familyScore.penalty) score -= familyScore.penalty;
+    if (isGenericCategoryModalText(item.normalized)) score -= 0.45;
+    if (score < 0.65) return null;
+    return {
+      ...item,
+      wantedIndex: matched.index,
+      matchKind: matched.match.kind,
+      score,
+      familyScore,
+    };
+  }
+
   function getCurrentEditTitleText() {
     const titleInput = findProductTitleInput();
     return firstNonEmpty(titleInput ? getInputText(titleInput) : '', (getProductFromEdit(state.editData) || {}).subject, '');
@@ -3909,9 +5929,20 @@
 
   function findProductCategoryContainer() {
     const label = '\u4ea7\u54c1\u5206\u7c7b';
+    const directCategoryItem = Array.from(document.querySelectorAll('.category-item,.ant-form-item'))
+      .filter((node) => !node.closest(`#${PANEL_ID}`) && visibleElement(node))
+      .map((node) => ({ node, text: elementText(node), rect: node.getBoundingClientRect() }))
+      .filter((item) => item.text.includes(label) && /\u9009\u62e9\u5206\u7c7b|Storage Boxes\s*&\s*Bins|\u6536\u7eb3\u76d2\u548c\u6536\u7eb3\u7bb1/i.test(item.text))
+      .sort((a, b) => a.text.length - b.text.length || a.rect.top - b.rect.top)[0];
+    if (directCategoryItem) return directCategoryItem.node;
     const nodes = Array.from(document.querySelectorAll('.ant-form-item,.form-group,.row,div,td,tr'))
       .filter((node) => !node.closest(`#${PANEL_ID}`) && visibleElement(node))
-      .filter((node) => elementText(node).includes(label) && node.querySelector('.ant-select,input,button'));
+      .filter((node) => {
+        const text = elementText(node);
+        if (!text.includes(label) || !node.querySelector('.ant-select,input,button')) return false;
+        if (/\u8d44\u8d28\u4fe1\u606f|\u5237\u65b0\u8d44\u8d28\u4fe1\u606f|GPSR|CPC/.test(text)) return false;
+        return true;
+      });
     const ranked = nodes
       .map((node) => ({ node, text: elementText(node), rect: node.getBoundingClientRect() }))
       .filter((item) => item.text.length < 500)
@@ -3921,9 +5952,24 @@
 
   function getProductCategorySelectedText() {
     const container = findProductCategoryContainer();
+    const selectedText = getSelectedTextInContainer(container);
+    if (!isBlankSelectionText(selectedText)) {
+      return {
+        container,
+        selectedText,
+      };
+    }
+    const fallbackText = container
+      ? Array.from(container.querySelectorAll('div,span,p'))
+        .filter((node) => !node.closest(`#${PANEL_ID}`) && visibleElement(node))
+        .map((node) => elementText(node))
+        .map((text) => String(text || '').replace(/\s+/g, ' ').trim())
+        .filter((text) => text && text.length < 500)
+        .find((text) => /Storage Boxes\s*&\s*Bins|\u6536\u7eb3\u76d2\u548c\u6536\u7eb3\u7bb1|Home Storage\s*&\s*Organization|\u5bb6\u7528\u50a8\u5b58\u6536\u85cf\u7528\u5177/i.test(text) && !isBlankSelectionText(text))
+      : '';
     return {
       container,
-      selectedText: getSelectedTextInContainer(container),
+      selectedText: fallbackText || selectedText,
     };
   }
 
@@ -3946,6 +5992,14 @@
       const text = String(value || '').replace(/\s+/g, ' ').trim();
       if (text && !terms.some((item) => item.toLowerCase() === text.toLowerCase())) terms.push(text);
     };
+    const evidencePlan = buildCategoryModalPlanFromEvidence(title, product);
+    if (evidencePlan) {
+      [
+        ...(evidencePlan.topTerms || []),
+        ...(evidencePlan.columnTerms || []),
+        ...(evidencePlan.leafTerms || []),
+      ].forEach(push);
+    }
     pushCategoryMappingTerms(
       [
         title,
@@ -3988,7 +6042,8 @@
       const options = Array.from(root.querySelectorAll('.ant-select-item-option,[role="option"],li,div,span'))
         .filter(visibleElement)
         .map((node) => ({ node, text: elementText(node) }))
-        .filter((item) => item.text && item.text.length < 240);
+        .filter((item) => item.text && item.text.length < 240)
+        .filter((item) => !/\u9009\u62e9\u7c7b\u76ee|\u9009\u62e9\u5206\u7c7b|\u641c\u7d22|\u5173\u95ed/.test(item.text));
       for (const term of terms) {
         const exact = options.find((item) => categoryOptionMatchesTerm(item.text, term));
         if (exact) return { option: exact.node.closest('.ant-select-item-option,[role="option"]') || exact.node, term, optionText: exact.text };
@@ -4003,7 +6058,7 @@
       .sort((a, b) => elementText(a).length - elementText(b).length)[0] || null;
   }
 
-  function findCategoryModalItemByText(texts, columnIndex = null) {
+  function findCategoryModalItemByText(texts, columnIndex = null, rejectTexts = [], plan = null) {
     const modal = getVisibleCategoryModal();
     if (!modal) return null;
     const boxes = Array.from(modal.querySelectorAll('.categories-box,.category-box,.ant-tree,.ant-list,ul,div'))
@@ -4013,26 +6068,480 @@
       .sort((a, b) => a.rect.left - b.rect.left || a.rect.top - b.rect.top);
     const roots = columnIndex == null || !boxes[columnIndex] ? boxes.map((item) => item.box) : [boxes[columnIndex].box];
     const wanted = texts.map((text) => normalizeCategoryText(text));
+    const rejected = rejectTexts.map((text) => normalizeCategoryText(text)).filter(Boolean);
     for (const root of roots) {
       const items = Array.from(root.querySelectorAll('.categories-item,.category-item,li,span,div'))
         .filter(visibleElement)
         .map((node) => ({ node, text: elementText(node), rect: node.getBoundingClientRect() }))
         .filter((item) => item.text && item.text.length < 260 && item.rect.width > 20 && item.rect.height > 8)
+        .filter((item) => !/\u9009\u62e9\u7c7b\u76ee|\u9009\u62e9\u5206\u7c7b|\u641c\u7d22|\u5173\u95ed/.test(item.text))
+        .filter((item) => (item.text.match(/>|\/|\u5bb6\u5c45\u7528\u54c1|Home\s*&\s*Garden/gi) || []).length <= 2)
+        .filter((item) => {
+          const text = normalizeCategoryText(item.text);
+          return !rejected.some((value) => value && text.includes(value));
+        })
         .sort((a, b) => a.text.length - b.text.length);
-      for (const item of items) {
-        const text = normalizeCategoryText(item.text);
-        if (wanted.some((value) => value && (text.includes(value) || value.includes(text)))) return item.node;
-      }
+      const scored = items
+        .map((item) => ({ ...item, normalized: normalizeCategoryText(item.text) }))
+        .map((item) => scoreCategoryModalListCandidate(item, wanted, plan))
+        .filter(Boolean)
+        .sort((a, b) => b.score - a.score || a.wantedIndex - b.wantedIndex || a.text.length - b.text.length || a.rect.top - b.rect.top);
+      const deepestMatches = scored.filter((item) => (
+        !scored.some((other) => other.node !== item.node && item.node.contains(other.node))
+      ));
+      if (deepestMatches[0]) return deepestMatches[0].node;
+      if (scored[0]) return scored[0].node;
     }
     return null;
   }
 
-  async function clickCategoryModalItem(texts, columnIndex = null) {
-    const item = findCategoryModalItemByText(texts, columnIndex);
+  async function clickCategoryModalItem(texts, columnIndex = null, plan = null) {
+    const rejectTexts = Array.isArray(columnIndex) ? columnIndex : [];
+    const actualColumnIndex = Array.isArray(columnIndex) ? null : columnIndex;
+    const item = findCategoryModalItemByText(texts, actualColumnIndex, rejectTexts, plan);
     if (!item) return { ok: false, reason: `category item not found: ${texts.join(' / ')}` };
     clickElement(item);
     await sleep(700);
     return { ok: true, text: elementText(item) };
+  }
+
+  function scoreCategoryModalSearchCandidate(item, wanted, plan) {
+    if (plan && categoryTextRejectedByModalPlan(item.text, plan)) return null;
+    if (isStrictDxmCandidatePlan(plan)) {
+      const strict = scoreStrictDxmCategoryCandidate(item.text, plan.leafTerms || []);
+      if (!strict) return null;
+      return {
+        ...item,
+        wantedIndex: strict.wantedIndex,
+        matchKind: strict.kind,
+        score: strict.score + Math.max(0, 320 - item.text.length) / 1800,
+        familyScore: { familyId: '', blocked: false, bonus: 0, penalty: 0, reason: '' },
+      };
+    }
+    if (plan && plan.exactDxmOnly) {
+      const exact = scoreExactDxmCategoryCandidate(item.text, plan.leafTerms || []);
+      if (!exact) return null;
+      return {
+        ...item,
+        wantedIndex: exact.wantedIndex,
+        matchKind: exact.kind,
+        score: exact.score + Math.max(0, 320 - item.text.length) / 1800,
+        familyScore: { familyId: '', blocked: false, bonus: 0, penalty: 0, reason: '' },
+      };
+    }
+    const matched = wanted
+      .map((value, index) => ({ index, match: scoreCategoryModalWantedMatch(item.normalized, value) }))
+      .filter((entry) => entry.match && entry.match.safe)
+      .sort((a, b) => b.match.score - a.match.score || a.index - b.index)[0];
+    if (!matched) return null;
+    const familyContext = plan
+      ? `${plan.id || ''} ${(plan.topTerms || []).join(' ')} ${(plan.columnTerms || []).join(' ')} ${(plan.leafTerms || []).join(' ')}`
+      : '';
+    const familyScore = scoreCategoryFamilyCandidateText(item.text, familyContext);
+    if (familyScore.blocked) return null;
+    let score = matched.match.score - matched.index * 0.08;
+    score += Math.max(0, 360 - item.text.length) / 1200;
+    if (familyScore.bonus) score += familyScore.bonus;
+    if (familyScore.penalty) score -= familyScore.penalty;
+    if (isGenericCategoryModalText(item.normalized)) score -= 0.45;
+    if (score < 0.65) return null;
+    return {
+      ...item,
+      wantedIndex: matched.index,
+      matchKind: matched.match.kind,
+      score,
+      familyScore,
+    };
+  }
+
+  function findCategoryModalSearchResultByText(texts, rejectTexts = [], plan = null) {
+    const modal = getVisibleCategoryModal();
+    if (!modal) return null;
+    const wanted = texts.map((text) => normalizeCategoryText(text)).filter(Boolean);
+    const rejected = rejectTexts.map((text) => normalizeCategoryText(text)).filter(Boolean);
+    const candidates = Array.from(modal.querySelectorAll('.search-result-item,[class*="search-result"]'))
+      .filter(visibleElement)
+      .map((node) => ({ node, text: elementText(node), rect: node.getBoundingClientRect() }))
+      .filter((item) => item.text && item.text.length < 1200 && item.rect.width > 80 && item.rect.height > 12)
+      .map((item) => ({ ...item, normalized: normalizeCategoryText(item.text) }))
+      .filter((item) => !rejected.some((value) => value && item.normalized.includes(value)))
+      .map((item) => scoreCategoryModalSearchCandidate(item, wanted, plan))
+      .filter(Boolean);
+    candidates.sort((a, b) => b.score - a.score || a.wantedIndex - b.wantedIndex || a.text.length - b.text.length || a.rect.top - b.rect.top);
+    return candidates[0] && candidates[0].node;
+  }
+
+  async function clickCategoryModalSearchResult(texts, rejectTexts = [], plan = null) {
+    const item = findCategoryModalSearchResultByText(texts, rejectTexts, plan);
+    if (!item) return { ok: false, reason: `category search result not found: ${texts.join(' / ')}` };
+    clickElement(item);
+    await sleep(900);
+    return { ok: true, text: elementText(item) };
+  }
+
+  function getVisibleCategoryModalInputs() {
+    const modal = getVisibleCategoryModal();
+    if (!modal) return [];
+    return Array.from(modal.querySelectorAll('input[type="text"],input[type="search"]'))
+      .filter(visibleElement)
+      .map((node) => ({ node, rect: node.getBoundingClientRect(), placeholder: String(node.getAttribute('placeholder') || '') }))
+      .sort((a, b) => a.rect.top - b.rect.top || a.rect.left - b.rect.left);
+  }
+
+  async function fillCategoryModalInput(input, value, options = {}) {
+    if (!input) return { ok: false, reason: 'input not found' };
+    const descriptor = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value');
+    if (descriptor && descriptor.set) descriptor.set.call(input, String(value));
+    else input.value = String(value);
+    if (typeof input.focus === 'function') input.focus();
+    input.dispatchEvent(new KeyboardEvent('keydown', { key: 'a', bubbles: true, cancelable: true }));
+    input.dispatchEvent(new InputEvent('beforeinput', { bubbles: true, cancelable: true, inputType: 'insertText', data: String(value) }));
+    input.dispatchEvent(new InputEvent('input', { bubbles: true, cancelable: true, inputType: 'insertText', data: String(value) }));
+    input.dispatchEvent(new Event('change', { bubbles: true }));
+    ['keydown', 'keypress', 'keyup'].forEach((type) => {
+      input.dispatchEvent(new KeyboardEvent(type, { key: 'Enter', code: 'Enter', keyCode: 13, which: 13, bubbles: true, cancelable: true }));
+    });
+    if (options.clickSearch) {
+      const modal = getVisibleCategoryModal();
+      const button = modal && Array.from(modal.querySelectorAll('button,a,span'))
+        .filter(visibleElement)
+        .find((node) => elementText(node) === '\u641c\u7d22');
+      if (button) {
+        const target = button.closest('button,a') || button;
+        callReactHandler(target, 'onMouseDown', target);
+        callReactHandler(target, 'onClick', target);
+        clickElement(target);
+      }
+    }
+    await sleep(options.waitMs || 900);
+    return { ok: true, value };
+  }
+
+  async function searchCategoryModalTop(term) {
+    const inputs = getVisibleCategoryModalInputs();
+    const topInput = inputs[0] && inputs[0].node;
+    if (!topInput) return { ok: false, reason: 'top category search input not found', term };
+    return fillCategoryModalInput(topInput, term, { clickSearch: true, waitMs: 1100 });
+  }
+
+  async function searchCategoryModalColumns(terms) {
+    const inputs = getVisibleCategoryModalInputs().slice(1);
+    const results = [];
+    for (let index = 0; index < Math.min(inputs.length, terms.length); index += 1) {
+      const term = terms[index];
+      if (!term) continue;
+      const result = await fillCategoryModalInput(inputs[index].node, term, { waitMs: 700 });
+      results.push({ index, term, ...result });
+    }
+    return results;
+  }
+
+  async function selectCategoryByModalSearchPlan(plan) {
+    if (!plan) return { ok: false, skipped: true, reason: 'no modal search plan' };
+    const attempts = [];
+    for (const topTerm of plan.topTerms || []) {
+      attempts.push({ step: 'top-search', topTerm, result: await searchCategoryModalTop(topTerm) });
+      let leaf = await clickCategoryModalSearchResult(plan.leafTerms || [], plan.rejectTerms || [], plan);
+      attempts.push({ step: 'search-result-leaf-click', topTerm, ...leaf });
+      if (leaf.ok) {
+        const confirm = await finalizeCategorySelectionAfterVisibleWrite(plan);
+        await sleep(500);
+        const after = getProductCategorySelectedText();
+        const success = !isBlankSelectionText(after.selectedText) && categoryTextMatchesModalPlan(after.selectedText, plan);
+          return {
+            ok: success,
+            changed: success,
+            selectedText: after.selectedText,
+            mode: 'modal-search-plan-search-result',
+            reason: success ? '' : ((confirm && confirm.reason) || 'dxm_visible_category_not_found'),
+            planId: plan.id,
+            topTerm,
+            leafText: leaf.text,
+            confirm,
+          attempts,
+        };
+      }
+      if (plan.exactDxmOnly) {
+        attempts.push({
+          step: 'exact-dxm-only-stop',
+          topTerm,
+          ok: false,
+          reason: 'dxm_exact_category_not_found',
+        });
+        continue;
+      }
+      if (plan.source !== 'asin-aliexpress-evidence-store') {
+        leaf = await clickCategoryModalItem(plan.leafTerms || [], plan.rejectTerms || [], plan);
+        attempts.push({ step: 'direct-leaf-click', topTerm, ...leaf });
+        if (leaf.ok) {
+          const confirm = await finalizeCategorySelectionAfterVisibleWrite(plan);
+          await sleep(500);
+          const after = getProductCategorySelectedText();
+          const success = !isBlankSelectionText(after.selectedText) && categoryTextMatchesModalPlan(after.selectedText, plan);
+          return {
+            ok: success,
+            changed: success,
+            selectedText: after.selectedText,
+            mode: 'modal-search-plan-direct-leaf',
+            reason: success ? '' : ((confirm && confirm.reason) || 'dxm_visible_category_not_found'),
+            planId: plan.id,
+            topTerm,
+            leafText: leaf.text,
+            confirm,
+            attempts,
+          };
+        }
+      } else {
+        attempts.push({
+          step: 'direct-leaf-click',
+          topTerm,
+          ok: false,
+          skipped: true,
+          reason: 'asin evidence category requires an exact visible leaf; generic direct click disabled',
+        });
+      }
+      const topMatch = await clickCategoryModalItem(plan.columnTerms || [topTerm], null);
+      if (topMatch.ok) attempts.push({ step: 'top-match-click', ...topMatch });
+      await searchCategoryModalColumns(plan.columnTerms || []);
+      leaf = await clickCategoryModalItem(plan.leafTerms || [], plan.rejectTerms || [], plan);
+      attempts.push({ step: 'leaf-click', topTerm, ...leaf });
+      if (leaf.ok) {
+        const confirm = await finalizeCategorySelectionAfterVisibleWrite(plan);
+        await sleep(500);
+        const after = getProductCategorySelectedText();
+        const success = !isBlankSelectionText(after.selectedText) && categoryTextMatchesModalPlan(after.selectedText, plan);
+        return {
+          ok: success,
+          changed: success,
+          selectedText: after.selectedText,
+          mode: 'modal-search-plan',
+          reason: success ? '' : ((confirm && confirm.reason) || 'dxm_visible_category_not_found'),
+          planId: plan.id,
+          topTerm,
+          leafText: leaf.text,
+          confirm,
+          attempts,
+        };
+      }
+    }
+    return {
+      ok: false,
+      changed: false,
+      mode: isStrictDxmCandidatePlan(plan) ? 'strict-dxm-category-search' : (plan.exactDxmOnly ? 'exact-dxm-category-search' : 'modal-search-plan'),
+      planId: plan.id,
+      attempts,
+      reason: isStrictDxmCandidatePlan(plan) ? 'dxm_strict_category_not_found' : (plan.exactDxmOnly ? 'dxm_exact_category_not_found' : 'leaf not selected'),
+    };
+  }
+
+  async function clickVisibleCategoryCommitButton() {
+    const modal = getVisibleCategoryModal();
+    if (!modal) return { clicked: false, reason: 'category_modal_not_visible' };
+    const candidates = Array.from(modal.querySelectorAll('button,a,span,.ant-btn'))
+      .filter(visibleElement)
+      .map((node) => {
+        const clickable = node.closest('button,a') || node;
+        return {
+          node: clickable,
+          text: elementText(node),
+          className: String(node.className || ''),
+          rect: clickable.getBoundingClientRect(),
+        };
+      })
+      .filter((item) => /^\s*(\u9009\u62e9|\u786e\u5b9a|\u786e\u8ba4)\s*$/.test(item.text) || /ant-btn-primary/.test(item.className))
+      .filter((item) => !/\u5173\u95ed|\u53d6\u6d88|close|cancel/i.test(`${item.text} ${item.className}`))
+      .sort((a, b) => b.rect.top - a.rect.top || b.rect.left - a.rect.left);
+    const target = candidates[0];
+    if (!target) return { clicked: false, reason: 'category_commit_button_not_found' };
+    clickElement(target.node);
+    await sleep(900);
+    return {
+      clicked: true,
+      text: target.text,
+      closed: !getVisibleCategoryModal(),
+      mode: 'category-modal-commit-button',
+    };
+  }
+
+  async function dismissVisibleCategoryModal(allowDomFallback = false) {
+    const modal = getVisibleCategoryModal();
+    if (!modal) return { closed: true, mode: 'not-open' };
+    const tryButtons = (patterns) => Array.from(modal.querySelectorAll('button,a,span,.ant-modal-close'))
+      .filter(visibleElement)
+      .filter((node) => patterns.some((pattern) => pattern.test(`${elementText(node)} ${String(node.className || '')}`)))
+      .sort((a, b) => {
+        const ar = a.getBoundingClientRect();
+        const br = b.getBoundingClientRect();
+        return br.top - ar.top || br.left - ar.left;
+      });
+    for (const node of tryButtons([/^\s*(\u9009\u62e9|\u786e\u5b9a)\s*$/, /ant-btn-primary/])) {
+      clickElement(node.closest('button,a') || node);
+      await sleep(700);
+      if (!getVisibleCategoryModal()) return { closed: true, mode: 'confirm-button' };
+    }
+    const globalConfirm = Array.from(document.querySelectorAll('button,a,.ant-btn,span'))
+      .filter((node) => !node.closest(`#${PANEL_ID}`) && visibleElement(node))
+      .filter((node) => /^\s*(\u9009\u62e9|\u786e\u5b9a)\s*$/.test(elementText(node)))
+      .filter((node) => !/\u5173\u95ed|\u53d6\u6d88|close/i.test(`${elementText(node)} ${String(node.className || '')}`))
+      .sort((a, b) => {
+        const ar = a.getBoundingClientRect();
+        const br = b.getBoundingClientRect();
+        return br.top - ar.top || br.left - ar.left;
+      })[0];
+    if (globalConfirm) {
+      clickElement(globalConfirm.closest('button,a') || globalConfirm);
+      await sleep(900);
+      if (!getVisibleCategoryModal()) return { closed: true, mode: 'global-confirm-button' };
+    }
+    for (const node of tryButtons([/^\s*(\u5173\u95ed|\u53d6\u6d88|×|x)\s*$/i, /ant-modal-close|close/i])) {
+      clickElement(node.closest('button,a') || node);
+      await sleep(700);
+      if (!getVisibleCategoryModal()) return { closed: true, mode: 'close-button' };
+    }
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', code: 'Escape', bubbles: true, cancelable: true }));
+    await sleep(500);
+    if (!getVisibleCategoryModal()) return { closed: true, mode: 'escape' };
+    if (allowDomFallback) {
+      Array.from(document.querySelectorAll('.ant-modal-root,.ant-modal-wrap,.ant-modal-mask,.ant-modal'))
+        .filter((node) => elementText(node).includes('\u9009\u62e9\u7c7b\u76ee') || elementText(node).includes('\u9009\u62e9\u5206\u7c7b'))
+        .forEach((node) => {
+          node.style.display = 'none';
+          node.style.pointerEvents = 'none';
+          node.setAttribute('data-dxm-category-modal-hidden', '1');
+        });
+      await sleep(200);
+      if (!getVisibleCategoryModal()) return { closed: true, mode: 'dom-fallback' };
+    }
+    return { closed: false, mode: 'failed' };
+  }
+
+  async function waitForCategoryModalClosed(timeoutMs = 2200) {
+    const start = Date.now();
+    while (getVisibleCategoryModal() && Date.now() - start < timeoutMs) {
+      await sleep(160);
+    }
+    return !getVisibleCategoryModal();
+  }
+
+  async function hideCommittedCategoryModalAfterWrite() {
+    const modal = getVisibleCategoryModal();
+    if (!modal) return { closed: true, mode: 'not-open-after-write' };
+    const roots = new Set([modal]);
+    let node = modal;
+    while (node && node !== document.body && node !== document.documentElement) {
+      if (
+        node.classList
+        && (
+          node.classList.contains('ant-modal-root')
+          || node.classList.contains('ant-modal-wrap')
+          || node.classList.contains('ant-modal')
+          || node.classList.contains('ant-drawer')
+        )
+      ) {
+        roots.add(node);
+      }
+      node = node.parentElement;
+    }
+    Array.from(document.querySelectorAll('.ant-modal-root,.ant-modal-wrap,.ant-modal-mask,.ant-modal,.ant-drawer,.ant-drawer-mask,.ant-drawer-content-wrapper'))
+      .filter((item) => item === modal || item.contains(modal) || modal.contains(item) || /选择类目|选择分类|category/i.test(elementText(item)))
+      .forEach((item) => roots.add(item));
+    roots.forEach((item) => {
+      item.style.display = 'none';
+      item.style.pointerEvents = 'none';
+      item.setAttribute('data-dxm-category-modal-hidden', '1');
+    });
+    document.body.classList.remove('ant-scrolling-effect');
+    document.body.style.overflow = '';
+    await sleep(120);
+    return {
+      closed: !getVisibleCategoryModal(),
+      mode: 'dom-fallback-after-category-write',
+      hiddenNodes: roots.size,
+    };
+  }
+
+  function categorySelectionMatchesExpectedPlan(selectedText, plan = null) {
+    if (isBlankSelectionText(selectedText)) return false;
+    return !plan || categoryTextMatchesModalPlan(selectedText, plan);
+  }
+
+  function buildCategoryCommitFailure(before, after, commit, plan = null) {
+    return {
+      closed: !getVisibleCategoryModal(),
+      mode: 'dxm_category_commit_failed',
+      reason: 'dxm_category_commit_failed',
+      selectedText: (after && after.selectedText) || (before && before.selectedText) || '',
+      expectedCategoryPath: plan && plan.expectedCategoryPath ? plan.expectedCategoryPath : '',
+      expectedLeafTerms: plan && Array.isArray(plan.leafTerms) ? plan.leafTerms : [],
+      commit,
+      modalStillVisible: Boolean(getVisibleCategoryModal()),
+    };
+  }
+
+  function isCategoryCommitFailed(result) {
+    return Boolean(result && result.reason === 'dxm_category_commit_failed');
+  }
+
+  async function finalizeCategorySelectionAfterVisibleWrite(plan = null) {
+    let before = getProductCategorySelectedText();
+    if (!categorySelectionMatchesExpectedPlan(before.selectedText, plan)) {
+      if (getVisibleCategoryModal()) {
+        const commit = await clickVisibleCategoryCommitButton();
+        await sleep(500);
+        const afterCommit = getProductCategorySelectedText();
+        if (categorySelectionMatchesExpectedPlan(afterCommit.selectedText, plan)) {
+          if (getVisibleCategoryModal()) {
+            const hidden = await hideCommittedCategoryModalAfterWrite();
+            return {
+              ...hidden,
+              mode: hidden.mode || 'category-commit-button',
+              selectedText: afterCommit.selectedText,
+              commit,
+              modalStillVisible: Boolean(getVisibleCategoryModal()),
+            };
+          }
+          return {
+            closed: true,
+            mode: 'category-commit-button',
+            selectedText: afterCommit.selectedText,
+            commit,
+            modalStillVisible: false,
+          };
+        }
+        return buildCategoryCommitFailure(before, afterCommit, commit, plan);
+      }
+      return buildCategoryCommitFailure(before, before, null, plan);
+    }
+    if (getVisibleCategoryModal()) {
+      const hidden = await hideCommittedCategoryModalAfterWrite();
+      const afterHidden = getProductCategorySelectedText();
+      if (hidden.closed && categorySelectionMatchesExpectedPlan(afterHidden.selectedText || before.selectedText, plan)) {
+        return {
+          ...hidden,
+          selectedText: afterHidden.selectedText || before.selectedText,
+          modalStillVisible: Boolean(getVisibleCategoryModal()),
+        };
+      }
+      if (!categorySelectionMatchesExpectedPlan(afterHidden.selectedText || before.selectedText, plan)) {
+        return buildCategoryCommitFailure(before, afterHidden, hidden, plan);
+      }
+    }
+    let dismiss = await dismissVisibleCategoryModal(false);
+    let closed = dismiss.closed || await waitForCategoryModalClosed(1200);
+    if (!closed) {
+      dismiss = await dismissVisibleCategoryModal(true);
+      closed = dismiss.closed || await waitForCategoryModalClosed(800);
+    }
+    const after = getProductCategorySelectedText();
+    if (!categorySelectionMatchesExpectedPlan(after.selectedText || before.selectedText, plan)) {
+      return buildCategoryCommitFailure(before, after, dismiss, plan);
+    }
+    return {
+      ...dismiss,
+      closed,
+      selectedText: after.selectedText || before.selectedText,
+      modalStillVisible: Boolean(getVisibleCategoryModal()),
+    };
   }
 
   async function selectFastDrawerStorageCategory() {
@@ -4072,12 +6581,14 @@
       await sleep(1200);
     }
     const after = getProductCategorySelectedText();
+    const dismiss = !isBlankSelectionText(after.selectedText) ? await dismissVisibleCategoryModal(true) : null;
     return {
       ok: !isBlankSelectionText(after.selectedText) && isGoodDrawerStorageCategory(after.selectedText),
       changed: true,
       selectedText: after.selectedText,
       mode: 'fast-drawer-storage-path',
       leaf: leaf.text,
+      dismiss,
     };
   }
 
@@ -4085,18 +6596,78 @@
     const current = getProductCategorySelectedText();
     if (!current.container) return { changed: false, ok: false, reason: 'product category container not found' };
     const title = getCurrentEditTitleText();
-    if (isDrawerStorageProductText(title)) {
-      const fast = await selectFastDrawerStorageCategory();
-      if (fast.ok) return fast;
+    const modalPlan = buildCategoryModalSearchPlan(title);
+    const selectedMatchesVerifiedPlan = modalPlan && categoryTextMatchesModalPlan(current.selectedText, modalPlan);
+    if (
+      !isBlankSelectionText(current.selectedText)
+      && !isWrongDrawerStorageCategory(current.selectedText)
+      && (selectedMatchesVerifiedPlan || (!REQUIRE_ALIEXPRESS_CATEGORY_EVIDENCE && !modalPlan))
+    ) {
+      return {
+        changed: false,
+        ok: true,
+        selectedText: current.selectedText,
+        mode: 'already-selected',
+        categoryEvidence: modalPlan ? modalPlan.categoryEvidence : null,
+      };
     }
-    if (!isBlankSelectionText(current.selectedText) && !isWrongDrawerStorageCategory(current.selectedText)) {
-      return { changed: false, ok: true, selectedText: current.selectedText, mode: 'already-selected' };
+    if (!modalPlan && REQUIRE_ALIEXPRESS_CATEGORY_EVIDENCE) {
+      const categoryEvidence = buildMissingCategoryEvidence(title, current.selectedText);
+      return {
+        changed: false,
+        ok: false,
+        reason: 'AliExpress category evidence is missing; run category verification before Dianxiaomi category search',
+        selectedText: current.selectedText,
+        mode: 'aliexpress-evidence-required',
+        failureReason: 'category_evidence_missing',
+        legalSkipReason: 'category_evidence_missing',
+        categoryEvidence,
+      };
     }
 
     const terms = buildVisibleCategoryTerms();
     const opener = Array.from(current.container.querySelectorAll('.ant-select-selector,.ant-select,input[role="combobox"],input[type="search"],input[type="text"],button'))
       .filter(visibleElement)[0];
     if (!opener) return { changed: false, ok: false, reason: 'product category selector not found', terms };
+
+    if (modalPlan) {
+      const categoryButton = Array.from(current.container.querySelectorAll('button,a,.ant-btn'))
+        .filter(visibleElement)
+        .find((node) => elementText(node).includes('\u9009\u62e9\u5206\u7c7b'));
+      clickElement(categoryButton || opener);
+      await sleep(900);
+      const planned = await selectCategoryByModalSearchPlan(modalPlan);
+      if (planned.ok) {
+        return {
+          ...planned,
+          categoryEvidence: modalPlan.categoryEvidence,
+        };
+      }
+      const dismiss = await dismissVisibleCategoryModal(false);
+      const after = getProductCategorySelectedText();
+      const evidenceClear = modalPlan.categoryEvidence && modalPlan.categoryEvidence.status === CATEGORY_EVIDENCE_STATUS.CLEAR;
+      const autoMappingFailureReason = modalPlan.dxmAutoMappingRequired
+        ? (planned.reason === 'dxm_exact_category_not_found' ? 'dxm_exact_category_not_found' : 'aliexpress_category_confirmed_but_dxm_mapping_missing')
+        : 'dxm_visible_category_not_found';
+      return {
+        ...planned,
+        changed: Boolean(planned.changed),
+        ok: false,
+        selectedText: after.selectedText || planned.selectedText || current.selectedText,
+        mode: planned.mode || 'modal-search-plan',
+        dismiss,
+        genericFallbackDisabled: true,
+        categoryEvidence: modalPlan.categoryEvidence,
+        failureReason: evidenceClear ? autoMappingFailureReason : 'category_evidence_missing',
+        legalSkipReason: evidenceClear ? autoMappingFailureReason : 'category_evidence_missing',
+        reason: planned.reason || 'AliExpress category is confirmed, but Dianxiaomi exact category was not found',
+      };
+    }
+
+    if (isDrawerStorageProductText(title)) {
+      const fast = await selectFastDrawerStorageCategory();
+      if (fast.ok) return fast;
+    }
 
     for (const term of terms) {
       clickElement(opener);
@@ -4114,13 +6685,16 @@
       await sleep(700);
       const after = getProductCategorySelectedText();
       if (!isBlankSelectionText(after.selectedText)) {
+        const dismiss = await dismissVisibleCategoryModal(true);
+        const ok = !modalPlan || categoryTextMatchesModalPlan(after.selectedText, modalPlan);
         return {
           changed: true,
-          ok: true,
+          ok,
           selectedText: after.selectedText,
           matchedTerm: matched.term,
           optionText: matched.optionText,
           mode: 'dropdown-search',
+          dismiss,
         };
       }
     }
@@ -4154,13 +6728,16 @@
         }
         const after = getProductCategorySelectedText();
         if (!isBlankSelectionText(after.selectedText)) {
+          const dismiss = await dismissVisibleCategoryModal(true);
+          const ok = !modalPlan || categoryTextMatchesModalPlan(after.selectedText, modalPlan);
           return {
             changed: true,
-            ok: true,
+            ok,
             selectedText: after.selectedText,
             matchedTerm: matched.term,
             optionText: matched.optionText,
             mode: 'category-button-modal',
+            dismiss,
           };
         }
       }
@@ -4169,26 +6746,33 @@
     return { changed: false, ok: false, reason: 'no high-confidence category option selected', terms };
   }
 
+  const FIXED_REQUIRED_ATTRIBUTE_VALUES = Object.freeze({
+    brand: Object.freeze(['NONE(AE\u5b58\u91cf)*******(None)']),
+    highConcernedChemical: Object.freeze(['\u5929\u7136\u672a\u5904\u7406(None)']),
+    origin: Object.freeze(['\u7f8e\u56fd(Origin)(US(Origin))']),
+  });
+
   const VISIBLE_REQUIRED_ATTRIBUTE_RULES = [
     {
       id: 'brand',
       label: /\u54c1\u724c|brand/i,
-      values: ['None', 'NONE', 'No Brand', 'NoBrand'],
+      exclude: /\u54c1\u724c\u5236\u9020\u5546|\u5236\u9020\u5546|\u6b27\u76df|\u571f\u8033\u5176|manufacturer/i,
+      values: FIXED_REQUIRED_ATTRIBUTE_VALUES.brand,
     },
     {
       id: 'high_concerned_chemical',
       label: /\u9ad8\u5173\u6ce8\u5316\u5b66\u54c1|high[-\s]?concerned chemical/i,
-      values: ['\u5929\u7136\u672a\u5904\u7406(None)', '\u5929\u7136\u672a\u5904\u7406', 'None', 'No', '\u65e0'],
+      values: FIXED_REQUIRED_ATTRIBUTE_VALUES.highConcernedChemical,
     },
     {
       id: 'function',
       label: /\u529f\u80fd|function/i,
-      values: ['Other', '\u5176\u4ed6', 'Reusable', '\u53ef\u91cd\u590d\u4f7f\u7528'],
+      values: ['\u5176\u4ed6(Other)', 'Other', '\u5176\u4ed6'],
     },
     {
       id: 'feature',
       label: /\u7279\u6027|\u7279\u70b9|feature/i,
-      values: ['Multi-Purpose', '\u591a\u7528\u9014', 'Reusable', '\u53ef\u91cd\u590d\u4f7f\u7528', 'Other', '\u5176\u4ed6'],
+      values: ['\u5176\u4ed6(Other)', 'Other', '\u5176\u4ed6'],
     },
     {
       id: 'use',
@@ -4198,7 +6782,17 @@
     {
       id: 'origin',
       label: /\u4ea7\u5730|\u56fd\u5bb6\u6216\u5730\u533a|origin/i,
-      values: ['\u7f8e\u56fd(Origin)(US(Origin))', 'US(Origin)', 'United States', '\u7f8e\u56fd', 'USA', 'US'],
+      values: FIXED_REQUIRED_ATTRIBUTE_VALUES.origin,
+    },
+    {
+      id: 'product_application_scenarios',
+      label: /\u4ea7\u54c1\u9002\u7528\u573a\u666f|product application scenarios?/i,
+      values: ['\u53a8\u623f(Kitchen)', 'Kitchen', '\u53a8\u623f', '\u9910\u684c\u7528(Dining table)', 'Dining table', '\u9910\u684c\u7528'],
+    },
+    {
+      id: 'theme',
+      label: /\u4e3b\u9898|theme/i,
+      values: ['\u5176\u4ed6(Other)', 'Other', '\u5176\u4ed6'],
     },
   ];
 
@@ -4208,61 +6802,2029 @@
     const payload = {
       subject: firstNonEmpty(titleInput ? getInputText(titleInput) : '', product.subject, product.title, product.productTitle, ''),
     };
+    const sourceText = normalizeCategoryText([
+      payload.subject,
+      product.subject,
+      product.title,
+      product.productTitle,
+      product.description,
+      product.detail,
+    ].filter(Boolean).join(' '));
+    if (/\b(?:sink|drain)\s+(?:strainer|filter|catcher|stopper)|\bkitchen\s+sink|\u6c34\u69fd|\u6ee4\u7f51/.test(sourceText)) {
+      return ['\u4e0d\u9508\u94a2(Stainless Steel)', 'Stainless Steel', '\u4e0d\u9508\u94a2', 'Metal', '\u91d1\u5c5e', 'Steel', '\u94a2'];
+    }
+    if (/silicone|\u7845\u80f6|\u7845\u6a61\u80f6/.test(sourceText)) {
+      return ['\u7845\u80f6(Silicone)', 'Silicone', '\u7845\u80f6', 'Silicone Rubber', '\u7845\u6a61\u80f6', 'Rubber', '\u6a61\u80f6'];
+    }
     const candidates = inferMaterialCandidates(payload, product);
     const values = [];
     for (const candidate of candidates) {
-      if (/pet/i.test(candidate)) values.push('PET', 'Plastic', '\u5851\u6599');
-      else if (/acrylic/i.test(candidate)) values.push('Acrylic', '\u4e9a\u514b\u529b', 'Plastic', '\u5851\u6599');
-      else if (/plastic|abs/i.test(candidate)) values.push('Plastic', '\u5851\u6599', 'ABS');
+      if (/pet/i.test(candidate)) values.push('PET', '\u5851\u6599(Plastic)', 'Plastic', '\u5851\u6599');
+      else if (/acrylic/i.test(candidate)) values.push('Acrylic', '\u4e9a\u514b\u529b', '\u5851\u6599(Plastic)', 'Plastic', '\u5851\u6599');
+      else if (/plastic|abs/i.test(candidate)) values.push('\u5851\u6599(Plastic)', 'Plastic', '\u5851\u6599', 'ABS');
       else if (/silicone/i.test(candidate)) values.push('Silicone', '\u7845\u80f6');
       else if (/rubber/i.test(candidate)) values.push('Rubber', '\u6a61\u80f6');
       else if (/metal/i.test(candidate)) values.push('Metal', '\u91d1\u5c5e');
       else if (/wood/i.test(candidate)) values.push('Wood', '\u6728');
       else if (/fiberglass/i.test(candidate)) values.push('Fiberglass', 'Glass Fiber', '\u73bb\u7483\u7ea4\u7ef4');
     }
-    values.push('PET', 'Plastic', '\u5851\u6599');
+    values.push('\u7845\u80f6(Silicone)', 'Silicone', '\u7845\u80f6', 'Silicone Rubber', '\u7845\u6a61\u80f6', 'PET', '\u5851\u6599(Plastic)', 'Plastic', '\u5851\u6599');
+    values.push('\u5176\u4ed6 \uff08\u81ea\u884c\u586b\u5199\uff09(Other)', '\u5176\u4ed6(\u81ea\u884c\u586b\u5199)(Other)', '\u5176\u4ed6(Other)', 'Other', '\u5176\u4ed6');
+    return Array.from(new Set(values));
+  }
+
+  function getVisibleApplicationScenarioCandidateValues() {
+    const product = getProductFromEdit(state.editData) || {};
+    const titleInput = findProductTitleInput();
+    const sourceText = normalizeCategoryText([
+      titleInput ? getInputText(titleInput) : '',
+      product.subject,
+      product.title,
+      product.productTitle,
+      product.description,
+      product.detail,
+      getProductCategorySelectedText().selectedText,
+    ].filter(Boolean).join(' '));
+    const values = [];
+    if (/kitchen|trivet|hot\s*pad|placemat|table|countertop|dish|sink|\u53a8\u623f|\u9910\u684c|\u9910\u57ab|\u9694\u70ed|\u9505\u57ab/.test(sourceText)) {
+      values.push('\u53a8\u623f(Kitchen)', 'Kitchen', '\u53a8\u623f', '\u9910\u684c\u7528(Dining table)', 'Dining table', '\u9910\u684c\u7528');
+    }
+    values.push('\u53a8\u623f(Kitchen)', 'Kitchen', '\u53a8\u623f', '\u5bb6\u5c45(Home)', 'Home', '\u5bb6\u5c45');
+    return Array.from(new Set(values));
+  }
+
+  function getVisibleThemeCandidateValues() {
+    return ['\u5176\u4ed6(Other)', 'Other', '\u5176\u4ed6'];
+  }
+
+  function getGenericOtherCandidateValues() {
+    return ['\u5176\u4ed6(Other)', 'Other', '\u5176\u4ed6', '\u5176\u4ed6(others)'];
+  }
+
+  function getVisibleFrameMaterialCandidateValues() {
+    return getGenericOtherCandidateValues();
+  }
+
+  function getVisibleUseCandidateValues() {
+    return getGenericOtherCandidateValues().concat(['杂货(Sundries)', 'Sundries', '杂货']);
+  }
+
+  function getVisibleFunctionCandidateValues() {
+    return getGenericOtherCandidateValues();
+  }
+
+  function getVisibleFeatureCandidateValues(labelText = '') {
+    const product = getProductFromEdit(state.editData) || {};
+    const titleInput = findProductTitleInput();
+    const sourceText = normalizeCategoryText([
+      titleInput ? getInputText(titleInput) : '',
+      product.subject,
+      product.title,
+      product.productTitle,
+      product.description,
+      product.detail,
+      labelText,
+      elementText(getEditFormScope()).slice(0, 1200),
+    ].filter(Boolean).join(' '));
+    const values = [];
+    if (/bpa[-\s]?free|\u65e0\s*bpa|\u4e0d\u542b\s*bpa/i.test(sourceText)) {
+      values.push(
+        '\u65e0BPA\u5851\u6599(Bpa-free plastic)',
+        'Bpa-free plastic',
+        '\u65e0BPA\u5851\u6599',
+        'BPA free',
+        'BPA-free'
+      );
+    }
+    if (/waterproof|\u9632\u6c34/.test(sourceText)) {
+      values.push('\u9632\u6c34(Waterproof)', 'Waterproof', '\u9632\u6c34');
+    }
+    if (/reusable|\u53ef\u91cd\u590d|\u53cd\u590d\u4f7f\u7528/.test(sourceText)) {
+      values.push('\u53ef\u91cd\u590d\u4f7f\u7528(Reusable)', 'Reusable', '\u53ef\u91cd\u590d\u4f7f\u7528');
+    }
+    if (/multi\s*use|multiple\s+uses|multipurpose|multi-purpose|\u591a\u7528|\u591a\u7528\u9014|\u6536\u7eb3|\u6574\u7406|organizer|storage|kitchen|bathroom|vanity|home|household/.test(sourceText)) {
+      values.push(
+        '\u591a\u7528\u9014(Multiple Uses)',
+        'Multiple Uses'
+      );
+    }
+    if (/adjustable|\u53ef\u8c03|\u53ef\u8c03\u8282|resize|extendable|expandable/.test(sourceText)) {
+      values.push('\u53ef\u8c03\u8282\u5c3a\u5bf8(Adjustable Size)', 'Adjustable Size', '\u53ef\u8c03\u8282\u5c3a\u5bf8');
+    }
+    values.push('\u5176\u4ed6(Other)', 'Other', '\u5176\u4ed6');
     return Array.from(new Set(values));
   }
 
   function findVisibleAttributeContainers() {
-    return Array.from(document.querySelectorAll('.ant-form-item,.form-group,.row,div,td,tr'))
+    const scope = getEditFormScope();
+    return Array.from(scope.querySelectorAll('.ant-form-item,.form-group,.row,div,td,tr'))
       .filter((node) => !node.closest(`#${PANEL_ID}`) && visibleElement(node))
-      .filter((node) => node.querySelector('.ant-select,input[role="combobox"],input[type="search"],input[type="text"]'))
+      .filter((node) => node.querySelector('.ant-select,input[role="combobox"],input[type="search"],input[type="text"],input[type="checkbox"],input[type="radio"]'))
       .map((node) => ({ node, text: elementText(node), rect: node.getBoundingClientRect() }))
       .filter((item) => item.text && item.text.length < 700)
       .sort((a, b) => a.text.length - b.text.length || a.rect.top - b.rect.top);
   }
 
-  function findVisibleOptionByCandidateValues(values) {
-    const normalizedValues = values.map((value) => normalizeCategoryText(value)).filter(Boolean);
-    const visibleDropdowns = Array.from(document.querySelectorAll('.ant-select-dropdown')).filter((node) => {
-      if (!visibleElement(node)) return false;
-      return !String(node.className || '').includes('ant-select-dropdown-hidden');
-    });
-    const roots = visibleDropdowns.length ? visibleDropdowns : [document];
+  function getAttributeContainerLabelText(node) {
+    const labelNode = node && node.querySelector('.attr-label,.label-wrapper,.ant-form-item-label,label');
+    return elementText(labelNode).replace(/\s+/g, ' ').trim();
+  }
+
+  function hasVisibleRequiredAttributeMarker(node) {
+    if (!node || node.closest(`#${PANEL_ID}`) || !visibleElement(node)) return false;
+    const labelText = getAttributeContainerLabelText(node);
+    const text = elementText(node);
+    return Boolean(
+      node.querySelector('.attr-label.required,.ant-form-item-required')
+      || (labelText && /\*/.test(labelText))
+      || /^\s*\*/.test(text.slice(0, 160))
+    );
+  }
+
+  function nodeOverlapsAnyUsed(node, usedNodes) {
+    for (const used of usedNodes) {
+      if (node === used || node.contains(used) || used.contains(node)) return true;
+    }
+    return false;
+  }
+
+  function findBestAttributeContainerForRule(containers, rule, usedNodes, options = {}) {
+    const matches = containers
+      .filter((candidate) => rule.label.test(candidate.text) && !(rule.exclude && rule.exclude.test(candidate.text)))
+      .filter((candidate) => !options.requireRequiredStar || hasVisibleRequiredAttributeMarker(candidate.node))
+      .filter((candidate) => {
+        if (!options.requireRequiredStar) return true;
+        const labelText = getAttributeContainerLabelText(candidate.node);
+        const currentFieldText = labelText || candidate.text.slice(0, 180);
+        return rule.label.test(currentFieldText) && !(rule.exclude && rule.exclude.test(currentFieldText));
+      })
+      .filter((candidate) => !nodeOverlapsAnyUsed(candidate.node, usedNodes))
+      .map((candidate) => {
+        const labelBonus = candidate.node.matches('.ant-form-item,.form-group,.row,tr') ? 0 : 2000;
+        const requiredBonus = /\*/.test(candidate.text) ? 0 : 200;
+        const multiFieldPenalty = (candidate.text.match(/\*\s*(品牌|高关注化学品|产地|材质|Brand|Material|Origin)/gi) || []).length > 1 ? 20000 : 0;
+        return {
+          ...candidate,
+          score: labelBonus + requiredBonus + multiFieldPenalty + candidate.text.length + Math.round(candidate.rect.height),
+        };
+      })
+      .sort((a, b) => a.score - b.score || a.rect.top - b.rect.top);
+    return matches[0] || null;
+  }
+
+  function getDirectRequiredAttributeClassName(ruleId) {
+    const classByRule = {
+      frame_material: 'smtDynamicAttr906',
+      function: 'smtDynamicAttr43',
+      use: 'smtDynamicAttr521',
+      high_concerned_chemical: 'smtDynamicAttr400000603',
+      origin: 'smtDynamicAttr219',
+      material: 'smtDynamicAttr10',
+    };
+    return classByRule[ruleId] || '';
+  }
+
+  function findDirectRequiredAttributeContainer(ruleId, options = {}) {
+    const className = getDirectRequiredAttributeClassName(ruleId);
+    if (!className) return null;
+    const scope = getEditFormScope();
+    const node = Array.from(scope.querySelectorAll(`.${className}`))
+      .filter((item) => !item.closest(`#${PANEL_ID}`) && visibleElement(item))
+      .map((item) => item.closest('.ant-form-item') || item)
+      .filter(Boolean)[0];
+    if (!node) return null;
+    const requiredStar = hasVisibleRequiredAttributeMarker(node);
+    if (options.requireRequiredStar && !requiredStar) return null;
+    return {
+      node,
+      text: elementText(node),
+      requiredStar,
+      rect: node.getBoundingClientRect(),
+    };
+  }
+
+  function findRequiredAttributeExpandControl() {
+    const scope = getEditFormScope();
+    const roots = Array.from(scope.querySelectorAll('.attr-gray-container,.form-card,.form-card-content,.ant-form-item,div'))
+      .filter((node) => !node.closest(`#${PANEL_ID}`) && visibleElement(node))
+      .map((node) => ({ node, text: elementText(node), rect: node.getBoundingClientRect() }))
+      .filter((item) => item.text.includes('\u4ea7\u54c1\u5c5e\u6027') && item.text.includes('+\u5c55\u5f00') && item.text.length < 1800)
+      .sort((a, b) => a.text.length - b.text.length || a.rect.top - b.rect.top);
+    const container = roots[0] ? roots[0].node : scope;
+    return Array.from(container.querySelectorAll('span.link,a,button,span,div'))
+      .filter((node) => !node.closest(`#${PANEL_ID}`) && visibleElement(node))
+      .map((node) => ({ node, text: elementText(node), rect: node.getBoundingClientRect() }))
+      .filter((item) => item.text === '+\u5c55\u5f00')
+      .sort((a, b) => a.text.length - b.text.length || b.rect.left - a.rect.left)[0]?.node || null;
+  }
+
+  async function ensureRequiredAttributeExpanded(ruleId) {
+    if (findDirectRequiredAttributeContainer(ruleId)) return { ok: true, expanded: false, mode: 'already-visible' };
+    const className = getDirectRequiredAttributeClassName(ruleId);
+    const scope = getEditFormScope();
+    const hiddenNode = className ? scope.querySelector(`.${className}`) : null;
+    if (!hiddenNode) return { ok: false, expanded: false, reason: 'direct attribute node not found' };
+    const control = findRequiredAttributeExpandControl();
+    if (!control) return { ok: false, expanded: false, reason: 'attribute expand control not found' };
+    callReactHandler(control, 'onMouseDown', control);
+    callReactHandler(control, 'onClick', control);
+    clickElement(control);
+    const start = Date.now();
+    while (Date.now() - start < 2200) {
+      await sleep(180);
+      if (findDirectRequiredAttributeContainer(ruleId)) return { ok: true, expanded: true, mode: 'expand-control' };
+    }
+    return { ok: false, expanded: true, reason: 'attribute remained hidden after expand click' };
+  }
+
+  function getCurrentDropdownOptionText(option) {
+    return firstNonEmpty(
+      option && option.getAttribute && option.getAttribute('title'),
+      option && option.querySelector && option.querySelector('.ant-select-item-option-content') && elementText(option.querySelector('.ant-select-item-option-content')),
+      elementText(option)
+    );
+  }
+
+  function collectVisibleSelectOptions(opener = null) {
+    const roots = opener ? getActiveSelectDropdowns(opener) : getVisibleSelectDropdowns();
+    const sourceRoots = roots.length ? roots : [document];
+    const options = [];
+    const seen = new Set();
+    for (const root of sourceRoots) {
+      const nodes = Array.from(root.querySelectorAll(
+        '.ant-select-item-option,.ant-select-dropdown-menu-item,.select2-results__option,[role="option"],li'
+      )).filter(visibleElement);
+      for (const node of nodes) {
+        if (
+          node.getAttribute('aria-disabled') === 'true'
+          || String(node.className || '').includes('disabled')
+        ) continue;
+        const optionNode = node.closest('.ant-select-item-option,.ant-select-dropdown-menu-item,.select2-results__option,[role="option"]') || node;
+        const text = normalizeSpaces(getCurrentDropdownOptionText(optionNode));
+        const normalized = normalizeSelectMatchText(text);
+        if (!text || text.length > 220 || !normalized) continue;
+        if (/\u6682\u65e0\u6570\u636e|\u65e0\u6570\u636e|no\s+data|not\s+found|\u641c\u7d22|\u8bf7\u9009\u62e9/i.test(text)) continue;
+        const key = `${normalized}|${optionNode.getBoundingClientRect().top}`;
+        if (seen.has(key)) continue;
+        seen.add(key);
+        options.push({ node: optionNode, text, normalized, rect: optionNode.getBoundingClientRect() });
+      }
+    }
+    return options.sort((a, b) => a.rect.top - b.rect.top || a.text.length - b.text.length);
+  }
+
+  function scoreSafeVisibleSelectOption(option, values, fallbackKind = 'generic') {
+    const text = option.normalized || normalizeSelectMatchText(option.text);
+    if (!text) return -1;
+    const wanted = values.map((value) => normalizeSelectMatchText(value)).filter(Boolean);
+    const exactIndex = wanted.findIndex((value) => text === value || text.includes(value) || value.includes(text));
+    if (exactIndex >= 0) return 100 - exactIndex;
+    const raw = String(option.text || '');
+    if (fallbackKind === 'frame_material') {
+      if (/other|\u5176\u4ed6/i.test(raw)) return 92;
+      if (/metal|steel|iron|alloy|\u91d1\u5c5e|\u94a2|\u94c1|\u5408\u91d1/i.test(raw)) return 42;
+      if (/plastic|\u5851\u6599|acrylic|\u4e9a\u514b\u529b/i.test(raw)) return 38;
+      return 12;
+    }
+    if (fallbackKind === 'material') {
+      if (/metal|steel|iron|alloy|\u91d1\u5c5e|\u94a2|\u94c1|\u5408\u91d1/i.test(raw)) return 78;
+      if (/silicone|\u7845\u80f6/i.test(raw)) return 74;
+      if (/acrylic|\u4e9a\u514b\u529b/i.test(raw)) return 68;
+      if (/plastic|\u5851\u6599/i.test(raw)) return 62;
+      if (/other|\u5176\u4ed6/i.test(raw)) return 55;
+      return 18;
+    }
+    if (fallbackKind === 'plastic_type') {
+      if (/^PC(?:\s*\(PC\))?$/i.test(raw) || /\bPC\b/i.test(raw)) return 92;
+      if (/polycarbonate|\u805a\u78b3\u9178\u916f/i.test(raw)) return 88;
+      return 12;
+    }
+    if (fallbackKind === 'function' || fallbackKind === 'feature') {
+      if (/other|\u5176\u4ed6/i.test(raw)) return 78;
+      return 0;
+    }
+    if (fallbackKind === 'use') {
+      if (/other|\u5176\u4ed6/i.test(raw)) return 78;
+      if (fallbackKind === 'use' && /food|\u98df\u54c1|beverage|\u996e\u6599|bedding|\u5e8a\u4e0a\u7528\u54c1|clothing|\u8863\u670d/i.test(raw)) return -1;
+      if (fallbackKind === 'use' && /sundries|\u6742\u8d27/i.test(raw)) return 76;
+      if (/garage|\u8f66\u5e93|tools?|\u5de5\u5177/i.test(raw)) return -1;
+      if (/office|\u529e\u516c|household|\u5bb6\u7528/i.test(raw)) return 72;
+      if (/storage|organizer|organize|home|household|office|reusable|multi|general|\u6536\u7eb3|\u6574\u7406|\u5bb6\u5c45|\u5bb6\u7528|\u529e\u516c|\u53ef\u91cd\u590d|\u591a\u7528|\u901a\u7528/i.test(raw)) return 70;
+      return 0;
+    }
+    if (fallbackKind === 'product_application_scenarios') {
+      if (/kitchen|\u53a8\u623f/i.test(raw)) return 88;
+      if (/dining\s*table|\u9910\u684c/i.test(raw)) return 82;
+      if (/home|household|\u5bb6\u5c45|\u5bb6\u7528/i.test(raw)) return 60;
+      return 18;
+    }
+    if (fallbackKind === 'theme') {
+      if (/other|\u5176\u4ed6/i.test(raw)) return 88;
+      return 18;
+    }
+    if (fallbackKind === 'origin') {
+      if (/united states|\busa?\b|\u7f8e\u56fd/i.test(raw)) return 88;
+      return 12;
+    }
+    if (/other|\u5176\u4ed6|none|\u65e0/i.test(raw)) return 60;
+    return 20;
+  }
+
+  async function findSafeVisibleSelectOptionWithScroll(opener, values, fallbackKind, options = {}) {
+    const deadlineAt = getDeadlineAt(options);
+    const pickBest = () => {
+      const scored = collectVisibleSelectOptions(opener)
+        .map((item) => ({ ...item, score: scoreSafeVisibleSelectOption(item, values, fallbackKind) }))
+        .filter((item) => item.score > 0)
+        .sort((a, b) => b.score - a.score || a.rect.top - b.rect.top || a.text.length - b.text.length);
+      return scored[0] || null;
+    };
+    let found = pickBest();
+    if (found) return { option: found.node, optionText: found.text, score: found.score };
+    const holders = getActiveSelectScrollContainers(opener);
+    for (const holder of holders) {
+      const maxScroll = Math.max(0, holder.scrollHeight - holder.clientHeight);
+      const step = Math.max(160, Math.floor(holder.clientHeight * 0.9) || 180);
+      for (let top = 0; top <= maxScroll + step; top += step) {
+        if (isDeadlineExceeded(deadlineAt)) return null;
+        holder.scrollTop = Math.min(top, maxScroll);
+        holder.dispatchEvent(new Event('scroll', { bubbles: true }));
+        await sleep(120);
+        found = pickBest();
+        if (found) return { option: found.node, optionText: found.text, score: found.score };
+      }
+    }
+    return null;
+  }
+
+  function findExactOptionInActiveDropdown(opener, values) {
+    const wanted = values.map((value) => normalizeSelectMatchText(value)).filter(Boolean);
+    const rawWanted = values.map((value) => String(value || '').replace(/\s+/g, ' ').trim()).filter(Boolean);
+    const roots = getActiveSelectDropdowns(opener);
     for (const root of roots) {
-      const options = Array.from(root.querySelectorAll('.ant-select-item-option,[role="option"],li,div,span'))
+      const options = Array.from(root.querySelectorAll('.ant-select-item-option,.ant-select-dropdown-menu-item,.select2-results__option,[role="option"],li'))
+        .filter(visibleElement);
+      for (const option of options) {
+        const rawText = getCurrentDropdownOptionText(option);
+        if (rawWanted.some((value) => rawText === value || rawText.includes(value))) return option;
+        const text = normalizeSelectMatchText(rawText);
+        if (wanted.some((value) => text === value || text.includes(value) || value.includes(text))) {
+          return option;
+        }
+      }
+    }
+    return null;
+  }
+
+  async function findExactOptionInActiveDropdownWithListScroll(opener, values, options = {}) {
+    const deadlineAt = getDeadlineAt(options);
+    let option = findExactOptionInActiveDropdown(opener, values);
+    if (option) return option;
+    const holders = getActiveSelectScrollContainers(opener);
+    for (const holder of holders) {
+      const maxScroll = Math.max(0, holder.scrollHeight - holder.clientHeight);
+      const step = Math.max(160, Math.floor(holder.clientHeight * 0.9) || 180);
+      for (let top = 0; top <= maxScroll + step; top += step) {
+        if (isDeadlineExceeded(deadlineAt)) return null;
+        holder.scrollTop = Math.min(top, maxScroll);
+        holder.dispatchEvent(new Event('scroll', { bubbles: true }));
+        await sleep(120);
+        option = findExactOptionInActiveDropdown(opener, values);
+        if (option) return option;
+      }
+    }
+    return null;
+  }
+
+  function findExactOptionInVisibleDropdowns(values, opener = null) {
+    if (!opener) {
+      for (const value of values) {
+        const option = findVisibleSelectOptionExact(value);
+        if (option) return option;
+      }
+    }
+    const wanted = values.map((value) => normalizeSelectMatchText(value)).filter(Boolean);
+    const rawWanted = values.map((value) => String(value || '').replace(/\s+/g, ' ').trim()).filter(Boolean);
+    for (const root of (opener ? getActiveSelectDropdowns(opener) : getVisibleSelectDropdowns())) {
+      const options = Array.from(root.querySelectorAll('.ant-select-item-option,.ant-select-dropdown-menu-item,.select2-results__option,[role="option"],li,div,span'))
+        .filter(visibleElement)
+        .map((node) => ({ node, rawText: getCurrentDropdownOptionText(node) || elementText(node) }))
+        .filter((item) => item.rawText && item.rawText.length < 700);
+      for (const item of options) {
+        if (rawWanted.some((value) => item.rawText === value || item.rawText.includes(value))) return item.node;
+        const normalized = normalizeSelectMatchText(item.rawText);
+        if (wanted.some((value) => normalized === value || normalized.includes(value) || value.includes(normalized))) return item.node;
+      }
+    }
+    return null;
+  }
+
+  async function closeVisibleSelectDropdowns() {
+    if (!getVisibleSelectDropdowns().length) return;
+    const target = document.activeElement && document.activeElement !== document.body ? document.activeElement : document.body;
+    dispatchKeyboardEvent(target, 'keydown', 'Escape');
+    dispatchKeyboardEvent(target, 'keyup', 'Escape');
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', code: 'Escape', bubbles: true, cancelable: true }));
+    await sleep(180);
+  }
+
+  async function waitForExactOptionInVisibleDropdowns(values, timeoutMs = 1600, opener = null, options = {}) {
+    const start = Date.now();
+    const deadlineAt = getDeadlineAt(options);
+    let option = findExactOptionInVisibleDropdowns(values, opener);
+    while (!option && Date.now() - start < timeoutMs && !isDeadlineExceeded(deadlineAt)) {
+      await sleep(180);
+      option = findExactOptionInVisibleDropdowns(values, opener);
+    }
+    return option;
+  }
+
+  async function ensureCurrentSelectDropdownOpen(container, opener) {
+    await closeVisibleSelectDropdowns();
+    const localTargets = Array.from(container.querySelectorAll('.ant-select-selector,.ant-select-selection,input[role="combobox"],input[type="search"],input[type="text"],.ant-select'))
+      .filter(visibleElement);
+    const primary = localTargets.find((node) => /ant-select-selector|ant-select-selection/.test(String(node.className || '')))
+      || localTargets.find((node) => node.matches && node.matches('input[role="combobox"],input[type="search"],input[type="text"]'))
+      || opener;
+    const selectRoot = primary && primary.closest ? primary.closest('.ant-select') : null;
+    const input = (selectRoot && selectRoot.querySelector('input[role="combobox"],input[type="search"],input[type="text"]'))
+      || (primary && primary.matches && primary.matches('input') ? primary : null);
+    const targets = Array.from(new Set([primary, input, selectRoot, opener].filter(Boolean)));
+    for (const target of targets) {
+      const eventTarget = input || target;
+      if (input && input.readOnly) input.removeAttribute('readonly');
+      if (input && typeof input.focus === 'function') input.focus();
+      callReactHandler(target, 'onMouseDown', eventTarget);
+      callReactHandler(target, 'onClick', eventTarget);
+      callReactHandler(eventTarget, 'onFocus', eventTarget);
+      dispatchPointerMouseClick(target);
+      clickElement(target);
+      if (input) {
+        input.dispatchEvent(new FocusEvent('focus', { bubbles: true, cancelable: false }));
+        input.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true }));
+        input.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+        dispatchKeyboardEvent(input, 'keydown', 'ArrowDown');
+      }
+      await sleep(420);
+      if (getVisibleSelectDropdowns().length) return true;
+    }
+    return false;
+  }
+
+  async function filterOpenDropdownByValue(opener, value) {
+    const input = findSelectSearchInputForOpenDropdown(opener)
+      || (opener && opener.matches && opener.matches('input') ? opener : null)
+      || (opener && opener.querySelector && opener.querySelector('input[role="combobox"],input[type="search"],input[type="text"]'));
+    if (!input) return null;
+    if (input.readOnly) input.removeAttribute('readonly');
+    setSelectSearchInputValue(input, value);
+    dispatchKeyboardEvent(input, 'keydown', value);
+    await sleep(550);
+    return input;
+  }
+
+  function activeDropdownShowsNoData(opener) {
+    const roots = opener ? getActiveSelectDropdowns(opener) : getVisibleSelectDropdowns();
+    return roots.some((root) => /\u6682\u65e0\u6570\u636e|\u65e0\u6570\u636e|no\s+data|not\s+found/i.test(elementText(root)));
+  }
+
+  async function clearOpenDropdownFilter(opener) {
+    const input = findSelectSearchInputForOpenDropdown(opener)
+      || (opener && opener.matches && opener.matches('input') ? opener : null)
+      || (opener && opener.querySelector && opener.querySelector('input[role="combobox"],input[type="search"],input[type="text"]'));
+    if (!input) return null;
+    if (input.readOnly) input.removeAttribute('readonly');
+    setSelectSearchInputValue(input, '');
+    input.dispatchEvent(new InputEvent('beforeinput', { bubbles: true, cancelable: true, inputType: 'deleteContentBackward', data: null }));
+    input.dispatchEvent(new InputEvent('input', { bubbles: true, cancelable: true, inputType: 'deleteContentBackward', data: null }));
+    input.dispatchEvent(new Event('change', { bubbles: true }));
+    dispatchKeyboardEvent(input, 'keyup', 'Backspace');
+    await sleep(520);
+    return input;
+  }
+
+  async function resetDropdownSearchToRecommendedOptions(opener) {
+    const input = await clearOpenDropdownFilter(opener);
+    if (!input) return { ok: false, reason: 'dropdown search input not found' };
+    await sleep(260);
+    return {
+      ok: true,
+      noData: activeDropdownShowsNoData(opener),
+      options: collectVisibleSelectOptions(opener).map((item) => item.text).slice(0, 12),
+    };
+  }
+
+  function getSelectInputControls(input) {
+    if (!input) return [];
+    return Array.from(new Set([
+      input.getAttribute('aria-controls'),
+      input.getAttribute('aria-owns'),
+      input.getAttribute('aria-activedescendant') ? String(input.getAttribute('aria-activedescendant')).replace(/_\d+$/, '') : '',
+    ].filter(Boolean)));
+  }
+
+  function getDropdownRootsForSelectInput(input, opener = null) {
+    const roots = [];
+    for (const id of getSelectInputControls(input)) {
+      const node = document.getElementById(id);
+      if (!node) continue;
+      const root = node.closest('.ant-select-dropdown,.ant-select-dropdown-menu,.select2-dropdown,.rc-virtual-list') || node;
+      roots.push(root);
+    }
+    roots.push(...getActiveSelectDropdowns(opener || input), ...getVisibleSelectDropdowns());
+    return Array.from(new Set(roots)).filter(Boolean);
+  }
+
+  function getControlledDropdownRootsForSelectInput(input) {
+    const roots = [];
+    for (const id of getSelectInputControls(input)) {
+      const node = document.getElementById(id);
+      if (!node) continue;
+      const root = node.closest('.ant-select-dropdown,.ant-select-dropdown-menu,.select2-dropdown,.rc-virtual-list') || node;
+      roots.push(root);
+    }
+    return Array.from(new Set(roots)).filter(Boolean);
+  }
+
+  function findExactOptionInSelectInputDropdown(input, values, opener = null) {
+    const wanted = values.map((value) => normalizeSelectMatchText(value)).filter(Boolean);
+    const rawWanted = values.map((value) => String(value || '').replace(/\s+/g, ' ').trim()).filter(Boolean);
+    for (const root of getDropdownRootsForSelectInput(input, opener)) {
+      const options = Array.from(root.querySelectorAll('.ant-select-item-option,.ant-select-dropdown-menu-item,.select2-results__option,[role="option"],li,div,span'))
+        .map((node) => {
+          const rawText = firstNonEmpty(
+            node.getAttribute && node.getAttribute('aria-label'),
+            node.getAttribute && node.getAttribute('title'),
+            getCurrentDropdownOptionText(node),
+            elementText(node)
+          );
+          const visibleOption = rawText ? Array.from(root.querySelectorAll('.ant-select-item-option,.ant-select-dropdown-menu-item,.select2-results__option'))
+            .find((option) => firstNonEmpty(option.getAttribute('title'), option.getAttribute('aria-label'), getCurrentDropdownOptionText(option), elementText(option)) === rawText) : null;
+          return {
+            node: visibleOption || node.closest('.ant-select-item-option,.ant-select-dropdown-menu-item,.select2-results__option,[role="option"],li') || node,
+            rawText,
+          };
+        })
+        .filter((item) => item.rawText && item.rawText.length < 240);
+      for (const item of options) {
+        if (rawWanted.some((value) => item.rawText === value || item.rawText.includes(value))) return item.node;
+        const normalized = normalizeSelectMatchText(item.rawText);
+        if (wanted.some((value) => normalized === value || normalized.includes(value) || value.includes(normalized))) return item.node;
+      }
+    }
+    return null;
+  }
+
+  async function selectAntMultipleExactValue(container, values, options = {}) {
+    const deadlineAt = getDeadlineAt(options);
+    const timeoutStage = options.timeoutStage || options.fieldId || 'multi-select';
+    const timeout = (extra = {}) => buildStageTimeoutResult(timeoutStage, deadlineAt, { locked: false, ...extra });
+    const verifyOptions = { requireCommittedOption: true, allowValidationIssue: Boolean(options.allowValidationIssue) };
+    const before = verifySelectContainerValue(container, values, verifyOptions);
+    if (before.ok) return { changed: false, ok: true, locked: true, selectedText: before.okText, mode: 'multi-already-selected', state: before };
+    const selectRoot = Array.from(container.querySelectorAll('.ant-select-multiple')).filter(visibleElement)[0];
+    if (!selectRoot) return { changed: false, ok: false, locked: false, reason: 'multi-select root not found' };
+    const selector = selectRoot.querySelector('.ant-select-selector') || selectRoot;
+    const input = selectRoot.querySelector('input[role="combobox"],input[type="search"],input[type="text"]');
+    if (!input) return { changed: false, ok: false, locked: false, reason: 'multi-select search input not found' };
+    if (input.readOnly) input.removeAttribute('readonly');
+    const attempts = [];
+    for (let attempt = 1; attempt <= 2; attempt += 1) {
+      if (isDeadlineExceeded(deadlineAt)) return timeout({ changed: false, attempts, reason: 'multi-select timeout before attempt' });
+      await closeVisibleSelectDropdowns();
+      const opened = await ensureCurrentSelectDropdownOpen(container, selector);
+      callReactHandler(selectRoot, 'onMouseDown', input);
+      callReactHandler(selector, 'onMouseDown', input);
+      dispatchPointerMouseClick(selector);
+      clickElement(selector);
+      if (typeof input.focus === 'function') input.focus();
+      input.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true }));
+      input.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+      dispatchKeyboardEvent(input, 'keydown', 'ArrowDown');
+      await sleep(260);
+      if (isDeadlineExceeded(deadlineAt)) return timeout({ changed: false, attempts, reason: 'multi-select timeout after open' });
+      setSelectSearchInputValue(input, values[0]);
+      dispatchKeyboardEvent(input, 'keyup', values[0]);
+      dispatchKeyboardEvent(input, 'keydown', 'ArrowDown');
+      await sleep(420);
+      let option = findExactOptionInSelectInputDropdown(input, values, selector)
+        || await findExactOptionInActiveDropdownWithListScroll(selector, values, { deadlineAt });
+      if (!option) {
+        dispatchKeyboardEvent(input, 'keydown', 'ArrowDown');
+        await sleep(180);
+        option = findExactOptionInSelectInputDropdown(input, values, selector);
+      }
+      const optionText = option ? getCurrentDropdownOptionText(option) || elementText(option) : '';
+      const visibleOptions = getDropdownRootsForSelectInput(input, selector)
+        .flatMap((root) => Array.from(root.querySelectorAll('.ant-select-item-option,[role="option"],li')).filter(visibleElement).map((node) => getCurrentDropdownOptionText(node) || elementText(node)).filter(Boolean))
+        .slice(0, 12);
+      attempts.push({ attempt, opened, optionText, found: Boolean(option), visibleOptions });
+      if (option) {
+        forceSelectOption(option);
+        clickSelectOption(option);
+        await sleep(360);
+        input.dispatchEvent(new Event('change', { bubbles: true }));
+        if (typeof input.blur === 'function') input.blur();
+        input.dispatchEvent(new Event('blur', { bubbles: true }));
+        const immediate = verifySelectContainerValue(container, values.concat(optionText ? [optionText] : []), verifyOptions);
+        if (immediate.ok) {
+          return {
+            changed: true,
+            ok: true,
+            locked: true,
+            selectedText: immediate.okText,
+            optionText,
+            acceptedValues: values.concat(optionText ? [optionText] : []),
+            attempts,
+            mode: 'ant-multiple-exact-option-click-immediate-readback',
+            state: immediate,
+          };
+        }
+        const after = await waitForSelectContainerValue(container, values.concat(optionText ? [optionText] : []), 900, { ...verifyOptions, deadlineAt });
+        const fieldReadback = options.fieldId
+          ? (getVisibleRequiredAttributeStatus().fields || []).find((item) => item && item.id === options.fieldId)
+          : null;
+        if (fieldReadback && fieldReadback.ok) {
+          return {
+            changed: true,
+            ok: true,
+            locked: true,
+            selectedText: fieldReadback.selectedText || after.okText,
+            optionText,
+            acceptedValues: values.concat(optionText ? [optionText] : []),
+            attempts,
+            mode: 'ant-multiple-exact-option-click-field-readback',
+            state: after,
+            fieldReadback,
+          };
+        }
+        if (after.ok) {
+          return {
+            changed: true,
+            ok: true,
+            locked: true,
+            selectedText: after.okText,
+            optionText,
+            acceptedValues: values.concat(optionText ? [optionText] : []),
+            attempts,
+            mode: 'ant-multiple-exact-option-click',
+            state: after,
+          };
+        }
+        attempts[attempts.length - 1].readback = after.okText;
+        attempts[attempts.length - 1].validationIssue = after.validationIssue || '';
+        return {
+          changed: true,
+          ok: false,
+          locked: false,
+          selectedText: after.okText,
+          optionText,
+          acceptedValues: values.concat(optionText ? [optionText] : []),
+          attempts,
+          mode: 'ant-multiple-exact-option-click-readback-failed',
+          state: after,
+          reason: after.reason || after.validationIssue || 'multi-select exact value readback failed after option click',
+        };
+      }
+      if (!opened && !visibleOptions.length) {
+        await sleep(900);
+        continue;
+      }
+      await clearOpenDropdownFilter(selector);
+    }
+    const after = verifySelectContainerValue(container, values, verifyOptions);
+    const hasAnyOptions = attempts.some((item) => item.visibleOptions && item.visibleOptions.length);
+    const reason = after.ok ? '' : (!hasAnyOptions ? 'multi-select dropdown did not open or produced no options' : 'multi-select exact value not committed');
+    return { changed: attempts.some((item) => item.found), ok: after.ok, locked: after.ok, selectedText: after.okText, attempts, mode: 'ant-multiple-exact-option-click', state: after, reason };
+  }
+
+  async function selectFixedHighConcernedChemicalValue(container, values, deadlineAt) {
+    const timeoutStage = 'high_concerned_chemical';
+    const timeout = (extra = {}) => buildStageTimeoutResult(timeoutStage, deadlineAt, { locked: false, ...extra });
+    const verifyOptions = { requireCommittedOption: true, allowValidationIssue: true };
+    const before = verifySelectContainerValue(container, values, verifyOptions);
+    if (before.ok) {
+      return { changed: false, ok: true, locked: true, selectedText: before.okText, mode: 'high-chemical-already-selected', state: before };
+    }
+    const labelOk = VISIBLE_REQUIRED_ATTRIBUTE_RULES[1].label.test(elementText(container));
+    if (!labelOk) {
+      return { changed: false, ok: false, locked: false, reason: 'high-concerned chemical container label mismatch' };
+    }
+    const opener = Array.from(container.querySelectorAll('.ant-select-selector,.ant-select-selection,.ant-select,input[role="combobox"],input[type="search"],input[type="text"]'))
+      .filter(visibleElement)[0];
+    if (!opener) {
+      return { changed: false, ok: false, locked: false, reason: 'high-concerned chemical dropdown opener not found' };
+    }
+    const attempts = [];
+    const acceptedValues = values.slice();
+    for (let attempt = 1; attempt <= 3; attempt += 1) {
+      if (isDeadlineExceeded(deadlineAt)) return timeout({ changed: attempts.some((item) => item.found), attempts, reason: 'high-concerned chemical timeout before attempt' });
+      const opened = await ensureCurrentSelectDropdownOpen(container, opener);
+      if (isDeadlineExceeded(deadlineAt)) return timeout({ changed: false, attempts, reason: 'high-concerned chemical timeout after open' });
+      const input = findSelectSearchInputForOpenDropdown(opener)
+        || (opener && opener.matches && opener.matches('input') ? opener : null)
+        || (opener && opener.querySelector && opener.querySelector('input[role="combobox"],input[type="search"],input[type="text"]'));
+      if (input && input.readOnly) input.removeAttribute('readonly');
+      if (attempt > 1 && input) {
+        setSelectSearchInputValue(input, values[0]);
+        dispatchKeyboardEvent(input, 'keydown', values[0]);
+        dispatchKeyboardEvent(input, 'keyup', values[0]);
+        await sleep(420);
+      }
+      let option = input ? findExactOptionInSelectInputDropdown(input, values, opener) : null;
+      if (!option) option = await findExactOptionInActiveDropdownWithListScroll(opener, values, { deadlineAt });
+      if (!option) option = await waitForExactOptionInVisibleDropdowns(values, attempt === 1 ? 700 : 1100, opener, { deadlineAt });
+      const visibleOptions = (opener ? getActiveSelectDropdowns(opener) : getVisibleSelectDropdowns())
+        .flatMap((root) => Array.from(root.querySelectorAll('.ant-select-item-option,[role="option"],li'))
+          .filter(visibleElement)
+          .map((node) => getCurrentDropdownOptionText(node) || elementText(node))
+          .filter(Boolean))
+        .slice(0, 12);
+      const optionText = option ? getCurrentDropdownOptionText(option) || elementText(option) : '';
+      attempts.push({ attempt, opened, found: Boolean(option), optionText, visibleOptions });
+      if (!option) {
+        await clearOpenDropdownFilter(opener);
+        continue;
+      }
+      if (optionText) acceptedValues.push(optionText);
+      forceSelectOption(option);
+      clickSelectOption(option);
+      await sleep(260);
+      if (input) {
+        input.dispatchEvent(new Event('change', { bubbles: true }));
+        if (typeof input.blur === 'function') input.blur();
+        input.dispatchEvent(new Event('blur', { bubbles: true }));
+      }
+      const blankConfirm = await confirmRequiredAttributeSelection(container, opener, input, deadlineAt);
+      attempts[attempts.length - 1].blankConfirm = blankConfirm;
+      if (isDeadlineExceeded(deadlineAt)) return timeout({ changed: true, optionText, acceptedValues: Array.from(new Set(acceptedValues)), attempts, reason: 'high-concerned chemical timeout during blank confirm' });
+      const uniqueAccepted = Array.from(new Set(acceptedValues));
+      let after = await waitForSelectContainerValue(container, uniqueAccepted, 1500, { ...verifyOptions, deadlineAt });
+      let fieldReadback = (getVisibleRequiredAttributeStatus().fields || []).find((item) => item && item.id === 'high_concerned_chemical');
+      if (fieldReadback && fieldReadback.ok) {
+        return {
+          changed: true,
+          ok: true,
+          locked: true,
+          selectedText: fieldReadback.selectedText || after.okText,
+          optionText,
+          acceptedValues: uniqueAccepted,
+          attempts,
+          mode: 'high-chemical-exact-option-field-readback',
+          state: after,
+          fieldReadback,
+        };
+      }
+      if (!after.ok && !after.timedOut) {
+        await sleep(450);
+        after = await waitForSelectContainerValue(container, uniqueAccepted, 1200, { ...verifyOptions, deadlineAt });
+        fieldReadback = (getVisibleRequiredAttributeStatus().fields || []).find((item) => item && item.id === 'high_concerned_chemical');
+      }
+      if (fieldReadback && fieldReadback.ok) {
+        return {
+          changed: true,
+          ok: true,
+          locked: true,
+          selectedText: fieldReadback.selectedText || after.okText,
+          optionText,
+          acceptedValues: uniqueAccepted,
+          attempts,
+          mode: 'high-chemical-exact-option-delayed-field-readback',
+          state: after,
+          fieldReadback,
+        };
+      }
+      if (after.ok) {
+        return {
+          changed: true,
+          ok: true,
+          locked: true,
+          selectedText: after.okText,
+          optionText,
+          acceptedValues: uniqueAccepted,
+          attempts,
+          mode: 'high-chemical-exact-option-readback',
+          state: after,
+        };
+      }
+      attempts[attempts.length - 1].readback = after.okText;
+      attempts[attempts.length - 1].validationIssue = after.validationIssue || '';
+      if (after.timedOut || isDeadlineExceeded(deadlineAt)) return timeout({ changed: true, optionText, acceptedValues: uniqueAccepted, attempts, state: after, selectedText: after.okText, reason: 'high-concerned chemical timeout during readback' });
+      await clearOpenDropdownFilter(opener);
+    }
+    const after = verifySelectContainerValue(container, values, verifyOptions);
+    return {
+      changed: attempts.some((item) => item.found),
+      ok: after.ok,
+      locked: after.ok,
+      selectedText: after.okText,
+      attempts,
+      mode: 'high-chemical-exact-option-fast-path',
+      state: after,
+      reason: after.ok ? '' : 'high-concerned chemical exact value not committed',
+    };
+  }
+
+  async function selectLockedDropdownOption(container, values, options = {}) {
+    const deadlineAt = getDeadlineAt(options);
+    const timeoutStage = options.timeoutStage || options.fieldId || 'dropdown';
+    const timeout = (extra = {}) => buildStageTimeoutResult(timeoutStage, deadlineAt, { locked: false, ...extra });
+    if (isDeadlineExceeded(deadlineAt)) return timeout({ changed: false, reason: 'dropdown stage timeout before start' });
+    const verifyOptions = { requireCommittedOption: Boolean(options.requireCommittedOption) };
+    const before = verifySelectContainerValue(container, values, verifyOptions);
+    if (before.ok) return { changed: false, ok: true, locked: true, selectedText: before.okText, mode: 'already-locked' };
+    await clearMismatchedSelectValue(container, values);
+    if (isDeadlineExceeded(deadlineAt)) return timeout({ changed: true, reason: 'dropdown stage timeout after clearing value' });
+    const opener = Array.from(container.querySelectorAll('.ant-select-selector,.ant-select-selection,.ant-select,input[role="combobox"],input[type="search"]'))
+      .filter(visibleElement)[0];
+    if (!opener) return { changed: false, ok: false, locked: false, reason: 'dropdown opener not found' };
+    await ensureCurrentSelectDropdownOpen(container, opener);
+    if (isDeadlineExceeded(deadlineAt)) return timeout({ changed: false, reason: 'dropdown stage timeout after open' });
+    await clearOpenDropdownFilter(opener);
+    if (isDeadlineExceeded(deadlineAt)) return timeout({ changed: false, reason: 'dropdown stage timeout after filter clear' });
+    let filteredInput = null;
+    let safeFallback = null;
+    const dynamicAttributeDirectPick = Boolean(options.directRecommendedOptionFirst);
+    let option = null;
+    if (dynamicAttributeDirectPick && options.allowSafeVisibleOptionFallback) {
+      await resetDropdownSearchToRecommendedOptions(opener);
+      if (isDeadlineExceeded(deadlineAt)) return timeout({ changed: false, reason: 'dropdown stage timeout after recommended reset' });
+      safeFallback = await findSafeVisibleSelectOptionWithScroll(opener, values, options.safeFallbackKind || 'generic', { deadlineAt });
+      if (safeFallback) option = safeFallback.option;
+    }
+    const controlledInput = findSelectSearchInputForOpenDropdown(opener)
+      || (opener && opener.matches && opener.matches('input') ? opener : null)
+      || (opener && opener.querySelector && opener.querySelector('input[role="combobox"],input[type="search"],input[type="text"]'));
+    if (!option) option = controlledInput ? findExactOptionInSelectInputDropdown(controlledInput, values, opener) : null;
+    if (!option) option = await findExactOptionInActiveDropdownWithListScroll(opener, values, { deadlineAt });
+    if (isDeadlineExceeded(deadlineAt)) return timeout({ changed: false, reason: 'dropdown stage timeout during option scan' });
+    if (!option && dynamicAttributeDirectPick && options.allowSafeVisibleOptionFallback) {
+      await resetDropdownSearchToRecommendedOptions(opener);
+      if (isDeadlineExceeded(deadlineAt)) return timeout({ changed: false, reason: 'dropdown stage timeout after recommended reset' });
+      safeFallback = await findSafeVisibleSelectOptionWithScroll(opener, values, options.safeFallbackKind || 'generic', { deadlineAt });
+      if (safeFallback) option = safeFallback.option;
+    }
+    if (!option && options.prefilterFirstValue && values[0]) {
+      filteredInput = await filterOpenDropdownByValue(opener, values[0]);
+      if (isDeadlineExceeded(deadlineAt)) return timeout({ changed: false, reason: 'dropdown stage timeout after first-value filter' });
+      if (!option) option = await findExactOptionInActiveDropdownWithListScroll(opener, [values[0]], { deadlineAt });
+      if (!option) option = await waitForExactOptionInVisibleDropdowns([values[0]], 1400, opener, { deadlineAt });
+    }
+    if (isDeadlineExceeded(deadlineAt)) return timeout({ changed: false, reason: 'dropdown stage timeout during first-value wait' });
+    if (!option) option = await findExactOptionInActiveDropdownWithListScroll(opener, values, { deadlineAt });
+    if (!option) {
+      await ensureCurrentSelectDropdownOpen(container, opener);
+      if (isDeadlineExceeded(deadlineAt)) return timeout({ changed: false, reason: 'dropdown stage timeout during reopen' });
+      await clearOpenDropdownFilter(opener);
+      if (isDeadlineExceeded(deadlineAt)) return timeout({ changed: false, reason: 'dropdown stage timeout during second filter clear' });
+      option = await findExactOptionInActiveDropdownWithListScroll(opener, values, { deadlineAt });
+    }
+    if (!option) {
+      option = await waitForExactOptionInVisibleDropdowns(values, 1800, opener, { deadlineAt });
+    }
+    if (isDeadlineExceeded(deadlineAt)) return timeout({ changed: false, reason: 'dropdown stage timeout waiting exact option' });
+    if (!option) {
+      for (const value of values) {
+        if (isDeadlineExceeded(deadlineAt)) return timeout({ changed: false, reason: 'dropdown stage timeout during value iteration' });
+        await filterOpenDropdownByValue(opener, value);
+        if (isDeadlineExceeded(deadlineAt)) return timeout({ changed: false, reason: 'dropdown stage timeout after value filter' });
+        option = await findExactOptionInActiveDropdownWithListScroll(opener, [value], { deadlineAt });
+        if (!option) option = await waitForExactOptionInVisibleDropdowns([value], 1400, opener, { deadlineAt });
+        if (option) break;
+        if (activeDropdownShowsNoData(opener)) {
+          await resetDropdownSearchToRecommendedOptions(opener);
+          if (options.allowSafeVisibleOptionFallback) {
+            if (isDeadlineExceeded(deadlineAt)) return timeout({ changed: false, reason: 'dropdown stage timeout during no-data reset' });
+            safeFallback = await findSafeVisibleSelectOptionWithScroll(opener, values, options.safeFallbackKind || 'generic', { deadlineAt });
+            if (safeFallback) {
+              option = safeFallback.option;
+              break;
+            }
+          }
+        }
+      }
+    }
+    if (!option && options.allowSafeVisibleOptionFallback) {
+      await ensureCurrentSelectDropdownOpen(container, opener);
+      await resetDropdownSearchToRecommendedOptions(opener);
+      if (isDeadlineExceeded(deadlineAt)) return timeout({ changed: false, reason: 'dropdown stage timeout before safe fallback' });
+      safeFallback = await findSafeVisibleSelectOptionWithScroll(opener, values, options.safeFallbackKind || 'generic', { deadlineAt });
+      if (safeFallback) option = safeFallback.option;
+    }
+    if (isDeadlineExceeded(deadlineAt)) return timeout({ changed: false, reason: 'dropdown stage timeout before option commit' });
+    if (!option) return { changed: false, ok: false, locked: false, reason: 'fixed option not found in active dropdown', values };
+    const optionText = safeFallback ? safeFallback.optionText : getCurrentDropdownOptionText(option);
+    const acceptedValues = safeFallback && optionText
+      ? Array.from(new Set(values.concat([optionText])))
+      : values;
+    if (options.hoverKeyboardOnly) {
+      forceSelectOption(option);
+      hoverSelectOption(option);
+    } else {
+      forceSelectOption(option);
+    }
+    await sleep(260);
+    if (isDeadlineExceeded(deadlineAt)) return timeout({ changed: true, optionText, acceptedValues, reason: 'dropdown stage timeout after option click' });
+    const input = filteredInput || Array.from(container.querySelectorAll('input[role="combobox"],input[type="search"],input[type="text"]')).filter(visibleElement)[0];
+    const dynamicAttributeNoKeyboardCommit = options.noKeyboardCommitForDynamicAttributes
+      || /^(?:function|use|feature)$/i.test(String(options.safeFallbackKind || ''));
+    if (options.confirmWithKeyboard && input && !dynamicAttributeNoKeyboardCommit) {
+      if (typeof input.focus === 'function') input.focus();
+      for (const key of ['Enter', 'Tab']) {
+          dispatchKeyboardEvent(input, 'keydown', key);
+          dispatchKeyboardEvent(input, 'keypress', key);
+          dispatchKeyboardEvent(input, 'keyup', key);
+          await sleep(320);
+          if (isDeadlineExceeded(deadlineAt)) return timeout({ changed: true, optionText, acceptedValues, reason: 'dropdown stage timeout during keyboard commit' });
+        }
+      }
+    if (options.skipKeyboardCommit || dynamicAttributeNoKeyboardCommit) {
+      if (input) {
+        input.dispatchEvent(new Event('change', { bubbles: true }));
+        if (typeof input.blur === 'function') input.blur();
+        input.dispatchEvent(new Event('blur', { bubbles: true }));
+      }
+    } else {
+      commitSelectControl(container, input);
+    }
+    let blankConfirm = null;
+    if (options.confirmRequiredAttributeSelection) {
+      blankConfirm = await confirmRequiredAttributeSelection(container, opener, input, deadlineAt);
+      if (isDeadlineExceeded(deadlineAt)) return timeout({ changed: true, optionText, acceptedValues, blankConfirm, reason: 'dropdown stage timeout during blank confirm' });
+    }
+    let after = await waitForSelectContainerValue(container, acceptedValues, 1200, { ...verifyOptions, deadlineAt });
+    if (after.timedOut || isDeadlineExceeded(deadlineAt)) return timeout({ changed: true, optionText, acceptedValues, state: after, selectedText: after.okText, reason: 'dropdown stage timeout during readback' });
+    let retriedWithoutKeyboard = false;
+    if (!after.ok && after.unsafeDisplay && dynamicAttributeNoKeyboardCommit) {
+      retriedWithoutKeyboard = true;
+      await clearMismatchedSelectValue(container, acceptedValues);
+      await ensureCurrentSelectDropdownOpen(container, opener);
+      await resetDropdownSearchToRecommendedOptions(opener);
+      if (isDeadlineExceeded(deadlineAt)) return timeout({ changed: true, optionText, acceptedValues, state: after, selectedText: after.okText, reason: 'dropdown stage timeout before unsafe retry' });
+      let retryOption = await findExactOptionInActiveDropdownWithListScroll(opener, acceptedValues, { deadlineAt });
+      let retrySafeFallback = null;
+      if (!retryOption && options.allowSafeVisibleOptionFallback) {
+        retrySafeFallback = await findSafeVisibleSelectOptionWithScroll(opener, acceptedValues, options.safeFallbackKind || 'generic', { deadlineAt });
+        if (retrySafeFallback) retryOption = retrySafeFallback.option;
+      }
+      if (retryOption) {
+        forceSelectOption(retryOption);
+        await sleep(260);
+        const retryInput = Array.from(container.querySelectorAll('input[role="combobox"],input[type="search"],input[type="text"]')).filter(visibleElement)[0];
+        if (retryInput) {
+          retryInput.dispatchEvent(new Event('change', { bubbles: true }));
+          if (typeof retryInput.blur === 'function') retryInput.blur();
+          retryInput.dispatchEvent(new Event('blur', { bubbles: true }));
+        }
+        if (options.confirmRequiredAttributeSelection) {
+          blankConfirm = await confirmRequiredAttributeSelection(container, opener, retryInput, deadlineAt);
+          if (isDeadlineExceeded(deadlineAt)) return timeout({ changed: true, optionText, acceptedValues, blankConfirm, reason: 'dropdown stage timeout during retry blank confirm' });
+        }
+        if (retrySafeFallback && retrySafeFallback.optionText) acceptedValues.push(retrySafeFallback.optionText);
+        after = await waitForSelectContainerValue(container, Array.from(new Set(acceptedValues)), 1400, { ...verifyOptions, deadlineAt });
+      }
+    }
+    if (after.timedOut || isDeadlineExceeded(deadlineAt)) return timeout({ changed: true, optionText, acceptedValues, state: after, selectedText: after.okText, reason: 'dropdown stage timeout after unsafe retry' });
+    return {
+      changed: true,
+      ok: after.ok,
+      locked: after.ok,
+      selectedText: after.okText,
+      optionText,
+      acceptedValues,
+      mode: options.hoverKeyboardOnly
+        ? 'fixed-option-hover-keyboard-lock'
+        : safeFallback
+          ? 'safe-visible-option-click-lock'
+          : options.confirmWithKeyboard
+          ? 'fixed-option-click-keyboard-lock'
+          : options.skipKeyboardCommit || dynamicAttributeNoKeyboardCommit
+            ? 'fixed-option-click-no-keyboard-lock'
+            : 'fixed-option-click-lock',
+      retriedWithoutKeyboard,
+      blankConfirm,
+      state: after,
+    };
+  }
+
+  function lockEditField(fieldId, container, values) {
+    const stateInfo = verifySelectContainerValue(container, values, { requireCommittedOption: true });
+    editFieldLocks.fields[fieldId] = {
+      locked: stateInfo.ok,
+      selectedText: stateInfo.okText,
+      lockedAt: nowIso(),
+      values: values.slice(),
+    };
+    return editFieldLocks.fields[fieldId];
+  }
+
+  function verifyEditFieldLock(fieldId, container, values) {
+    const lock = editFieldLocks.fields[fieldId];
+    const stateInfo = verifySelectContainerValue(container, values, { requireCommittedOption: true });
+    if (!lock || !lock.locked) return { locked: false, ok: stateInfo.ok, selectedText: stateInfo.okText, state: stateInfo };
+    const ok = stateInfo.ok;
+    if (!ok) {
+      editFieldLocks.lockViolations.push({
+        fieldId,
+        expected: values.slice(),
+        actual: stateInfo.okText,
+        at: nowIso(),
+      });
+    }
+    return { locked: true, ok, selectedText: stateInfo.okText, state: stateInfo };
+  }
+
+  async function runMinimalExclusiveFieldPipeline() {
+    const steps = [
+      {
+        id: 'chemical',
+        directId: 'high_concerned_chemical',
+        values: ['\u5929\u7136\u672a\u5904\u7406(None)'],
+        options: { confirmWithKeyboard: true, hoverKeyboardOnly: true },
+      },
+      {
+        id: 'origin',
+        directId: 'origin',
+        values: ['\u7f8e\u56fd(Origin)(US(Origin))'],
+        options: {},
+      },
+    ];
+    const results = [];
+    for (const step of steps) {
+      const item = findDirectRequiredAttributeContainer(step.directId);
+      if (!item) {
+        const result = { id: step.id, ok: false, locked: false, changed: false, reason: 'field container not found' };
+        results.push(result);
+        return { ok: false, changed: results.some((entry) => entry.changed), stoppedAt: step.id, results, locks: { ...editFieldLocks.fields } };
+      }
+      const currentLock = verifyEditFieldLock(step.id, item.node, step.values);
+      if (currentLock.locked && currentLock.ok) {
+        results.push({ id: step.id, ok: true, locked: true, changed: false, selectedText: currentLock.selectedText, mode: 'already-field-locked' });
+        continue;
+      }
+      const result = await selectLockedDropdownOption(item.node, step.values, {
+        ...step.options,
+        confirmRequiredAttributeSelection: true,
+      });
+      if (result.ok) lockEditField(step.id, item.node, step.values);
+      results.push({ id: step.id, ...result, lock: editFieldLocks.fields[step.id] || null });
+      if (!result.ok) {
+        return { ok: false, changed: results.some((entry) => entry.changed), stoppedAt: step.id, results, locks: { ...editFieldLocks.fields } };
+      }
+    }
+    return {
+      ok: results.every((entry) => entry.ok),
+      changed: results.some((entry) => entry.changed),
+      results,
+      locks: { ...editFieldLocks.fields },
+    };
+  }
+
+  async function applyMinimalExclusiveEditPageRules() {
+    if (visibleEditRulesPipelineRunning) {
+      return state.visibleEditRuleResult || { skipped: true, reason: 'minimal exclusive pipeline already running' };
+    }
+    visibleEditRulesPipelineRunning = true;
+    return withExclusiveEditExecution(async () => {
+      try {
+        const beforeScrollY = window.scrollY;
+        const requiredAttributes = await runMinimalExclusiveFieldPipeline();
+        await sleep(600);
+        const afterStatus = {
+          chemical: (() => {
+            const item = findDirectRequiredAttributeContainer('high_concerned_chemical');
+            return item ? verifySelectContainerValue(item.node, ['\u5929\u7136\u672a\u5904\u7406(None)']) : { ok: false, okText: '', reason: 'field container not found' };
+          })(),
+          origin: (() => {
+            const item = findDirectRequiredAttributeContainer('origin');
+            return item ? verifySelectContainerValue(item.node, ['\u7f8e\u56fd(Origin)(US(Origin))']) : { ok: false, okText: '', reason: 'field container not found' };
+          })(),
+        };
+        const result = {
+          at: nowIso(),
+          mode: 'minimal-exclusive-field-lock',
+          manual: true,
+          requiredAttributes,
+          afterStatus,
+          scroll: {
+            before: beforeScrollY,
+            after: window.scrollY,
+            blocked: editFieldLocks.scrollBlocked,
+          },
+          locks: { ...editFieldLocks.fields },
+          lockViolations: editFieldLocks.lockViolations.slice(),
+          ok: requiredAttributes.ok && afterStatus.chemical.ok && afterStatus.origin.ok && editFieldLocks.lockViolations.length === 0,
+        };
+        state.visibleEditRuleResult = result;
+        if (!state.report) state.report = {};
+        state.report.visibleEditRuleResult = result;
+        log(`\u6700\u5c0f\u72ec\u5360\u9a8c\u8bc1\uff1a\u9ad8\u5173\u6ce8${afterStatus.chemical.ok ? '\u5df2\u9501\u5b9a' : '\u672a\u9501\u5b9a'}\uff0c\u4ea7\u5730${afterStatus.origin.ok ? '\u5df2\u9501\u5b9a' : '\u672a\u9501\u5b9a'}\uff0c\u62e6\u622a\u6eda\u52a8${editFieldLocks.scrollBlocked}\u6b21`, result);
+        updateUi();
+        return result;
+      } finally {
+        visibleEditRulesPipelineRunning = false;
+      }
+    });
+  }
+
+  function getCheckedTextsInContainer(container) {
+    return Array.from(container.querySelectorAll('input[type="checkbox"],input[type="radio"]'))
+      .filter((node) => !node.closest(`#${PANEL_ID}`) && node.checked)
+      .map((node) => checkboxNearbyText(node))
+      .filter(Boolean);
+  }
+
+  function checkboxTextMatchesCandidate(text, values) {
+    const normalizedText = normalizeCategoryText(text);
+    return values.some((value) => {
+      const wanted = normalizeCategoryText(value);
+      return wanted && (normalizedText.includes(wanted) || wanted.includes(normalizedText));
+    });
+  }
+
+  async function selectRequiredAttributeCheckboxValue(container, values, options = {}) {
+    const controls = Array.from(container.querySelectorAll('input[type="checkbox"],input[type="radio"]'))
+      .filter((node) => !node.closest(`#${PANEL_ID}`))
+      .filter((node) => visibleElement(node) || visibleElement(node.closest('label')) || visibleElement(node.parentElement));
+    if (!controls.length) return { handled: false };
+    const checkedTexts = getCheckedTextsInContainer(container);
+    if (checkedTexts.some((text) => checkboxTextMatchesCandidate(text, values))) {
+      return { handled: true, changed: false, ok: true, selectedText: checkedTexts.join(' '), mode: 'checkbox-already-selected' };
+    }
+
+    const candidates = [];
+    for (const value of values) {
+      const wanted = normalizeCategoryText(value);
+      if (!wanted) continue;
+      const found = controls.find((node) => {
+        const text = normalizeCategoryText(checkboxNearbyText(node));
+        return text && (text.includes(wanted) || wanted.includes(text));
+      });
+      if (found && !candidates.includes(found)) candidates.push(found);
+      if (found && !options.allowMultipleCheckboxes) break;
+    }
+
+    if (!candidates.length) {
+      const scored = controls
+        .map((node) => {
+          const text = checkboxNearbyText(node);
+          return {
+            node,
+            text,
+            score: scoreSafeVisibleSelectOption({ text, normalized: normalizeSelectMatchText(text) }, values, options.safeFallbackKind || 'generic'),
+          };
+        })
+        .filter((item) => item.score > 0)
+        .sort((a, b) => b.score - a.score);
+      if (scored[0]) candidates.push(scored[0].node);
+    }
+
+    if (!candidates.length) {
+      return { handled: true, changed: false, ok: false, locked: false, reason: 'required checkbox/radio option not found', values };
+    }
+
+    let changed = false;
+    const isRadio = candidates.some((node) => String(node.type || '').toLowerCase() === 'radio');
+    const selected = isRadio || !options.allowMultipleCheckboxes ? candidates.slice(0, 1) : candidates;
+    for (const node of selected) {
+      changed = setCheckboxChecked(node, true) || changed;
+      await sleep(180);
+    }
+    const afterTexts = getCheckedTextsInContainer(container);
+    const ok = afterTexts.some((text) => checkboxTextMatchesCandidate(text, values))
+      || selected.some((node) => node.checked);
+    return {
+      handled: true,
+      changed,
+      ok,
+      locked: ok,
+      selectedText: afterTexts.join(' ') || selected.map((node) => checkboxNearbyText(node)).filter(Boolean).join(' '),
+      optionText: selected.map((node) => checkboxNearbyText(node)).filter(Boolean).join(' | '),
+      acceptedValues: Array.from(new Set(values.concat(afterTexts))),
+      mode: options.allowMultipleCheckboxes && selected.length > 1 ? 'checkbox-multiple' : 'checkbox',
+      reason: ok ? '' : 'required checkbox/radio option did not read back checked',
+    };
+  }
+
+  async function selectRequiredAttributeStepValue(item, step, deadlineAt) {
+    const checkboxResult = await selectRequiredAttributeCheckboxValue(item.node, step.values, {
+      allowMultipleCheckboxes: Boolean(step.allowMultipleCheckboxes),
+      safeFallbackKind: step.safeFallbackKind,
+    });
+    if (checkboxResult.handled) return checkboxResult;
+    if (step.id === 'use') {
+      const useFastPath = await selectVisibleUseDropdownFastPath(item.node, step.values, deadlineAt);
+      if (useFastPath.ok || useFastPath.timedOut) return useFastPath;
+    }
+    return selectLockedDropdownOption(item.node, step.values, {
+      confirmWithKeyboard: step.confirmWithKeyboard,
+      hoverKeyboardOnly: step.hoverKeyboardOnly,
+      skipKeyboardCommit: step.skipKeyboardCommit,
+      noKeyboardCommitForDynamicAttributes: step.noKeyboardCommitForDynamicAttributes,
+      prefilterFirstValue: step.prefilterFirstValue,
+      requireCommittedOption: step.requireCommittedOption,
+      allowSafeVisibleOptionFallback: step.allowSafeVisibleOptionFallback,
+      safeFallbackKind: step.safeFallbackKind,
+      directRecommendedOptionFirst: step.directRecommendedOptionFirst,
+      confirmRequiredAttributeSelection: true,
+      deadlineAt,
+      timeoutStage: step.id,
+    });
+  }
+
+  async function selectVisibleUseDropdownFastPath(container, values, deadlineAt) {
+    const timeout = (extra = {}) => buildStageTimeoutResult('required-attributes.use', deadlineAt, { locked: false, ...extra });
+    if (isDeadlineExceeded(deadlineAt)) return timeout({ changed: false, reason: 'use fast path timeout before start' });
+    const before = verifySelectContainerValue(container, values, { requireCommittedOption: true });
+    if (before.ok) return { changed: false, ok: true, locked: true, selectedText: before.okText, mode: 'use-fast-already-locked', state: before };
+    const opener = Array.from(container.querySelectorAll('.ant-select-selector,.ant-select-selection,.ant-select,input[role="combobox"],input[type="search"]'))
+      .filter(visibleElement)[0];
+    if (!opener) return { changed: false, ok: false, locked: false, reason: 'use dropdown opener not found' };
+    opener.scrollIntoView({ block: 'center' });
+    await sleep(180);
+    opener.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true, view: window }));
+    opener.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, cancelable: true, view: window }));
+    if (typeof opener.click === 'function') opener.click();
+    await sleep(700);
+    if (isDeadlineExceeded(deadlineAt)) return timeout({ changed: false, reason: 'use fast path timeout after open' });
+    const scored = collectVisibleSelectOptions(opener)
+      .map((entry) => ({ ...entry, score: scoreSafeVisibleSelectOption(entry, values, 'use') }))
+      .filter((entry) => entry.score > 0)
+      .sort((a, b) => b.score - a.score || a.rect.top - b.rect.top || a.text.length - b.text.length);
+    const selected = scored[0];
+    if (!selected) return { changed: false, ok: false, locked: false, reason: 'use fast path option not visible', values };
+    forceSelectOption(selected.node);
+    await sleep(500);
+    const input = Array.from(container.querySelectorAll('input[role="combobox"],input[type="search"],input[type="text"]')).filter(visibleElement)[0];
+    if (input) {
+      input.dispatchEvent(new Event('change', { bubbles: true }));
+      if (typeof input.blur === 'function') input.blur();
+      input.dispatchEvent(new Event('blur', { bubbles: true }));
+    }
+    const acceptedValues = Array.from(new Set(values.concat([selected.text])));
+    const blankConfirm = await confirmRequiredAttributeSelection(container, opener, input, deadlineAt);
+    if (isDeadlineExceeded(deadlineAt)) {
+      return timeout({ changed: true, optionText: selected.text, acceptedValues, blankConfirm, reason: 'use fast path timeout during blank confirm' });
+    }
+    await sleep(500);
+    let after = verifySelectContainerValue(container, acceptedValues, { requireCommittedOption: true });
+    const fieldReadback = (getVisibleRequiredAttributeStatus().fields || []).find((entry) => entry && entry.id === 'use');
+    if (!after.ok && fieldReadback && fieldReadback.ok) {
+      return {
+        changed: true,
+        ok: true,
+        locked: true,
+        selectedText: fieldReadback.selectedText || selected.text,
+        optionText: selected.text,
+        acceptedValues,
+        mode: 'use-fast-field-readback',
+        blankConfirm,
+        state: after,
+        fieldReadback,
+      };
+    }
+    return {
+      changed: true,
+      ok: after.ok,
+      locked: after.ok,
+      selectedText: after.okText || (fieldReadback && fieldReadback.selectedText) || selected.text,
+      optionText: selected.text,
+      acceptedValues,
+      mode: 'use-fast-visible-option',
+      blankConfirm,
+      state: after,
+      fieldReadback,
+      reason: after.ok ? '' : 'use fast path option did not read back',
+    };
+  }
+
+  function getPlasticTypeCandidateValues() {
+    return ['PC(PC)', 'PC', 'Polycarbonate', '\u805a\u78b3\u9178\u916f(PC)', '\u805a\u78b3\u9178\u916f'];
+  }
+
+  function materialSelectionRequiresPlasticType(selectedText) {
+    return /plastic|\u5851\u6599/i.test(String(selectedText || ''));
+  }
+
+  function findPlasticTypeAttributeContainer() {
+    const labelPattern = /plastic\s*type|\u5851\u6599(?:\u7c7b\u578b|\u79cd\u7c7b)|\u5851\u6599\u6750\u8d28/i;
+    return findVisibleAttributeContainers()
+      .filter((candidate) => {
+        const labelText = getAttributeContainerLabelText(candidate.node);
+        const fieldText = labelText || candidate.text.slice(0, 180);
+        return labelPattern.test(fieldText);
+      })
+      .filter((candidate) => candidate.node.querySelector('.ant-select,input[role="combobox"],input[type="search"],input[type="text"]'))
+      .map((candidate) => ({
+        ...candidate,
+        requiredStar: hasVisibleRequiredAttributeMarker(candidate.node),
+        score: (getAttributeContainerLabelText(candidate.node) || candidate.text).length + Math.round(candidate.rect.height),
+      }))
+      .sort((a, b) => a.score - b.score || a.rect.top - b.rect.top)[0] || null;
+  }
+
+  async function selectVisiblePlasticTypePcIfPresent(deadlineAt) {
+    const item = findPlasticTypeAttributeContainer();
+    if (!item) return { ok: true, changed: false, skipped: true, reason: 'plastic type field not visible' };
+    const values = getPlasticTypeCandidateValues();
+    const before = verifySelectContainerValue(item.node, values, { requireCommittedOption: true });
+    if (before.ok) {
+      lockRequiredAttributeField('plastic_type', item.node, values, { ok: true, selectedText: before.okText, mode: 'already-selected-readback' });
+      return { ok: true, changed: false, locked: true, selectedText: before.okText, mode: 'already-selected-readback', state: before };
+    }
+    const result = await selectLockedDropdownOption(item.node, values, {
+      confirmWithKeyboard: false,
+      skipKeyboardCommit: true,
+      noKeyboardCommitForDynamicAttributes: true,
+      prefilterFirstValue: true,
+      requireCommittedOption: true,
+      allowSafeVisibleOptionFallback: true,
+      safeFallbackKind: 'plastic_type',
+      confirmRequiredAttributeSelection: true,
+      deadlineAt,
+      timeoutStage: 'plastic_type',
+      fieldId: 'plastic_type',
+    });
+    const acceptedValues = (result.acceptedValues && result.acceptedValues.length) ? result.acceptedValues : values;
+    if (result.ok) lockRequiredAttributeField('plastic_type', item.node, acceptedValues, result);
+    return { ...result, values: acceptedValues, lock: editFieldLocks.fields.plastic_type || null };
+  }
+
+  async function selectMaterialDropdownFastPath(container, values, deadlineAt) {
+    const timeout = (extra = {}) => buildStageTimeoutResult('required-attributes.material', deadlineAt, { locked: false, ...extra });
+    if (isDeadlineExceeded(deadlineAt)) return timeout({ changed: false, reason: 'material fast path timeout before start' });
+    const before = verifySelectContainerValue(container, values, { requireCommittedOption: true });
+    if (before.ok) return { changed: false, ok: true, locked: true, selectedText: before.okText, mode: 'material-fast-already-locked', state: before };
+    await clearMismatchedSelectValue(container, values);
+    if (isDeadlineExceeded(deadlineAt)) return timeout({ changed: true, reason: 'material fast path timeout after clear' });
+    const opener = Array.from(container.querySelectorAll('.ant-select-selector,.ant-select-selection,.ant-select,input[role="combobox"],input[type="search"]'))
+      .filter(visibleElement)[0];
+    if (!opener) return { changed: false, ok: false, locked: false, reason: 'material dropdown opener not found' };
+    await ensureCurrentSelectDropdownOpen(container, opener);
+    await resetDropdownSearchToRecommendedOptions(opener);
+    if (isDeadlineExceeded(deadlineAt)) return timeout({ changed: false, reason: 'material fast path timeout after open' });
+    const controlledInput = findSelectSearchInputForOpenDropdown(opener)
+      || Array.from(container.querySelectorAll('input[role="combobox"],input[type="search"],input[type="text"]')).filter(visibleElement)[0];
+    const controlledRoots = getControlledDropdownRootsForSelectInput(controlledInput);
+    const exactOption = controlledInput ? findExactOptionInSelectInputDropdown(controlledInput, values, opener) : null;
+    const exactOptionText = exactOption ? normalizeSpaces(getCurrentDropdownOptionText(exactOption) || elementText(exactOption)) : '';
+
+    let picked = exactOption
+      ? { option: exactOption, optionText: exactOptionText }
+      : findVisibleOptionByCandidateValuesInRoots(values, controlledRoots)
+      || findVisibleOptionByCandidateValues(values, opener)
+      || await findVisibleOptionByCandidateValuesWithScroll(values, opener, { deadlineAt })
+      || await findSafeVisibleSelectOptionWithScroll(opener, values, 'material', { deadlineAt });
+    if (!picked && !isDeadlineExceeded(deadlineAt)) {
+      const firstValue = values.find(Boolean);
+      if (firstValue) {
+        await filterOpenDropdownByValue(opener, firstValue);
+        picked = findVisibleOptionByCandidateValues([firstValue], opener)
+          || await findVisibleOptionByCandidateValuesWithScroll([firstValue], opener, { deadlineAt });
+      }
+    }
+    if (isDeadlineExceeded(deadlineAt)) return timeout({ changed: false, reason: 'material fast path timeout during option pick' });
+    if (!picked) return { changed: false, ok: false, locked: false, reason: 'material visible option not found', values };
+
+    const option = picked.option || picked.node;
+    const optionText = normalizeSpaces(picked.optionText || picked.text || getCurrentDropdownOptionText(option));
+    const acceptedValues = Array.from(new Set(values.concat(optionText ? [optionText] : [])));
+    forceSelectOption(option);
+    await sleep(260);
+    const input = Array.from(container.querySelectorAll('input[role="combobox"],input[type="search"],input[type="text"]')).filter(visibleElement)[0];
+    if (input) {
+      input.dispatchEvent(new Event('change', { bubbles: true }));
+      if (typeof input.blur === 'function') input.blur();
+      input.dispatchEvent(new Event('blur', { bubbles: true }));
+    }
+    const blankConfirm = await confirmRequiredAttributeSelection(container, opener, input, deadlineAt);
+    if (isDeadlineExceeded(deadlineAt)) {
+      return timeout({ changed: true, optionText, acceptedValues, blankConfirm, reason: 'material fast path timeout during blank confirm' });
+    }
+    const after = await waitForSelectContainerValue(container, acceptedValues, 1600, {
+      requireCommittedOption: true,
+      deadlineAt,
+    });
+    if (after.timedOut || isDeadlineExceeded(deadlineAt)) {
+      return timeout({ changed: true, optionText, acceptedValues, selectedText: after.okText, state: after, reason: 'material fast path timeout during readback' });
+    }
+    return {
+      changed: true,
+      ok: after.ok,
+      locked: after.ok,
+      selectedText: after.okText,
+      optionText,
+      acceptedValues,
+      mode: 'material-fast-visible-option-click-lock',
+      blankConfirm,
+      state: after,
+      reason: after.ok ? '' : 'material fast path value did not read back cleanly',
+    };
+  }
+
+  async function selectRequiredMaterialAttributeValue(item, step, deadlineAt) {
+    const values = step.values || getVisibleMaterialCandidateValues();
+    let lastResult = null;
+    for (let attempt = 0; attempt < 2; attempt += 1) {
+      if (isDeadlineExceeded(deadlineAt)) {
+        return buildStageTimeoutResult('required-attributes.material', deadlineAt, {
+          changed: Boolean(lastResult && lastResult.changed),
+          reason: 'material stage timeout before retry',
+          lastResult,
+        });
+      }
+      const currentItem = attempt === 0
+        ? item
+        : (findDirectRequiredAttributeContainer('material', { requireRequiredStar: true }) || item);
+      if (!currentItem || !currentItem.node) {
+        return { changed: Boolean(lastResult && lastResult.changed), ok: false, locked: false, reason: 'material field container not found', lastResult };
+      }
+      const before = verifySelectContainerValue(currentItem.node, values, { requireCommittedOption: true });
+      if (before.ok) {
+        const plasticType = materialSelectionRequiresPlasticType(before.okText)
+          ? await selectVisiblePlasticTypePcIfPresent(deadlineAt)
+          : { ok: true, changed: false, skipped: true, reason: 'material is not plastic' };
+        return {
+          changed: Boolean(plasticType.changed),
+          ok: plasticType.ok,
+          locked: plasticType.ok,
+          selectedText: before.okText,
+          mode: 'material-already-selected-readback',
+          state: before,
+          plasticType,
+        };
+      }
+
+      const checkboxResult = await selectRequiredAttributeCheckboxValue(currentItem.node, values, {
+        allowMultipleCheckboxes: Boolean(step.allowMultipleCheckboxes),
+        safeFallbackKind: 'material',
+      });
+      const result = checkboxResult.handled
+        ? checkboxResult
+        : await selectMaterialDropdownFastPath(currentItem.node, values, deadlineAt);
+      lastResult = result;
+      const selectedText = firstNonEmpty(result.selectedText, result.optionText, result.state && result.state.okText, '');
+      if (result.ok) {
+        const plasticType = materialSelectionRequiresPlasticType(selectedText)
+          ? await selectVisiblePlasticTypePcIfPresent(deadlineAt)
+          : { ok: true, changed: false, skipped: true, reason: 'material is not plastic' };
+        return {
+          ...result,
+          ok: result.ok && plasticType.ok,
+          locked: result.ok && plasticType.ok,
+          selectedText,
+          acceptedValues: (result.acceptedValues && result.acceptedValues.length) ? result.acceptedValues : values,
+          plasticType,
+          mode: result.mode ? `${result.mode}+material-specialized` : 'material-specialized',
+          reason: plasticType.ok ? result.reason : `plastic type failed: ${plasticType.reason || 'readback failed'}`,
+        };
+      }
+      if (result.timedOut || isDeadlineExceeded(deadlineAt)) return result;
+      await ensureRequiredAttributeExpanded('material');
+      await sleep(320);
+    }
+    return { ...(lastResult || {}), ok: false, locked: false, reason: (lastResult && lastResult.reason) || 'material selection failed after retry' };
+  }
+
+  function lockRequiredAttributeField(fieldId, container, values, result) {
+    const checkedTexts = getCheckedTextsInContainer(container);
+    if (checkedTexts.length) {
+      editFieldLocks.fields[fieldId] = {
+        locked: Boolean(result && result.ok),
+        selectedText: checkedTexts.join(' '),
+        lockedAt: nowIso(),
+        values: values.slice(),
+      };
+      return editFieldLocks.fields[fieldId];
+    }
+    return lockEditField(fieldId, container, values);
+  }
+
+  function buildVisibleRequiredAttributeSteps(usedNodes = new Set()) {
+    const fixedChemicalValues = FIXED_REQUIRED_ATTRIBUTE_VALUES.highConcernedChemical;
+    const fixedOriginValues = FIXED_REQUIRED_ATTRIBUTE_VALUES.origin;
+    const applicationScenarioRule = VISIBLE_REQUIRED_ATTRIBUTE_RULES[6];
+    const themeRule = VISIBLE_REQUIRED_ATTRIBUTE_RULES[7];
+    return [
+      {
+        id: 'brand',
+        find: () => findBestAttributeContainerForRule(findVisibleAttributeContainers(), VISIBLE_REQUIRED_ATTRIBUTE_RULES[0], usedNodes, { requireRequiredStar: true }),
+        values: VISIBLE_REQUIRED_ATTRIBUTE_RULES[0].values,
+        mode: 'verify-or-select',
+      },
+      {
+        id: 'frame_material',
+        find: () => findDirectRequiredAttributeContainer('frame_material', { requireRequiredStar: true }),
+        values: getVisibleFrameMaterialCandidateValues(),
+        mode: 'fixed-click',
+        confirmWithKeyboard: true,
+        prefilterFirstValue: true,
+        requireCommittedOption: true,
+        allowSafeVisibleOptionFallback: true,
+        safeFallbackKind: 'frame_material',
+        optionalIfMissing: true,
+      },
+      {
+        id: 'use',
+        find: () => findDirectRequiredAttributeContainer('use', { requireRequiredStar: true })
+          || findBestAttributeContainerForRule(findVisibleAttributeContainers(), VISIBLE_REQUIRED_ATTRIBUTE_RULES[4], usedNodes, { requireRequiredStar: true }),
+        values: getVisibleUseCandidateValues(),
+        mode: 'fixed-click',
+        confirmWithKeyboard: false,
+        skipKeyboardCommit: true,
+        noKeyboardCommitForDynamicAttributes: true,
+        prefilterFirstValue: true,
+        requireCommittedOption: true,
+        allowSafeVisibleOptionFallback: true,
+        safeFallbackKind: 'use',
+        optionalIfMissing: true,
+      },
+      {
+        id: 'function',
+        find: () => findDirectRequiredAttributeContainer('function', { requireRequiredStar: true }),
+        values: getVisibleFunctionCandidateValues(),
+        mode: 'fixed-click',
+        confirmWithKeyboard: false,
+        skipKeyboardCommit: true,
+        noKeyboardCommitForDynamicAttributes: true,
+        prefilterFirstValue: true,
+        requireCommittedOption: true,
+        allowSafeVisibleOptionFallback: true,
+        safeFallbackKind: 'function',
+        optionalIfMissing: true,
+      },
+      {
+        id: 'feature',
+        find: () => findBestAttributeContainerForRule(findVisibleAttributeContainers(), VISIBLE_REQUIRED_ATTRIBUTE_RULES[3], usedNodes, { requireRequiredStar: true }),
+        values: getVisibleFeatureCandidateValues(),
+        mode: 'fixed-click',
+        confirmWithKeyboard: false,
+        skipKeyboardCommit: true,
+        noKeyboardCommitForDynamicAttributes: true,
+        requireCommittedOption: true,
+        allowSafeVisibleOptionFallback: true,
+        safeFallbackKind: 'feature',
+        optionalIfMissing: true,
+      },
+      {
+        id: 'high_concerned_chemical',
+        find: () => findDirectRequiredAttributeContainer('high_concerned_chemical', { requireRequiredStar: true }),
+        values: fixedChemicalValues,
+        mode: 'fixed-click',
+        confirmWithKeyboard: true,
+        hoverKeyboardOnly: true,
+        prefilterFirstValue: true,
+        requireCommittedOption: true,
+        multiSelectExact: true,
+      },
+      {
+        id: 'origin',
+        find: () => findDirectRequiredAttributeContainer('origin', { requireRequiredStar: true }),
+        values: fixedOriginValues,
+        mode: 'fixed-click',
+        confirmWithKeyboard: true,
+        prefilterFirstValue: true,
+        requireCommittedOption: true,
+      },
+      {
+        id: 'material',
+        find: () => findDirectRequiredAttributeContainer('material', { requireRequiredStar: true }),
+        values: getVisibleMaterialCandidateValues(),
+        mode: 'fixed-click',
+        confirmWithKeyboard: false,
+        skipKeyboardCommit: true,
+        noKeyboardCommitForDynamicAttributes: true,
+        prefilterFirstValue: true,
+        requireCommittedOption: true,
+        allowSafeVisibleOptionFallback: true,
+        safeFallbackKind: 'material',
+        optionalIfMissing: true,
+      },
+      {
+        id: 'product_application_scenarios',
+        find: () => findBestAttributeContainerForRule(findVisibleAttributeContainers(), applicationScenarioRule, usedNodes, { requireRequiredStar: true }),
+        values: getVisibleApplicationScenarioCandidateValues(),
+        mode: 'fixed-click',
+        confirmWithKeyboard: false,
+        skipKeyboardCommit: true,
+        noKeyboardCommitForDynamicAttributes: true,
+        requireCommittedOption: true,
+        allowSafeVisibleOptionFallback: true,
+        safeFallbackKind: 'product_application_scenarios',
+        allowMultipleCheckboxes: true,
+        optionalIfMissing: true,
+      },
+      {
+        id: 'theme',
+        find: () => findBestAttributeContainerForRule(findVisibleAttributeContainers(), themeRule, usedNodes, { requireRequiredStar: true }),
+        values: getVisibleThemeCandidateValues(),
+        mode: 'fixed-click',
+        confirmWithKeyboard: false,
+        skipKeyboardCommit: true,
+        noKeyboardCommitForDynamicAttributes: true,
+        requireCommittedOption: true,
+        allowSafeVisibleOptionFallback: true,
+        safeFallbackKind: 'theme',
+        optionalIfMissing: true,
+      },
+    ];
+  }
+
+  async function runSingleRequiredAttributeStep(fieldId, options = {}) {
+    const deadlineAt = getDeadlineAt(options);
+    const usedNodes = new Set();
+    const steps = buildVisibleRequiredAttributeSteps(usedNodes);
+    const aliases = {
+      chemical: 'high_concerned_chemical',
+      highConcernedChemical: 'high_concerned_chemical',
+      high_concerned: 'high_concerned_chemical',
+      application_scenarios: 'product_application_scenarios',
+      product_application: 'product_application_scenarios',
+      productApplicationScenarios: 'product_application_scenarios',
+      shipsFrom: 'ships_from',
+      ships_from: 'ships_from',
+    };
+    const normalizedId = aliases[fieldId] || fieldId;
+    const fieldDeadlineAt = deadlineAt || makeDeadlineAt(getRequiredAttributeFieldTimeoutMs(options, 8000));
+    if (isDeadlineExceeded(fieldDeadlineAt)) {
+      return buildStageTimeoutResult(`required-attributes.${normalizedId}`, fieldDeadlineAt, { id: normalizedId, changed: false, locked: false, reason: 'required attribute stage timeout before start' });
+    }
+    if (normalizedId === 'ships_from') {
+      const before = getVisibleShipsFromStatus();
+      const result = before.ok ? { changed: false, ok: true, selectedText: before.selectedText, mode: 'already-selected' } : selectVisibleShipsFromUnitedStates();
+      const after = getVisibleShipsFromStatus();
+      return { id: normalizedId, before, result, after, ok: after.ok, changed: Boolean(result.changed) };
+    }
+    const step = steps.find((item) => item.id === normalizedId);
+    if (!step) return { id: normalizedId, ok: false, changed: false, reason: 'unsupported required attribute field' };
+
+    let expand = null;
+    if (step.id === 'material' || options.expand === true) {
+      expand = await ensureRequiredAttributeExpanded(step.id);
+    }
+    if (isDeadlineExceeded(fieldDeadlineAt)) {
+      return buildStageTimeoutResult(`required-attributes.${step.id}`, fieldDeadlineAt, { id: step.id, changed: Boolean(expand && expand.expanded), locked: false, expand, reason: 'required attribute stage timeout after expand' });
+    }
+    const item = step.find();
+    if (!item) {
+      if (step.optionalIfMissing) {
+        return { id: step.id, changed: Boolean(expand && expand.expanded), ok: true, skipped: true, locked: false, reason: 'field not visible for this category', expand };
+      }
+      return { id: step.id, changed: Boolean(expand && expand.expanded), ok: false, locked: false, reason: 'locked field container not found', expand };
+    }
+
+    const beforeState = verifySelectContainerValue(item.node, step.values, {
+      requireCommittedOption: step.requireCommittedOption,
+    });
+    if (beforeState.ok && step.id !== 'material') {
+      return {
+        id: step.id,
+        expand,
+        changed: false,
+        ok: true,
+        locked: true,
+        selectedText: beforeState.okText,
+        mode: 'already-selected-readback',
+        state: beforeState,
+      };
+    }
+
+    const result = await runRequiredAttributeSelectionWithHardTimeout(step.id, fieldDeadlineAt, async () => {
+      if (step.id === 'high_concerned_chemical') {
+        const fastFixedResult = await selectFixedHighConcernedChemicalValue(item.node, step.values, fieldDeadlineAt);
+        if (fastFixedResult.ok || fastFixedResult.timedOut || isDeadlineExceeded(fieldDeadlineAt)) {
+          return fastFixedResult;
+        }
+        const fallbackResult = await selectAntMultipleExactValue(item.node, step.values, {
+          deadlineAt: fieldDeadlineAt,
+          timeoutStage: step.id,
+          fieldId: step.id,
+          allowValidationIssue: true,
+        });
+        return { ...fallbackResult, fastFixedResult };
+      }
+      if (step.multiSelectExact) {
+        return selectAntMultipleExactValue(item.node, step.values, {
+          deadlineAt: fieldDeadlineAt,
+          timeoutStage: step.id,
+          fieldId: step.id,
+          allowValidationIssue: true,
+        });
+      }
+      if (step.mode === 'fixed-click') {
+        if (step.id === 'material') {
+          return selectRequiredMaterialAttributeValue(item, step, fieldDeadlineAt);
+        }
+        return selectRequiredAttributeStepValue(item, step, fieldDeadlineAt);
+      }
+      return selectAttributeContainerValue(item.node, step.values);
+    });
+    const acceptedValues = (result.acceptedValues && result.acceptedValues.length) ? result.acceptedValues : step.values;
+    let finalResult = result;
+    if (
+      !result.ok
+      && result.state
+      && result.state.hasCommittedOption
+      && selectedTextMatchesCandidateValues(result.state.okText, acceptedValues)
+      && /\u8bf7\u9009\u62e9\u4ea7\u54c1\u5c5e\u6027/.test(String(result.state.validationIssue || ''))
+    ) {
+      finalResult = {
+        ...result,
+        ok: true,
+        locked: true,
+        fieldAcceptedDespiteGlobalNativeError: true,
+        reason: 'field has committed option; global native product attribute error is checked by final preflight',
+      };
+    }
+    if (finalResult.ok) {
+      lockRequiredAttributeField(step.id, item.node, acceptedValues, finalResult);
+    }
+    return { id: step.id, expand, ...finalResult, values: acceptedValues, lock: editFieldLocks.fields[step.id] || null };
+  }
+
+  async function runLockedRequiredAttributePipeline(options = {}) {
+    const deadlineAt = getDeadlineAt(options);
+    const usedNodes = new Set();
+    const skipFieldIds = new Set(Array.isArray(options.skipFieldIds) ? options.skipFieldIds : []);
+    const fieldTimeoutMs = getRequiredAttributeFieldTimeoutMs(options, 8000);
+    for (const fieldId of skipFieldIds) {
+      const skippedItem = findDirectRequiredAttributeContainer(fieldId);
+      if (skippedItem && skippedItem.node) usedNodes.add(skippedItem.node);
+    }
+    const steps = buildVisibleRequiredAttributeSteps(usedNodes)
+      .filter((step) => !skipFieldIds.has(step.id));
+    const results = [];
+    const locked = new Set();
+    for (const step of steps) {
+      const fieldDeadlineAt = deadlineAt || makeDeadlineAt(fieldTimeoutMs);
+      if (isDeadlineExceeded(deadlineAt)) {
+        return {
+          changed: results.some((result) => result.changed),
+          ok: false,
+          timedOut: true,
+          locked: Array.from(locked),
+          stoppedAt: step.id,
+          reason: `stage timeout: ${step.id}`,
+          results,
+        };
+      }
+      let expand = null;
+      if (step.id === 'material') {
+        expand = await ensureRequiredAttributeExpanded('material');
+      }
+      if (isDeadlineExceeded(fieldDeadlineAt)) {
+        results.push(buildStageTimeoutResult(`required-attributes.${step.id}`, fieldDeadlineAt, { id: step.id, changed: Boolean(expand && expand.expanded), expand, reason: 'required attribute stage timeout after expand' }));
+        return { changed: results.some((result) => result.changed), ok: false, timedOut: true, locked: Array.from(locked), stoppedAt: step.id, reason: `stage timeout: ${step.id}`, results };
+      }
+      const item = step.find();
+      if (!item) {
+        if (step.optionalIfMissing) {
+          results.push({ id: step.id, changed: Boolean(expand && expand.expanded), ok: true, skipped: true, locked: false, reason: 'field not visible for this category', expand });
+          continue;
+        }
+        const missing = { id: step.id, changed: Boolean(expand && expand.expanded), ok: false, locked: false, reason: 'locked field container not found', expand };
+        results.push(missing);
+        return { changed: results.some((result) => result.changed), ok: false, locked: Array.from(locked), stoppedAt: step.id, results };
+      }
+      const beforeState = verifySelectContainerValue(item.node, step.values, {
+        requireCommittedOption: step.requireCommittedOption,
+      });
+      if (beforeState.ok && step.id !== 'material') {
+        locked.add(step.id);
+        usedNodes.add(item.node);
+        results.push({
+          id: step.id,
+          expand,
+          changed: false,
+          ok: true,
+          locked: true,
+          selectedText: beforeState.okText,
+          mode: 'already-selected-readback',
+          state: beforeState,
+        });
+        continue;
+      }
+      let result = await runRequiredAttributeSelectionWithHardTimeout(step.id, fieldDeadlineAt, async () => {
+        if (step.multiSelectExact) {
+          return selectAntMultipleExactValue(item.node, step.values, {
+            deadlineAt: fieldDeadlineAt,
+            timeoutStage: step.id,
+            fieldId: step.id,
+            allowValidationIssue: true,
+          });
+        }
+        if (step.mode === 'fixed-click') {
+          if (step.id === 'material') {
+            return selectRequiredMaterialAttributeValue(item, step, fieldDeadlineAt);
+          }
+          return selectRequiredAttributeStepValue(item, step, fieldDeadlineAt);
+        }
+        return selectAttributeContainerValue(item.node, step.values);
+      });
+      if (
+        !result.ok
+        && result.state
+        && result.state.hasCommittedOption
+        && selectedTextMatchesCandidateValues(result.state.okText, (result.acceptedValues && result.acceptedValues.length) ? result.acceptedValues : step.values)
+        && /\u8bf7\u9009\u62e9\u4ea7\u54c1\u5c5e\u6027/.test(String(result.state.validationIssue || ''))
+      ) {
+        result = {
+          ...result,
+          ok: true,
+          locked: true,
+          fieldAcceptedDespiteGlobalNativeError: true,
+          reason: 'field has committed option; global native product attribute error is checked by final preflight',
+        };
+      }
+      results.push({ id: step.id, expand, ...result });
+      if (!result.ok) {
+        return { changed: results.some((entry) => entry.changed), ok: false, timedOut: Boolean(result.timedOut), locked: Array.from(locked), stoppedAt: step.id, reason: result.reason, results };
+      }
+      lockRequiredAttributeField(step.id, item.node, (result.acceptedValues && result.acceptedValues.length) ? result.acceptedValues : step.values, result);
+      locked.add(step.id);
+      if (result.acceptedValues && result.acceptedValues.length) step.values = result.acceptedValues;
+      usedNodes.add(item.node);
+    }
+    const unknownRequired = await fillUnknownRequiredAttributeFallbackFields(findVisibleAttributeContainers(), usedNodes);
+    const unknownFailed = unknownRequired.filter((entry) => entry.ok === false);
+    return {
+      changed: results.some((entry) => entry.changed) || unknownRequired.some((entry) => entry.changed),
+      ok: unknownFailed.length === 0,
+      locked: Array.from(locked),
+      results,
+      unknownRequired,
+      stoppedAt: unknownFailed[0] ? 'unknown_required_other' : undefined,
+    };
+  }
+
+  function findVisibleOptionByCandidateValues(values, opener = null) {
+    const visibleDropdowns = opener ? getActiveSelectDropdowns(opener) : getVisibleSelectDropdowns();
+    const roots = visibleDropdowns.length ? visibleDropdowns : [document];
+    return findVisibleOptionByCandidateValuesInRoots(values, roots);
+  }
+
+  function findVisibleOptionByCandidateValuesInRoots(values, roots = []) {
+    const normalizedValues = values.map((value) => normalizeSelectMatchText(value)).filter(Boolean);
+    for (const root of roots) {
+      if (!root) continue;
+      const optionNodes = Array.from(root.querySelectorAll(
+        '.ant-select-item-option,.ant-select-dropdown-menu-item,.select2-results__option,[role="option"],li'
+      ));
+      const contentNodes = Array.from(root.querySelectorAll('.ant-select-item-option-content,.select2-results__option')).map((node) => (
+        node.closest('.ant-select-item-option,.ant-select-dropdown-menu-item,.select2-results__option,[role="option"],li') || node
+      ));
+      const options = Array.from(new Set(optionNodes.concat(contentNodes)))
         .filter(visibleElement)
         .map((node) => ({ node, text: elementText(node) }))
         .filter((item) => item.text && item.text.length < 220);
       for (const value of normalizedValues) {
         const found = options.find((item) => {
-          const text = normalizeCategoryText(item.text);
-          return text === value || text.includes(value);
+          const text = normalizeSelectMatchText(item.text);
+          return text === value || text.includes(value) || value.includes(text);
         });
-        if (found) return { option: found.node.closest('.ant-select-item-option,[role="option"]') || found.node, optionText: found.text };
+        if (found) return { option: found.node.closest('.ant-select-item-option,.ant-select-dropdown-menu-item,.select2-results__option,[role="option"]') || found.node, optionText: found.text };
+      }
+    }
+    return null;
+  }
+
+  async function findVisibleOptionByCandidateValuesWithScroll(values, opener = null, options = {}) {
+    const deadlineAt = getDeadlineAt(options);
+    let option = findVisibleOptionByCandidateValues(values, opener);
+    if (option) return option;
+    if (isDeadlineExceeded(deadlineAt)) return null;
+    const holders = getActiveSelectScrollContainers(opener);
+    for (const holder of holders) {
+      if (isDeadlineExceeded(deadlineAt)) return null;
+      const maxScroll = Math.max(0, holder.scrollHeight - holder.clientHeight);
+      const stepSize = Math.max(120, Math.floor(holder.clientHeight * 0.8) || 160);
+      for (let top = 0; top <= maxScroll + stepSize; top += stepSize) {
+        if (isDeadlineExceeded(deadlineAt)) return null;
+        holder.scrollTop = Math.min(top, maxScroll);
+        holder.dispatchEvent(new Event('scroll', { bubbles: true }));
+        await sleep(90);
+        if (isDeadlineExceeded(deadlineAt)) return null;
+        option = findVisibleOptionByCandidateValues(values, opener);
+        if (option) return option;
       }
     }
     return null;
   }
 
   function selectedTextMatchesCandidateValues(selectedText, values) {
-    const selected = normalizeCategoryText(selectedText);
+    const selected = normalizeSelectMatchText(selectedText);
     if (!selected) return false;
     return values.some((value) => {
-      const wanted = normalizeCategoryText(value);
+      const wanted = normalizeSelectMatchText(value);
       return wanted && (selected === wanted || selected.includes(wanted) || wanted.includes(selected));
     });
+  }
+
+  function isUnknownRequiredAttributeContainer(candidate) {
+    const text = String((candidate && candidate.text) || '');
+    if (!/\*/.test(text)) return false;
+    if (/\u4ea7\u54c1\u5206\u7c7b|\u5e97\u94fa\u540d\u79f0|\u8fd0\u8d39\u6a21\u677f|\u53d1\u8d27\u5730|\u4ea7\u54c1\u6807\u9898|SKU|\u8d27\u503c|\u7269\u6d41\u8d39|\u5e93\u5b58|\u91cd\u91cf|\u5c3a\u5bf8|category|shop|postage|freight|ship|title|sku|price|stock|weight|size/i.test(text)) return false;
+    if (!candidate.node || !candidate.node.querySelector('.ant-select,input[role="combobox"],input[type="search"],input[type="checkbox"],input[type="radio"]')) return false;
+    const selectedText = firstNonEmpty(getSelectedTextInContainer(candidate.node), getCheckedTextsInContainer(candidate.node).join(' '), '');
+    return isBlankSelectionText(selectedText);
+  }
+
+  async function fillUnknownRequiredAttributeFallbackFields(containers, usedNodes) {
+    const results = [];
+    for (const item of containers) {
+      if (nodeOverlapsAnyUsed(item.node, usedNodes) || !isUnknownRequiredAttributeContainer(item)) continue;
+      const labelText = item.text.slice(0, 120);
+      const fallbackKind = /\u7528\u9014|^use$|\(use\)/i.test(labelText)
+        ? 'use'
+        : /\u4ea7\u54c1\u9002\u7528\u573a\u666f|product application scenarios?/i.test(labelText)
+          ? 'product_application_scenarios'
+          : /\u4e3b\u9898|theme/i.test(labelText)
+            ? 'theme'
+            : /\u6750\u8d28|material/i.test(labelText)
+              ? 'material'
+        : /\u7279\u6027|\u7279\u70b9|feature/i.test(labelText)
+          ? 'feature'
+          : /\u529f\u80fd|function/i.test(labelText)
+            ? 'function'
+            : 'generic';
+      const fallbackValues = fallbackKind === 'feature'
+        ? getVisibleFeatureCandidateValues(labelText)
+        : fallbackKind === 'product_application_scenarios'
+          ? getVisibleApplicationScenarioCandidateValues()
+          : fallbackKind === 'theme'
+            ? getVisibleThemeCandidateValues()
+            : fallbackKind === 'material'
+              ? getVisibleMaterialCandidateValues()
+        : ['\u5176\u4ed6(Other)', 'Other', '\u5176\u4ed6'];
+      let result = await selectRequiredAttributeCheckboxValue(item.node, fallbackValues, {
+        allowMultipleCheckboxes: fallbackKind === 'product_application_scenarios',
+        safeFallbackKind: fallbackKind,
+      });
+      if (!result.handled) {
+        result = await selectLockedDropdownOption(item.node, fallbackValues, {
+          confirmWithKeyboard: false,
+          skipKeyboardCommit: true,
+          noKeyboardCommitForDynamicAttributes: /^(?:function|use|feature|product_application_scenarios|theme)$/i.test(fallbackKind),
+          requireCommittedOption: true,
+          allowSafeVisibleOptionFallback: true,
+          safeFallbackKind: fallbackKind,
+        });
+      }
+      results.push({
+        id: 'unknown_required_other',
+        labelText,
+        ...result,
+      });
+      if (result.ok) usedNodes.add(item.node);
+    }
+    return results;
+  }
+
+  function getRequiredAttributeFieldTimeoutMs(options = {}, fallback = 8000) {
+    const value = Number(options.fieldTimeoutMs || options.requiredAttributeFieldTimeoutMs || options.requiredFieldTimeoutMs || fallback || 0);
+    return Number.isFinite(value) && value > 0 ? value : 0;
+  }
+
+  async function runRequiredAttributeSelectionWithHardTimeout(fieldId, deadlineAt, task) {
+    if (!deadlineAt) return task();
+    const stageId = `required-attributes.${fieldId}`;
+    const remainingMs = Math.max(0, deadlineAt - Date.now());
+    if (!remainingMs) {
+      return buildStageTimeoutResult(stageId, deadlineAt, {
+        id: fieldId,
+        changed: false,
+        locked: false,
+        reason: `required attribute field timeout before selection: ${fieldId}`,
+      });
+    }
+    let timer = null;
+    let hardTimedOut = false;
+    try {
+      const result = await Promise.race([
+        Promise.resolve().then(task),
+        new Promise((resolve) => {
+          timer = window.setTimeout(() => {
+            hardTimedOut = true;
+            resolve(buildStageTimeoutResult(stageId, deadlineAt, {
+              id: fieldId,
+              changed: false,
+              locked: false,
+              reason: `required attribute field hard timeout: ${fieldId}`,
+            }));
+          }, remainingMs + 500);
+        }),
+      ]);
+      if (hardTimedOut || (result && result.timedOut)) {
+        try {
+          await closeVisibleSelectDropdowns();
+        } catch (_) {
+          // Timeout recovery should never hide the field-level result.
+        }
+      }
+      return result;
+    } finally {
+      if (timer) window.clearTimeout(timer);
+    }
   }
 
   async function selectAttributeContainerValue(container, values, options = {}) {
@@ -4292,62 +8854,13 @@
         }
       }
     }
-    const opener = Array.from(container.querySelectorAll('.ant-select-selector,.ant-select,input[role="combobox"],input[type="search"],input[type="text"]'))
-      .filter(visibleElement)[0];
-    if (!opener) return { changed: false, ok: false, reason: 'attribute selector not found' };
-    for (const value of values) {
-      clickElement(opener);
-      await sleep(250);
-      const searchInput = Array.from(document.querySelectorAll('.ant-select-dropdown input[role="combobox"],.ant-select-dropdown input[type="search"],input[role="combobox"],input[type="search"]'))
-        .filter((node) => visibleElement(node) && !node.closest(`#${PANEL_ID}`))[0];
-      if (searchInput) {
-        setInputValue(searchInput, value);
-        pressKey(searchInput, 'Enter');
-        await sleep(400);
-      }
-      const option = findVisibleOptionByCandidateValues([value]);
-      if (!option) continue;
-      forceSelectOption(option.option);
-      await sleep(450);
-      const afterText = getSelectedTextInContainer(container);
-      if (!isBlankSelectionText(afterText)) {
-        return { changed: true, ok: true, selectedText: afterText, optionText: option.optionText };
-      }
-    }
-    return { changed: false, ok: false, reason: 'attribute value not selected', values };
+    const result = await selectAntLikeValue(container, values, { maxAttempts: 3 });
+    if (result.ok) return result;
+    return { ...result, reason: result.reason || 'attribute value not selected', values };
   }
 
-  async function fillVisibleRequiredAttributeFields() {
-    const containers = findVisibleAttributeContainers();
-    const results = [];
-    const dynamicRules = VISIBLE_REQUIRED_ATTRIBUTE_RULES.concat([
-      {
-        id: 'frame_material',
-        label: /\u6846\u67b6\u6750\u8d28|frame material/i,
-        values: getVisibleMaterialCandidateValues(),
-      },
-      {
-        id: 'material',
-        label: /\u6750\u8d28|material/i,
-        exclude: /\u6846\u67b6\u6750\u8d28|frame material/i,
-        values: getVisibleMaterialCandidateValues(),
-      },
-    ]);
-    for (const rule of dynamicRules) {
-      const matches = containers.filter((candidate) => rule.label.test(candidate.text) && !(rule.exclude && rule.exclude.test(candidate.text)));
-      if (!matches.length) {
-        results.push({ id: rule.id, ok: true, changed: false, skipped: true, reason: 'container not visible on this category' });
-        continue;
-      }
-      const item = matches[0];
-      const result = await selectAttributeContainerValue(item.node, rule.values);
-      results.push({ id: rule.id, ...result });
-    }
-    return {
-      changed: results.some((item) => item.changed),
-      ok: results.every((item) => item.ok),
-      results,
-    };
+  async function fillVisibleRequiredAttributeFields(options = {}) {
+    return runLockedRequiredAttributePipeline(options);
   }
 
   function findVisibleShipFromSection() {
@@ -4374,25 +8887,48 @@
     if (!input) return false;
     if (Boolean(input.checked) === Boolean(checked)) return false;
     const label = input.closest('label') || input.parentElement;
+    if (label) {
+      callReactHandler(label, 'onMouseDown', input);
+      callReactHandler(label, 'onClick', input);
+    }
+    callReactHandler(input, 'onMouseDown', input);
+    callReactHandler(input, 'onClick', input);
     clickElement(label || input);
-    if (Boolean(input.checked) === Boolean(checked)) return true;
-    input.checked = Boolean(checked);
+    if (Boolean(input.checked) === Boolean(checked)) {
+      input.dispatchEvent(new Event('change', { bubbles: true }));
+      return true;
+    }
+    const descriptor = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'checked');
+    if (descriptor && descriptor.set) descriptor.set.call(input, Boolean(checked));
+    else input.checked = Boolean(checked);
     input.dispatchEvent(new Event('input', { bubbles: true }));
     input.dispatchEvent(new Event('change', { bubbles: true }));
+    input.dispatchEvent(new Event('blur', { bubbles: true }));
     return Boolean(input.checked) === Boolean(checked);
   }
 
   function getVisibleShipsFromStatus() {
     const section = findVisibleShipFromSection();
     if (!section) return { ok: false, reason: 'ships from section not found' };
+    const sectionText = elementText(section);
     const checkboxes = Array.from(section.querySelectorAll('input[type="checkbox"]'))
       .filter((node) => !node.closest(`#${PANEL_ID}`));
-    const usCheckbox = checkboxes.find((node) => /united states|\u7f8e\u56fd/i.test(checkboxNearbyText(node)));
+    const isUs = (node) => /united states|\u7f8e\u56fd/i.test(checkboxNearbyText(node));
+    const usCheckbox = checkboxes.find(isUs);
+    const checkedBoxes = checkboxes.filter((node) => node.checked);
+    const checkedTexts = checkedBoxes.map((node) => checkboxNearbyText(node)).filter(Boolean);
+    const nonUsChecked = checkedBoxes.filter((node) => !isUs(node));
+    const visibleUnitedStates = /united states|\u7f8e\u56fd/i.test(sectionText);
     return {
-      ok: Boolean(usCheckbox && usCheckbox.checked),
+      ok: checkboxes.length
+        ? Boolean(usCheckbox && usCheckbox.checked && nonUsChecked.length === 0)
+        : Boolean(visibleUnitedStates),
       hasSection: true,
-      hasUnitedStates: Boolean(usCheckbox),
-      selectedText: usCheckbox ? checkboxNearbyText(usCheckbox) : '',
+      hasCheckboxes: checkboxes.length > 0,
+      hasUnitedStates: Boolean(usCheckbox || visibleUnitedStates),
+      checkedTexts,
+      badCheckedTexts: nonUsChecked.map((node) => checkboxNearbyText(node)).filter(Boolean),
+      selectedText: usCheckbox ? checkboxNearbyText(usCheckbox) : (visibleUnitedStates ? sectionText.slice(0, 180) : ''),
     };
   }
 
@@ -4401,15 +8937,28 @@
     if (!section) return { changed: false, ok: false, reason: 'ships from section not found' };
     const checkboxes = Array.from(section.querySelectorAll('input[type="checkbox"]'))
       .filter((node) => !node.closest(`#${PANEL_ID}`));
-    const usCheckbox = checkboxes.find((node) => /united states|\u7f8e\u56fd/i.test(checkboxNearbyText(node)));
+    const isUs = (node) => /united states|\u7f8e\u56fd/i.test(checkboxNearbyText(node));
+    const usCheckbox = checkboxes.find(isUs);
     if (!usCheckbox) return { changed: false, ok: false, reason: 'United States checkbox not found' };
-    const changed = setCheckboxChecked(usCheckbox, true);
-    return { changed, ok: Boolean(usCheckbox.checked), selectedText: checkboxNearbyText(usCheckbox) };
+    let changed = false;
+    for (const box of checkboxes) {
+      changed = setCheckboxChecked(box, box === usCheckbox) || changed;
+    }
+    const status = getVisibleShipsFromStatus();
+    return {
+      changed,
+      ok: status.ok,
+      selectedText: status.selectedText || checkboxNearbyText(usCheckbox),
+      checkedTexts: status.checkedTexts || [],
+      badCheckedTexts: status.badCheckedTexts || [],
+      mode: 'only-united-states',
+    };
   }
 
   function findCustomAttributeSection() {
     const label = '\u81ea\u5b9a\u4e49\u5c5e\u6027';
-    const nodes = Array.from(document.querySelectorAll('.ant-form-item,.form-group,.row,table,tbody,section,div'))
+    const scope = getEditFormScope();
+    const nodes = Array.from(scope.querySelectorAll('.ant-form-item,.form-group,.row,table,tbody,section,div'))
       .filter((node) => !node.closest(`#${PANEL_ID}`) && visibleElement(node))
       .filter((node) => elementText(node).includes(label) && node.querySelector('input,button,a,span'));
     const ranked = nodes
@@ -4425,9 +8974,48 @@
   }
 
   function getCustomAttributeInputs(section) {
-    if (!section) return [];
-    return Array.from(section.querySelectorAll('input[type="text"],textarea'))
+    const scoped = section ? Array.from(section.querySelectorAll('input[type="text"],textarea')) : [];
+    const scope = getEditFormScope();
+    const visibleCustomInputs = Array.from(scope.querySelectorAll('input[type="text"],textarea'))
+      .filter((node) => /属性名|属性值/i.test(String(node.getAttribute('placeholder') || '')));
+    return Array.from(new Set([...scoped, ...visibleCustomInputs]))
       .filter((node) => !node.closest(`#${PANEL_ID}`) && node.type !== 'hidden' && visibleElement(node));
+  }
+
+  function getCustomAttributeRows(section) {
+    const inputs = getCustomAttributeInputs(section)
+      .filter((node) => /属性名|属性值/i.test(String(node.getAttribute('placeholder') || '')));
+    const rows = [];
+    for (const input of inputs) {
+      let cursor = input.parentElement;
+      for (let depth = 0; cursor && depth < 6; depth += 1, cursor = cursor.parentElement) {
+        const placeholders = Array.from(cursor.querySelectorAll('input[type="text"],textarea'))
+          .map((node) => String(node.getAttribute('placeholder') || ''));
+        if (placeholders.some((value) => /属性名/i.test(value)) && placeholders.some((value) => /属性值/i.test(value))) {
+          rows.push(cursor);
+          break;
+        }
+      }
+    }
+    return Array.from(new Set(rows)).filter((node) => !node.closest(`#${PANEL_ID}`) && visibleElement(node));
+  }
+
+  function findCustomAttributeDeleteControls(section) {
+    return getCustomAttributeRows(section)
+      .flatMap((row) => Array.from(row.querySelectorAll('button,a,span,i,.iconfont')))
+      .filter((node) => !node.closest(`#${PANEL_ID}`) && visibleElement(node))
+      .filter((node) => /icon_close|icon-delete|delete|remove|close|minus|trash/i.test(String(node.className || '') + ' ' + String(node.getAttribute('title') || '') + ' ' + String(node.getAttribute('aria-label') || '')));
+  }
+
+  async function waitForCustomAttributeRowCountBelow(section, beforeCount, timeoutMs = 1200) {
+    const start = Date.now();
+    let rows = getCustomAttributeRows(section);
+    while (Date.now() - start < timeoutMs) {
+      if (rows.length < beforeCount || !rows.some((row) => document.documentElement.contains(row))) return rows;
+      await sleep(120);
+      rows = getCustomAttributeRows(section);
+    }
+    return rows;
   }
 
   function normalizeCustomAttributeText(value) {
@@ -4447,6 +9035,10 @@
 
   function getVisibleCustomAttributeStatus() {
     const current = getVisibleCustomAttributeValues();
+    const rows = getCustomAttributeRows(current.section);
+    const rowErrors = rows
+      .map((row, index) => ({ index, text: elementText(row) }))
+      .filter((item) => /\u4e0d\u80fd\u8d85\u8fc7|\u4e0d\u80fd\u4e3a\u7a7a|required|too long/i.test(item.text));
     const invalid = current.values
       .map((value, index) => ({
         index,
@@ -4456,11 +9048,13 @@
       }))
       .filter((item) => item.length > EDIT_PAGE_RULES.customAttributeMaxChars || item.issues.length);
     return {
-      ok: invalid.length === 0,
+      ok: invalid.length === 0 && rowErrors.length === 0,
       section: current.section,
       values: current.values,
       count: current.values.length,
       invalid,
+      rowCount: rows.length,
+      rowErrors,
     };
   }
 
@@ -4469,46 +9063,50 @@
     const current = getVisibleCustomAttributeValues();
     if (!current.section) return { changed: false, ok: true, reason: 'custom attribute section not found' };
     const beforeCount = current.values.length;
-    let clicked = 0;
-    const controls = Array.from(current.section.querySelectorAll('button,a,span,i,.anticon,.anticon-close,.anticon-delete,.anticon-minus-circle,.icon-close,.icon-delete'))
-      .filter((node) => !node.closest(`#${PANEL_ID}`) && visibleElement(node))
-      .filter((node) => {
-        const text = elementText(node);
-        const className = String(node.className || '');
-        const aria = String(node.getAttribute('aria-label') || node.getAttribute('title') || '');
-        return /^[xX×]$/.test(text) || /delete|remove|close|minus|trash/i.test(`${className} ${aria}`);
-      })
-      .slice(0, 20);
-    for (const control of controls.reverse()) {
-      clickElement(control);
-      clicked += 1;
-      await sleep(120);
-    }
+    let legalFallback = 0;
     let cleared = 0;
-    getCustomAttributeInputs(current.section).forEach((node) => {
-      if (getInputText(node) && setInputValue(node, '')) cleared += 1;
-    });
-    await sleep(300);
+    let clicked = 0;
+    for (let attempt = 0; attempt < 8; attempt += 1) {
+      const rows = getCustomAttributeRows(current.section);
+      if (!rows.length) break;
+      for (const row of rows.slice().reverse()) {
+        const beforeRows = getCustomAttributeRows(current.section).length;
+        const control = Array.from(row.querySelectorAll('button,a,span,i,.iconfont'))
+          .filter((node) => !node.closest(`#${PANEL_ID}`) && visibleElement(node))
+          .find((node) => /icon_close|icon-delete|delete|remove|close|minus|trash/i.test(String(node.className || '') + ' ' + String(node.getAttribute('title') || '') + ' ' + String(node.getAttribute('aria-label') || '')));
+        if (!control) continue;
+        clickElement(control);
+        clicked += 1;
+        await waitForCustomAttributeRowCountBelow(current.section, beforeRows, 900);
+      }
+      await sleep(250);
+      if (!getCustomAttributeRows(current.section).length) break;
+    }
     let after = getVisibleCustomAttributeStatus();
-    let normalized = 0;
     if (!after.ok) {
-      getCustomAttributeInputs(after.section || current.section).forEach((node) => {
-        const before = getInputText(node);
-        const next = normalizeCustomAttributeText(before);
-        if (before && before !== next && setInputValue(node, next)) normalized += 1;
+      const rows = getCustomAttributeRows(after.section || current.section);
+      rows.forEach((row) => {
+        const inputs = Array.from(row.querySelectorAll('input[type="text"],textarea')).filter((node) => visibleElement(node));
+        if (inputs[0] && setInputValue(inputs[0], 'Material')) legalFallback += 1;
+        if (inputs[1] && setInputValue(inputs[1], 'Silicone')) legalFallback += 1;
+        inputs.slice(2).forEach((node) => {
+          if (getInputText(node) && setInputValue(node, '')) cleared += 1;
+        });
       });
-      await sleep(200);
+      await sleep(300);
       after = getVisibleCustomAttributeStatus();
     }
     return {
-      changed: clicked > 0 || cleared > 0 || normalized > 0,
-      ok: after.ok,
+      changed: clicked > 0 || cleared > 0 || legalFallback > 0,
+      ok: after.ok && after.rowErrors.length === 0,
       beforeCount,
       afterCount: after.count,
       invalidCount: after.invalid.length,
+      rowCount: after.rowCount,
+      rowErrors: after.rowErrors,
       clicked,
       cleared,
-      normalized,
+      legalFallback,
     };
   }
 
@@ -4521,8 +9119,39 @@
     return text.replace(/\s+/g, ' ').trim().length;
   }
 
+  function getVisiblePcDescriptionHtml() {
+    const target = findVisiblePcDescriptionTarget();
+    if (!target) return '';
+    if (target.type === 'iframe' || target.type === 'contenteditable') return String(target.node.innerHTML || '');
+    return getInputText(target.node);
+  }
+
+  function getVisiblePcDescriptionImageStatus() {
+    const html = getVisiblePcDescriptionHtml();
+    const sourceImages = selectPcDetailImages(getCurrentEditMainImageUrls());
+    const detailImageState = analyzePcDetailWebImages(html, sourceImages);
+    const ok = sourceImages.length >= EDIT_PAGE_RULES.pcDescriptionMinImages
+      && detailImageState.currentProductImageCount >= EDIT_PAGE_RULES.pcDescriptionMinImages
+      && detailImageState.leadingImageCount >= EDIT_PAGE_RULES.pcDescriptionMinImages;
+    return {
+      ok,
+      sourceImageCount: sourceImages.length,
+      ...detailImageState,
+    };
+  }
+
+  async function waitForVisiblePcDescriptionImageStatus(timeoutMs = 5000, pollMs = 300) {
+    const startedAt = Date.now();
+    let status = getVisiblePcDescriptionImageStatus();
+    while (!status.ok && Date.now() - startedAt < timeoutMs) {
+      await sleep(pollMs);
+      status = getVisiblePcDescriptionImageStatus();
+    }
+    return { ...status, waitedMs: Date.now() - startedAt };
+  }
+
   function verifyEditTemplateSelections() {
-    const postageContainer = findFieldContainerByText('\u8fd0\u8d39\u6a21\u677f') || document.body;
+    const postageContainer = findPostageTemplateContainer() || document.body;
     const postageSelectedText = getSelectedTextInContainer(postageContainer);
     const category = getProductCategorySelectedText();
     return {
@@ -4533,35 +9162,257 @@
     };
   }
 
-  function getVisibleRequiredAttributeStatus() {
-    const containers = findVisibleAttributeContainers();
-    const rules = VISIBLE_REQUIRED_ATTRIBUTE_RULES.concat([
-      {
-        id: 'frame_material',
-        label: /\u6846\u67b6\u6750\u8d28|frame material/i,
-        values: getVisibleMaterialCandidateValues(),
-      },
-      {
-        id: 'material',
-        label: /\u6750\u8d28|material/i,
-        exclude: /\u6846\u67b6\u6750\u8d28|frame material/i,
-        values: getVisibleMaterialCandidateValues(),
-      },
-    ]);
-    const fields = rules.map((rule) => {
-      const item = containers.find((candidate) => rule.label.test(candidate.text) && !(rule.exclude && rule.exclude.test(candidate.text)));
-      if (!item) return { id: rule.id, ok: true, skipped: true, reason: 'container not visible on this category' };
-      const selectedText = getSelectedTextInContainer(item.node);
+  function hasVisibleNativeValidationText(pattern) {
+    const scope = getEditFormScope();
+    return Array.from(scope.querySelectorAll('.ant-form-item-explain-error,.ant-form-show-help-item'))
+      .filter((node) => {
+        if (node.closest(`#${PANEL_ID}`) || !visibleElement(node)) return false;
+        const className = String(node.className || '');
+        if (/validating|leave|prepare/i.test(className)) return false;
+        const style = window.getComputedStyle(node);
+        const rect = node.getBoundingClientRect();
+        if (!style || style.display === 'none' || style.visibility === 'hidden' || Number(style.opacity) === 0) return false;
+        return rect.width > 0 && rect.height > 1;
+      })
+      .some((node) => pattern.test(elementText(node)));
+  }
+
+  function getRequiredStarAttributeRows() {
+    const scope = getEditFormScope();
+    const attrScope = Array.from(scope.querySelectorAll('.required-attrs,.attr-gray-container.product-attrs,.product-attrs'))
+      .filter((node) => !node.closest(`#${PANEL_ID}`) && visibleElement(node))
+      .sort((a, b) => elementText(a).length - elementText(b).length)[0] || scope;
+    const rows = Array.from(attrScope.querySelectorAll('.ant-form-item,.form-group,.row,tr,td'))
+      .filter((node) => !node.closest(`#${PANEL_ID}`) && visibleElement(node))
+      .filter((node) => node.querySelector('.ant-select,input,select,textarea,input[type="checkbox"],input[type="radio"]'))
+      .map((node) => {
+        const labelNode = node.querySelector('.attr-label,.label-wrapper,.ant-form-item-label,label');
+        const labelText = elementText(labelNode).replace(/\s+/g, ' ').trim();
+        const text = elementText(node);
+        const required = Boolean(
+          node.querySelector('.attr-label.required')
+          || (labelNode && /\*/.test(elementText(labelNode)))
+          || /\*/.test(text.slice(0, 160))
+        );
+        return { node, labelText: labelText || text.slice(0, 80), text };
+      })
+      .filter((item) => item.labelText && item.text.length < 900)
+      .filter((item) => {
+        const text = item.text;
+        if (!/\*/.test(text.slice(0, 180)) && !item.node.querySelector('.attr-label.required')) return false;
+        if (/\u5e97\u94fa\u540d\u79f0|\u4ea7\u54c1\u5206\u7c7b|\u8fd0\u8d39\u6a21\u677f|\u53d1\u8d27\u5730|SKU|\u8d27\u503c|\u7269\u6d41\u8d39|\u5e93\u5b58|\u91cd\u91cf|\u5c3a\u5bf8|shop|category|postage|freight|ship|sku|price|stock|weight|size/i.test(text)) return false;
+        return true;
+      });
+    const seen = new Set();
+    return rows
+      .sort((a, b) => a.text.length - b.text.length || a.node.getBoundingClientRect().top - b.node.getBoundingClientRect().top)
+      .filter((item) => {
+        const key = `${item.labelText}::${Math.round(item.node.getBoundingClientRect().top)}`;
+        if (seen.has(key)) return false;
+        if (rows.some((other) => other !== item && item.node.contains(other.node) && other.text.length < item.text.length)) return false;
+        seen.add(key);
+        return true;
+      });
+  }
+
+  function getRequiredStarAttributeStatus() {
+    const rows = getRequiredStarAttributeRows();
+    const fields = rows.map((item, index) => {
+      const info = getAntSelectValueInfo(item.node);
+      const checkedInputs = Array.from(item.node.querySelectorAll('input[type="checkbox"],input[type="radio"]'))
+        .filter((node) => !node.closest(`#${PANEL_ID}`) && node.checked);
+      const plainInputValue = Array.from(item.node.querySelectorAll('input:not([type="checkbox"]):not([type="radio"]),textarea,select'))
+        .filter((node) => !node.closest(`#${PANEL_ID}`) && visibleElement(node))
+        .filter((node) => !/combobox|search/i.test(String(node.getAttribute('role') || node.type || '')))
+        .map((node) => getInputText(node) || elementText(node))
+        .find((value) => !isBlankSelectionText(value) && !isUnsafeSelectDisplayText(value));
+      const selectedText = firstNonEmpty(
+        getSelectedTextInContainer(item.node),
+        checkedInputs.map((node) => checkboxNearbyText(node)).filter(Boolean).join(' '),
+        plainInputValue,
+        info.okText,
+        ''
+      );
+      const hasDropdown = Boolean(item.node.querySelector('.ant-select,input[role="combobox"],input[type="search"]'));
+      const hasEffectiveValue = !isBlankSelectionText(selectedText) && !isUnsafeSelectDisplayText(selectedText);
+      const committedDynamicRequired = (
+        (/\u7528\u9014|use/i.test(item.labelText) && selectedTextMatchesCandidateValues(selectedText, getVisibleUseCandidateValues()))
+        || (/\u529f\u80fd|function/i.test(item.labelText) && selectedTextMatchesCandidateValues(selectedText, getVisibleFunctionCandidateValues()))
+        || (/\u6846\u67b6\u6750\u8d28|frame\s*material/i.test(item.labelText) && selectedTextMatchesCandidateValues(selectedText, getVisibleFrameMaterialCandidateValues()))
+      );
+      const ok = hasDropdown
+        ? Boolean(hasEffectiveValue && (!getSelectValidationIssue(item.node) || committedDynamicRequired))
+        : Boolean(hasEffectiveValue);
       return {
-        id: rule.id,
-        ok: !isBlankSelectionText(selectedText) && selectedTextMatchesCandidateValues(selectedText, rule.values),
-        selectedText,
+        id: `required_star_${index + 1}`,
+        labelText: item.labelText,
+        ok,
+        selectedText: selectedText || info.okText || '',
       };
     });
     return {
-      ok: fields.every((item) => item.ok),
+      ok: fields.every((field) => field.ok),
       fields,
-      missing: fields.filter((item) => !item.ok).map((item) => item.id),
+      missing: fields.filter((field) => !field.ok).map((field) => field.labelText || field.id),
+    };
+  }
+
+  function getVisibleRequiredAttributeStatus() {
+    const brandRule = VISIBLE_REQUIRED_ATTRIBUTE_RULES[0];
+    const containers = findVisibleAttributeContainers();
+    const usedNodes = new Set();
+    const brandItem = findBestAttributeContainerForRule(containers, brandRule, usedNodes, { requireRequiredStar: true });
+    if (brandItem) usedNodes.add(brandItem.node);
+    const useRule = VISIBLE_REQUIRED_ATTRIBUTE_RULES[4];
+    const useItem = findDirectRequiredAttributeContainer('use', { requireRequiredStar: true })
+      || findBestAttributeContainerForRule(containers, useRule, usedNodes, { requireRequiredStar: true });
+    if (useItem) usedNodes.add(useItem.node);
+    const featureRule = VISIBLE_REQUIRED_ATTRIBUTE_RULES[3];
+    const featureItem = findBestAttributeContainerForRule(containers, featureRule, usedNodes, { requireRequiredStar: true });
+    if (featureItem) usedNodes.add(featureItem.node);
+    const functionItem = findDirectRequiredAttributeContainer('function', { requireRequiredStar: true });
+    if (functionItem) usedNodes.add(functionItem.node);
+    const applicationScenarioRule = VISIBLE_REQUIRED_ATTRIBUTE_RULES[6];
+    const applicationScenarioItem = findBestAttributeContainerForRule(containers, applicationScenarioRule, usedNodes, { requireRequiredStar: true });
+    if (applicationScenarioItem) usedNodes.add(applicationScenarioItem.node);
+    const themeRule = VISIBLE_REQUIRED_ATTRIBUTE_RULES[7];
+    const themeItem = findBestAttributeContainerForRule(containers, themeRule, usedNodes, { requireRequiredStar: true });
+    if (themeItem) usedNodes.add(themeItem.node);
+    const rules = [
+      {
+        id: 'brand',
+        item: brandItem,
+        values: brandRule.values,
+      },
+      {
+        id: 'use',
+        item: useItem,
+        values: getVisibleUseCandidateValues(),
+        acceptCommittedOption: true,
+      },
+      {
+        id: 'function',
+        item: functionItem,
+        values: getVisibleFunctionCandidateValues(),
+        acceptCommittedOption: true,
+      },
+      {
+        id: 'feature',
+        item: featureItem,
+        values: getVisibleFeatureCandidateValues(),
+        acceptCommittedOption: true,
+      },
+      {
+        id: 'high_concerned_chemical',
+        item: findDirectRequiredAttributeContainer('high_concerned_chemical', { requireRequiredStar: true }),
+        values: FIXED_REQUIRED_ATTRIBUTE_VALUES.highConcernedChemical,
+      },
+      {
+        id: 'origin',
+        item: findDirectRequiredAttributeContainer('origin', { requireRequiredStar: true }),
+        values: FIXED_REQUIRED_ATTRIBUTE_VALUES.origin,
+      },
+      {
+        id: 'material',
+        item: findDirectRequiredAttributeContainer('material', { requireRequiredStar: true }),
+        values: getVisibleMaterialCandidateValues(),
+        acceptCommittedOption: true,
+      },
+      {
+        id: 'product_application_scenarios',
+        item: applicationScenarioItem,
+        values: getVisibleApplicationScenarioCandidateValues(),
+        acceptCommittedOption: true,
+      },
+      {
+        id: 'theme',
+        item: themeItem,
+        values: getVisibleThemeCandidateValues(),
+        acceptCommittedOption: true,
+      },
+    ];
+    const fields = rules.map((rule) => {
+      const item = rule.item;
+      if (!item) return { id: rule.id, ok: true, skipped: true, reason: 'locked field container not visible on this category' };
+      const selectedText = firstNonEmpty(
+        getSelectedTextInContainer(item.node),
+        getCheckedTextsInContainer(item.node).join(' '),
+        ''
+      );
+      const hasCommittedOption = !isBlankSelectionText(selectedText) && !isUnsafeSelectDisplayText(selectedText);
+      return {
+        id: rule.id,
+        ok: rule.acceptCommittedOption
+          ? hasCommittedOption
+          : hasCommittedOption && selectedTextMatchesCandidateValues(selectedText, rule.values),
+        selectedText,
+      };
+    });
+    const nativeProductAttributeError = hasVisibleNativeValidationText(/\u8bf7\u9009\u62e9\u4ea7\u54c1\u5c5e\u6027/);
+    const starStatus = getRequiredStarAttributeStatus();
+    const missing = Array.from(new Set(
+      fields.filter((item) => !item.ok).map((item) => item.id)
+        .concat(starStatus.missing.map((item) => `red_star:${item}`))
+        .concat(nativeProductAttributeError ? ['native_product_attribute_error'] : [])
+    ));
+    return {
+      ok: fields.every((item) => item.ok) && starStatus.ok && !nativeProductAttributeError,
+      fields,
+      redStarFields: starStatus.fields,
+      missing,
+    };
+  }
+
+  function getUnsafeRequiredAttributeDisplays() {
+    return getRequiredStarAttributeRows()
+      .map((item) => {
+        const info = getAntSelectValueInfo(item.node);
+        return {
+          labelText: item.text.slice(0, 120),
+          selectedText: info.okText,
+          unsafe: isUnsafeSelectDisplayText(info.okText),
+        };
+      })
+      .filter((item) => item.unsafe && item.selectedText);
+  }
+
+  function getPackageSaleState() {
+    const scope = getEditFormScope();
+    const nodes = Array.from(scope.querySelectorAll('.ant-form-item,.form-group,.row,div,td,tr,label'))
+      .filter((node) => !node.closest(`#${PANEL_ID}`) && visibleElement(node))
+      .map((node) => ({ node, text: elementText(node), rect: node.getBoundingClientRect() }))
+      .filter((item) => /\u9500\u552e\u65b9\u5f0f|\u6253\u5305\u51fa\u552e|\u6bcf\u5305/.test(item.text) && item.text.length < 500)
+      .sort((a, b) => a.text.length - b.text.length || a.rect.top - b.rect.top);
+    const root = nodes[0] ? nodes[0].node : null;
+    if (!root) return { visible: false, checked: false, root: null, text: '' };
+    const checkbox = Array.from(root.querySelectorAll('input[type="checkbox"]')).find((node) => visibleElement(node) || node.checked)
+      || Array.from(scope.querySelectorAll('input[type="checkbox"]')).find((node) => {
+        const label = node.closest('label');
+        const text = checkboxNearbyText(node) || elementText(label);
+        return /\u6253\u5305\u51fa\u552e|\u9500\u552e\u65b9\u5f0f/.test(text);
+      });
+    return {
+      visible: true,
+      checked: Boolean(checkbox && checkbox.checked),
+      checkbox,
+      root,
+      text: elementText(root).slice(0, 300),
+    };
+  }
+
+  function disablePackageSaleIfChecked() {
+    const stateInfo = getPackageSaleState();
+    if (!stateInfo.checkbox || !stateInfo.checked) {
+      return { changed: false, ok: !stateInfo.checked, ...stateInfo };
+    }
+    const changed = setCheckboxChecked(stateInfo.checkbox, false);
+    const after = getPackageSaleState();
+    return {
+      changed,
+      ok: !after.checked,
+      beforeChecked: true,
+      afterChecked: after.checked,
+      text: stateInfo.text,
     };
   }
 
@@ -4572,18 +9423,47 @@
     const templates = verifyEditTemplateSelections();
     const requiredAttributes = getVisibleRequiredAttributeStatus();
     const shipsFrom = getVisibleShipsFromStatus();
+    const price = getVisiblePriceStatus();
+    const variationRequiredFields = getVisibleVariationRequiredFieldStatus();
+    const unsafeRequiredAttributeDisplays = getUnsafeRequiredAttributeDisplays();
+    const packageSale = getPackageSaleState();
+    const modalPlan = buildCategoryModalSearchPlan(titleText);
+    const categoryEvidence = modalPlan && modalPlan.categoryEvidence
+      ? { required: REQUIRE_ALIEXPRESS_CATEGORY_EVIDENCE, ok: true, planId: modalPlan.id, ...modalPlan.categoryEvidence }
+      : getAliExpressEvidencePreflightStatus(titleText, templates.categorySelectedText);
     const risks = [];
     if (!titleText || titleText.length > EDIT_PAGE_RULES.titleMaxChars) risks.push(`title invalid length=${titleText.length}`);
     const titleForbiddenTerms = findForbiddenTitleTerms(titleText, getCurrentEditComplianceSource(titleText));
     if (titleForbiddenTerms.length) risks.push(`title contains brand/trademark terms: ${titleForbiddenTerms.join(', ')}`);
+    if (REQUIRE_ALIEXPRESS_CATEGORY_EVIDENCE && !categoryEvidence.ok && !modalPlan) {
+      risks.push(`AliExpress category evidence required: ${categoryEvidence.reason || 'category_evidence_missing'}`);
+    }
     if (!templates.categorySelected) risks.push('product category is not selected');
+    if (modalPlan && !categoryTextMatchesModalPlan(templates.categorySelectedText, modalPlan)) risks.push(`product category does not match ${modalPlan.id}: ${templates.categorySelectedText || 'empty'}`);
     if (isDrawerStorageProductText(titleText) && isWrongDrawerStorageCategory(templates.categorySelectedText)) risks.push(`category path is wrong for drawer storage: ${templates.categorySelectedText}`);
     if (!templates.postage111) risks.push(`postage template is not 111: ${templates.postageSelectedText || 'empty'}`);
     if (!requiredAttributes.ok) risks.push(`required attributes incomplete: ${requiredAttributes.missing.join(', ')}`);
+    if (unsafeRequiredAttributeDisplays.length) risks.push(`unsafe required attribute display: ${unsafeRequiredAttributeDisplays.map((item) => `${item.labelText}=${item.selectedText}`).join('; ')}`);
+    if (packageSale.checked) risks.push('package sale must stay unchecked');
     if (!shipsFrom.ok) risks.push(`ships from is not United States: ${shipsFrom.selectedText || shipsFrom.reason || 'empty'}`);
-    if (document.body && /\u8bf7\u9009\u62e9\u5fc5\u9009\u53d8\u79cd\u5c5e\u6027/.test(document.body.innerText || '')) risks.push('variation parameter blocked: required variation attribute missing');
+    if (!price.ok) risks.push(`price invalid: ${price.reason || 'must equal Amazon original price x task formula'}`);
+    if (!variationRequiredFields.ok) risks.push(variationRequiredFields.reason || `variation required fields incomplete: ${variationRequiredFields.missing.join(', ')}`);
+    if (hasVisibleNativeValidationText(/\u8bf7\u9009\u62e9\u5fc5\u9009\u53d8\u79cd\u5c5e\u6027/)) risks.push('variation parameter blocked: required variation attribute missing');
     const pcDescriptionChars = getVisiblePcDescriptionChars();
     if (pcDescriptionChars < EDIT_PAGE_RULES.pcDescriptionMinChars) risks.push(`PC description too short: ${pcDescriptionChars}`);
+    const pcDescriptionImages = getVisiblePcDescriptionImageStatus();
+    if (pcDescriptionImages.sourceImageCount < EDIT_PAGE_RULES.pcDescriptionMinImages) {
+      risks.push(`PC description source images missing: ${pcDescriptionImages.sourceImageCount}/${EDIT_PAGE_RULES.pcDescriptionMinImages}`);
+    } else if (pcDescriptionImages.currentProductImageCount < EDIT_PAGE_RULES.pcDescriptionMinImages) {
+      risks.push(`PC description missing current product images: ${pcDescriptionImages.currentProductImageCount}/${EDIT_PAGE_RULES.pcDescriptionMinImages}`);
+    }
+    if (pcDescriptionImages.leadingImageCount < EDIT_PAGE_RULES.pcDescriptionMinImages) {
+      risks.push(`PC description image-first layout missing: ${pcDescriptionImages.leadingImageCount}/${EDIT_PAGE_RULES.pcDescriptionMinImages}`);
+    }
+    const marketingImages = getMarketingImageStatus();
+    if (!marketingImages.ready) {
+      risks.push(`marketing images incomplete: ${marketingImages.count}/${EDIT_PAGE_RULES.marketingImageCount}`);
+    }
     if (!customAttributes.ok) {
       const invalidSummary = customAttributes.invalid
         .slice(0, 5)
@@ -4596,12 +9476,124 @@
       risks,
       titleLength: titleText.length,
       pcDescriptionChars,
+      pcDescriptionImages,
+      marketingImages,
       templates,
       requiredAttributes,
+      unsafeRequiredAttributeDisplays,
+      packageSale: {
+        visible: packageSale.visible,
+        checked: packageSale.checked,
+        text: packageSale.text,
+      },
+      categoryEvidence,
       shipsFrom,
+      price,
+      variationRequiredFields,
       customAttributeCount: customAttributes.count,
       customAttributeInvalidCount: customAttributes.invalid.length,
     };
+  }
+
+  function makeReadonlyJsonSafe(value) {
+    return JSON.parse(JSON.stringify(value, (key, item) => {
+      if (key === 'node' || key === 'element' || key === 'container' || key === 'root' || key === 'checkbox' || key === 'section') return undefined;
+      if (item && typeof Element !== 'undefined' && item instanceof Element) return undefined;
+      if (item && typeof Node !== 'undefined' && item instanceof Node) return undefined;
+      if (typeof item === 'function') return undefined;
+      return item;
+    }));
+  }
+
+  function getVisibleDangerousActionStatus() {
+    const controls = Array.from(document.querySelectorAll('button,a,[role="button"],input[type="button"],input[type="submit"],span'))
+      .filter((node) => !node.closest(`#${PANEL_ID}`) && visibleElement(node))
+      .map((node) => ({
+        text: elementText(node) || String(node.value || ''),
+        tag: String(node.tagName || '').toLowerCase(),
+      }))
+      .filter((item) => item.text && item.text.length <= 80);
+    const publishControls = controls.filter((item) => /一键发布|采集并一键发布|发布/.test(item.text));
+    const saveControls = controls.filter((item) => /保存并移入待发布|保存/.test(item.text) && !/发布/.test(item.text));
+    return {
+      publishControlVisible: publishControls.length > 0,
+      publishControls: publishControls.slice(0, 10),
+      saveControlVisible: saveControls.length > 0,
+      saveControls: saveControls.slice(0, 10),
+    };
+  }
+
+  function buildReadonlyEditPreflightReadback() {
+    const product = getProductFromEdit(state.editData) || {};
+    const titleInput = findProductTitleInput();
+    const titleText = titleInput ? getInputText(titleInput) : firstNonEmpty(product.subject, product.title, product.productTitle, '');
+    const productId = extractProductIdFromCurrentPage();
+    const asin = getCurrentEditAsinForEvidence(titleText, product);
+    const dangerousActions = getVisibleDangerousActionStatus();
+    let preflight = null;
+    let error = '';
+    if (isEditPage()) {
+      try {
+        preflight = getVisibleEditPreflightStatus();
+      } catch (readError) {
+        error = String(readError && readError.message ? readError.message : readError);
+      }
+    }
+    const evidenceStore = readAliExpressEvidenceStore();
+    const blockers = [];
+    if (!isEditPage()) blockers.push('not_edit_page');
+    if (error) blockers.push(`readonly_preflight_error: ${error}`);
+    if (preflight && Array.isArray(preflight.risks)) blockers.push(...preflight.risks);
+    const result = {
+      app: APP_NAME,
+      version: VERSION,
+      readonly: true,
+      generatedAt: nowIso(),
+      currentUrl: location.href,
+      pageTitle: document.title,
+      readyState: document.readyState,
+      isEditPage: isEditPage(),
+      productId,
+      asin,
+      sourceUrl: firstNonEmpty(product.sourceUrl, extractSourceUrlFromCurrentEditPage()),
+      titleLength: titleText.length,
+      evidenceStore: {
+        ok: evidenceStore.ok,
+        reason: evidenceStore.reason || '',
+        cacheKey: ALIEXPRESS_EVIDENCE_STORE_KEY,
+        schemaVersion: evidenceStore.store ? evidenceStore.store.schemaVersion : '',
+        updatedAt: evidenceStore.store ? evidenceStore.store.updatedAt : '',
+        recordCount: evidenceStore.store && evidenceStore.store.records ? Object.keys(evidenceStore.store.records).length : 0,
+      },
+      preflight: preflight ? makeReadonlyJsonSafe(preflight) : null,
+      dangerousActions,
+      preflightPass: Boolean(preflight && preflight.pass),
+      publishRisk: dangerousActions.publishControlVisible,
+      safeToSaveToWaitPublish: Boolean(preflight && preflight.pass && !dangerousActions.publishControlVisible),
+      pass: Boolean(preflight && preflight.pass),
+      blockers,
+      error,
+    };
+    return makeReadonlyJsonSafe(result);
+  }
+
+  function writeReadonlyEditPreflightNode(result) {
+    const payload = result || buildReadonlyEditPreflightReadback();
+    let node = document.getElementById(READONLY_PREFLIGHT_NODE_ID);
+    if (!node) {
+      node = document.createElement('script');
+      node.id = READONLY_PREFLIGHT_NODE_ID;
+      node.type = 'application/json';
+      node.style.display = 'none';
+      (document.documentElement || document.body).appendChild(node);
+    }
+    node.textContent = JSON.stringify(payload);
+    window.__DXM_AUTOMATION_V1_READONLY_PREFLIGHT_LAST__ = payload;
+    return payload;
+  }
+
+  function getReadonlyEditPreflightReadback() {
+    return writeReadonlyEditPreflightNode(buildReadonlyEditPreflightReadback());
   }
 
   function collectVisibleEditPageErrors() {
@@ -4625,15 +9617,196 @@
     );
   }
 
-  async function runEditPagePreflightAndFix() {
-    const category = await selectVisibleProductCategory();
-    const requiredAttributes = await fillVisibleRequiredAttributeFields();
-    const shipsFrom = selectVisibleShipsFromUnitedStates();
-    const customAttributes = await clearVisibleCustomAttributes();
-    const postage = await selectPostageTemplate111();
-    const sanitization = applyVisiblePlatformTextSanitization();
-    const preflight = getVisibleEditPreflightStatus();
-    const result = { category, requiredAttributes, shipsFrom, customAttributes, postage, sanitization, preflight };
+  function findEditPageSaveToWaitPublishButton() {
+    const buttons = Array.from(document.querySelectorAll('button,a,.ant-btn,input[type="button"],input[type="submit"]'))
+      .filter((node) => !node.closest(`#${PANEL_ID}`) && visibleElement(node))
+      .map((node) => ({ node, text: String(elementText(node) || node.value || '').trim() }));
+    return buttons.find((item) => item.text === '\u4fdd\u5b58\u5e76\u79fb\u5165\u5f85\u53d1\u5e03') || null;
+  }
+
+  function buildCurrentEditIdentitySnapshot() {
+    const product = getProductFromEdit(state.editData) || {};
+    const titleInput = findProductTitleInput();
+    const titleText = titleInput ? getInputText(titleInput) : firstNonEmpty(product.subject, product.title, product.productTitle, '');
+    return {
+      editId: extractProductIdFromCurrentPage(),
+      asin: getCurrentEditAsinForEvidence(titleText, product),
+      titleLength: titleText.length,
+      sourceUrl: firstNonEmpty(product.sourceUrl, extractSourceUrlFromCurrentEditPage()),
+    };
+  }
+
+  async function applyFixedRequiredAttributeRecoveryFields(options = {}) {
+    const fieldTimeoutMs = Number(options.fieldTimeoutMs || options.stageTimeoutMs || 10000);
+    const fields = [
+      { id: 'high_concerned_chemical', label: 'High-concerned chemical' },
+      { id: 'origin', label: 'Origin' },
+    ];
+    const beforeStatus = getVisibleRequiredAttributeStatus();
+    const beforeResults = fields.map((field) => {
+      const readback = beforeStatus && Array.isArray(beforeStatus.fields)
+        ? beforeStatus.fields.find((item) => item && item.id === field.id)
+        : null;
+      return { ...field, result: readback || { id: field.id, ok: false, reason: 'field readback not found' }, ok: Boolean(readback && readback.ok) };
+    });
+    if (beforeResults.every((entry) => entry.ok)) {
+      return {
+        ok: true,
+        mode: 'already-ok-readback',
+        results: beforeResults,
+      };
+    }
+    const results = [];
+    for (const field of fields) {
+      const deadlineAt = makeDeadlineAt(fieldTimeoutMs);
+      const result = await runSingleRequiredAttributeStep(field.id, { manual: true, fixedRecovery: true, deadlineAt });
+      results.push({ ...field, result, ok: Boolean(result && result.ok) });
+      if (!result || !result.ok) {
+        return {
+          ok: false,
+          stoppedAt: field.id,
+          timedOut: Boolean(result && result.timedOut),
+          reason: `${field.label} fixed value not selected`,
+          results,
+        };
+      }
+    }
+    return {
+      ok: true,
+      results,
+    };
+  }
+
+  async function recoverCurrentEditToWaitPublish(options = {}) {
+    const expectedAsin = extractAsin(options.asin || options.expectedAsin || '');
+    const expectedEditId = String(options.editId || options.expectedEditId || '').trim();
+    const shouldSave = options.save === true;
+    const resultBase = {
+      at: nowIso(),
+      mode: 'recover-current-edit-to-wait-publish',
+      manual: true,
+      requested: {
+        asin: expectedAsin,
+        editId: expectedEditId,
+        save: shouldSave,
+      },
+      currentUrl: location.href,
+    };
+    if (!isEditPage()) {
+      return { ...resultBase, ok: false, stoppedAt: 'page', reason: 'not_edit_page' };
+    }
+    if (!expectedAsin || !expectedEditId) {
+      return { ...resultBase, ok: false, stoppedAt: 'input', reason: 'recover requires asin and editId' };
+    }
+    if (!state.editData) {
+      try {
+        await loadEditJson();
+      } catch (_) {
+        // Visible page plus local stores are enough for identity and recovery checks.
+      }
+    }
+
+    const beforeIdentity = buildCurrentEditIdentitySnapshot();
+    const identityErrors = [];
+    if (beforeIdentity.editId !== expectedEditId) identityErrors.push(`editId mismatch: expected ${expectedEditId}, current ${beforeIdentity.editId || 'empty'}`);
+    if (beforeIdentity.asin !== expectedAsin) identityErrors.push(`asin mismatch: expected ${expectedAsin}, current ${beforeIdentity.asin || 'empty'}`);
+    if (identityErrors.length) {
+      const result = {
+        ...resultBase,
+        ok: false,
+        stoppedAt: 'identity',
+        identity: beforeIdentity,
+        identityErrors,
+      };
+      state.visibleEditRuleResult = result;
+      window.__DXM_AUTOMATION_V1_LAST_RESULT__ = result;
+      log(`采集箱返工入口停止：${identityErrors.join('；')}`, result);
+      updateUi();
+      return result;
+    }
+
+    const stageTimeoutMs = getRecoverStageTimeoutMs(options, 15000);
+    const fixedFieldTimeoutMs = Number(options.fixedFieldTimeoutMs || options.fieldTimeoutMs || 10000);
+    const before = getReadonlyEditPreflightReadback();
+    const recovery = await applyVisibleRemainingEditPageRules({
+      manual: true,
+      forceReset: true,
+      resetReason: 'recover_to_wait_publish_entry',
+      stageTimeoutMs,
+      fixedFieldTimeoutMs,
+    });
+    if (recovery && (recovery.timedOut || (recovery.ok === false && recovery.stoppedAt))) {
+      const afterRecoveryStop = getReadonlyEditPreflightReadback();
+      const result = {
+        ...resultBase,
+        identity: beforeIdentity,
+        before,
+        recovery,
+        fixedRequiredAttributes: { skipped: true, reason: 'recovery stopped before fixed required fields' },
+        after: afterRecoveryStop,
+        saveButton: { found: Boolean(findEditPageSaveToWaitPublishButton()), skipped: true },
+        safeToSaveToWaitPublish: false,
+        saved: false,
+        ok: false,
+        timedOut: Boolean(recovery.timedOut),
+        stoppedAt: recovery.stoppedAt || 'recovery',
+        reason: recovery.reason || 'recovery stopped before ready-to-save',
+      };
+      state.visibleEditRuleResult = result;
+      window.__DXM_AUTOMATION_V1_LAST_RESULT__ = result;
+      log(`采集箱返工入口停止：${result.stoppedAt}，${result.reason}`, result);
+      updateUi();
+      return result;
+    }
+    const fixedRequiredAttributes = await applyFixedRequiredAttributeRecoveryFields({ fieldTimeoutMs: fixedFieldTimeoutMs });
+    const after = getReadonlyEditPreflightReadback();
+    const saveButton = findEditPageSaveToWaitPublishButton();
+    const result = {
+      ...resultBase,
+      identity: beforeIdentity,
+      before,
+      recovery,
+      fixedRequiredAttributes,
+      after,
+      saveButton: saveButton ? { found: true, text: saveButton.text } : { found: false },
+      safeToSaveToWaitPublish: Boolean(fixedRequiredAttributes.ok && after && after.pass && saveButton),
+      saved: false,
+      ok: Boolean(fixedRequiredAttributes.ok && after && after.pass && saveButton),
+    };
+
+    if (!result.ok || !shouldSave) {
+      result.stoppedAt = result.ok ? 'ready_to_save' : (!fixedRequiredAttributes.ok ? 'fixedRequiredAttributes' : 'preflight');
+      result.reason = result.ok
+        ? 'preflight passed; save=false'
+        : (!fixedRequiredAttributes.ok
+          ? fixedRequiredAttributes.reason
+          : (after && after.blockers && after.blockers.length ? after.blockers.join('; ') : 'preflight failed or save button missing'));
+      state.visibleEditRuleResult = result;
+      window.__DXM_AUTOMATION_V1_LAST_RESULT__ = result;
+      log(`采集箱返工入口已执行：${result.ok ? '已达到可保存状态' : '未达到可保存状态'}，${result.reason}`, result);
+      updateUi();
+      return result;
+    }
+
+    clickElement(saveButton.node);
+    await sleep(Number(options.saveWaitMs || 3500));
+    const errors = collectVisibleEditPageErrors();
+    result.saved = errors.length === 0;
+    result.saveErrors = errors;
+    result.ok = result.saved;
+    result.stoppedAt = result.saved ? 'saved_to_wait_publish' : 'save_error';
+    result.reason = result.saved ? 'saved_to_wait_publish' : errors.join('; ');
+    state.visibleEditRuleResult = result;
+    window.__DXM_AUTOMATION_V1_LAST_RESULT__ = result;
+    if (!state.report) state.report = {};
+    state.report.visibleEditRuleResult = result;
+    log(`采集箱返工入口保存${result.saved ? '已点击并无页面错误' : '后仍有页面错误'}：${result.reason}`, result);
+    updateUi();
+    return result;
+  }
+
+  async function runEditPagePreflightAndFix(options = {}) {
+    const result = await applyVisibleEditPageRules({ manual: false, preSave: true, ...options });
     if (!state.report) state.report = {};
     state.report.editPagePreflight = result;
     return result;
@@ -4642,7 +9815,7 @@
   async function saveEditPageWithPreflight() {
     if (!isEditPage()) throw new Error('not edit page');
     const applyResult = await applyVisibleEditPageRules({ manual: true, preSave: true });
-    let preflight = await runEditPagePreflightAndFix();
+    let preflight = applyResult;
     if (!preflight.preflight.pass) {
       throw new Error(`edit preflight failed: ${preflight.preflight.risks.join('; ')}`);
     }
@@ -4655,7 +9828,7 @@
     let errors = collectVisibleEditPageErrors();
     let retry = null;
     if (errors.length && EDIT_PAGE_RULES.saveRetryLimit > 0) {
-      retry = await runEditPagePreflightAndFix();
+      retry = await runEditPagePreflightAndFix({ retryAfterSaveError: true });
       if (retry.preflight.pass) {
         const retryButton = findEditPageSaveButton();
         if (retryButton) {
@@ -4682,101 +9855,1110 @@
     return result;
   }
 
-  function getMarketingImageStatus() {
-    const sections = Array.from(document.querySelectorAll('div,section,td,tr')).filter((node) => elementText(node).includes('\u8425\u9500\u56fe\u7247'));
-    const section = sections
-      .map((node) => ({ node, textLength: elementText(node).length, rect: node.getBoundingClientRect() }))
-      .sort((a, b) => a.textLength - b.textLength || b.rect.width * b.rect.height - a.rect.width * a.rect.height)[0];
-    const root = section ? section.node : document;
-    const urls = Array.from(root.querySelectorAll('img'))
+  function normalizeMarketingImageUrl(img) {
+    const url = img && (img.currentSrc || img.src || img.getAttribute('data-src') || img.getAttribute('data-original') || '');
+    if (/^data:image/i.test(url)) return '';
+    if (!url || /loading|addImg|placeholder|logo|avatar|icon|sprite|static\/img/i.test(url)) return '';
+    return url;
+  }
+
+  function getMarketingImageSection() {
+    const scope = getEditFormScope();
+    const roots = Array.from(scope.querySelectorAll('.ant-form-item,.form-group,.row,tr,td,div'))
+      .filter((node) => !node.closest(`#${PANEL_ID}`) && visibleElement(node))
+      .map((node) => {
+        const text = elementText(node);
+        const rect = node.getBoundingClientRect();
+        const hasMarketingLabel = /\u8425\u9500\u56fe\u7247/.test(text);
+        const hasMarketingSlot = /1\s*:\s*1\s*\u767d\u5e95\u56fe|3\s*:\s*4\s*\u573a\u666f\u56fe/.test(text);
+        const hasGenerateButton = Array.from(node.querySelectorAll('button,a,.ant-btn'))
+          .some((item) => visibleElement(item) && elementText(item).includes('\u4e00\u952e\u751f\u6210'));
+        return {
+          node,
+          text,
+          textLength: text.length,
+          area: rect.width * rect.height,
+          hasMarketingLabel,
+          hasMarketingSlot,
+          hasGenerateButton,
+          productImagePenalty: /\*\s*\u4ea7\u54c1\u56fe\u7247/.test(text) ? 5000 : 0,
+        };
+      })
+      .filter((item) => item.hasMarketingLabel && (item.hasMarketingSlot || item.hasGenerateButton))
+      .filter((item) => item.textLength < 2600)
+      .sort((a, b) => (
+        b.hasMarketingSlot - a.hasMarketingSlot
+        || b.hasGenerateButton - a.hasGenerateButton
+        || a.productImagePenalty - b.productImagePenalty
+        || a.textLength - b.textLength
+        || a.area - b.area
+      ));
+    return roots[0] || null;
+  }
+
+  function getMarketingImageSlotNodes(sectionNode) {
+    if (!sectionNode) return [];
+    const slotPattern = /1\s*:\s*1\s*\u767d\u5e95\u56fe|3\s*:\s*4\s*\u573a\u666f\u56fe/;
+    const slots = Array.from(sectionNode.querySelectorAll('li,td,.ant-upload-list-item,.ant-upload,.image-item,.img-item,.pic-item,div'))
+      .filter((node) => !node.closest(`#${PANEL_ID}`) && visibleElement(node))
+      .map((node) => ({ node, text: elementText(node), rect: node.getBoundingClientRect() }))
+      .filter((item) => slotPattern.test(item.text) && item.text.length < 420)
+      .sort((a, b) => a.rect.top - b.rect.top || a.rect.left - b.rect.left || a.text.length - b.text.length);
+    return slots.map((item) => item.node).slice(0, EDIT_PAGE_RULES.marketingImageCount);
+  }
+
+  function readMarketingImageUrlsFromSlots(sectionNode) {
+    const slots = getMarketingImageSlotNodes(sectionNode);
+    const urls = [];
+    for (const slot of slots) {
+      const slotUrls = Array.from(slot.querySelectorAll('img'))
+        .filter(visibleElement)
+        .map(normalizeMarketingImageUrl)
+        .filter(Boolean);
+      if (slotUrls[0]) urls.push(slotUrls[0]);
+    }
+    const uniqueUrls = Array.from(new Set(urls));
+    if (uniqueUrls.length >= EDIT_PAGE_RULES.marketingImageCount) return { slots, urls: uniqueUrls };
+    const sectionUrls = Array.from(sectionNode.querySelectorAll('img'))
       .filter(visibleElement)
-      .map((img) => img.currentSrc || img.src || img.getAttribute('data-src') || '')
-      .filter((url) => /^https?:\/\//i.test(url))
-      .filter((url) => !/loading|addImg|logo|avatar|icon|sprite|static\/img/i.test(url));
-    const generated = urls.filter((url) => /wxalbum|dianxiaomi/i.test(url));
-    return { ready: generated.length >= EDIT_PAGE_RULES.marketingImageCount, count: generated.length, urls: generated.slice(0, EDIT_PAGE_RULES.marketingImageCount) };
+      .map(normalizeMarketingImageUrl)
+      .filter(Boolean);
+    return { slots, urls: Array.from(new Set(uniqueUrls.concat(sectionUrls))) };
+  }
+
+  function getMarketingImageStatus() {
+    const section = getMarketingImageSection();
+    if (!section) {
+      return { ready: false, count: 0, urls: [], skipped: true, reason: 'marketing image section not visible' };
+    }
+    const { slots, urls } = readMarketingImageUrlsFromSlots(section.node);
+    const uniqueUrls = Array.from(new Set(urls));
+    return {
+      ready: uniqueUrls.length >= EDIT_PAGE_RULES.marketingImageCount,
+      count: uniqueUrls.length,
+      urls: uniqueUrls.slice(0, EDIT_PAGE_RULES.marketingImageCount),
+      slotCount: slots.length,
+      sectionText: section.text.slice(0, 180),
+      hasGenerateButton: section.hasGenerateButton,
+      mode: 'marketing-slots-only',
+    };
+  }
+
+  async function waitForMarketingImageStatus(timeoutMs = 12000, pollMs = 500) {
+    const startedAt = Date.now();
+    let status = getMarketingImageStatus();
+    while (!status.ready && Date.now() - startedAt < timeoutMs) {
+      await sleep(pollMs);
+      status = getMarketingImageStatus();
+    }
+    return { ...status, waitedMs: Date.now() - startedAt };
   }
 
   async function triggerMarketingImageGeneration() {
     const before = getMarketingImageStatus();
-    if (before.ready) return { changed: true, action: 'already has marketing images', count: before.count };
-    const buttons = Array.from(document.querySelectorAll('button,a,.ant-btn')).filter(visibleElement);
+    if (before.ready) return { changed: false, ok: true, action: 'already has marketing images', count: before.count, before };
+    const section = getMarketingImageSection();
+    if (!section) return { changed: false, ok: false, reason: 'marketing image section not visible', before };
+    const buttons = Array.from(section.node.querySelectorAll('button,a,.ant-btn')).filter(visibleElement);
     const button = buttons.find((node) => elementText(node).includes('\u4e00\u952e\u751f\u6210'));
-    if (!button) return { changed: false, reason: 'one-click marketing image button not found' };
+    if (!button) return { changed: false, ok: false, reason: 'one-click marketing image button not found in marketing image section', before };
     clickElement(button);
-    await sleep(2500);
-    const after = getMarketingImageStatus();
-    return { changed: after.ready || after.count > before.count, action: 'clicked one-click generate', count: after.count };
+    const after = await waitForMarketingImageStatus();
+    return {
+      changed: after.ready || after.count > before.count,
+      ok: after.ready,
+      action: 'clicked one-click generate',
+      count: after.count,
+      before,
+      after,
+      waitedMs: after.waitedMs,
+      reason: after.ready ? '' : `marketing images incomplete after one-click generate: ${after.count}/${EDIT_PAGE_RULES.marketingImageCount}`,
+    };
+  }
+
+  async function applyVisibleCategoryAndPriceOnly(options = {}) {
+    if (!isEditPage()) return { skipped: true, reason: 'not edit page' };
+    const currentEditId = new URLSearchParams(location.search).get('id') || '';
+    if (visibleEditRulesPipelineRunning) {
+      return state.visibleEditRuleResult || { skipped: true, reason: 'visible edit pipeline already running' };
+    }
+    visibleEditRulesPipelineRunning = true;
+    return withExclusiveEditExecution(async () => {
+      try {
+        if (!state.editData) {
+          try {
+            await loadEditJson();
+          } catch (_) {
+            // The visible page plus local stores are enough for this batch validation.
+          }
+        }
+        const beforeScrollY = window.scrollY;
+        const category = await selectVisibleProductCategory();
+        const categoryPlan = buildCategoryModalSearchPlan(getCurrentEditTitleText());
+        const categoryFinalize = category.ok
+          ? (getVisibleCategoryModal()
+            ? await finalizeCategorySelectionAfterVisibleWrite(categoryPlan)
+            : { closed: true, mode: 'not-open-after-category', selectedText: category.selectedText || '' })
+          : { closed: false, skipped: true, reason: category.reason || 'category not selected' };
+        const priceFill = fillVisibleGoodsValueFromCurrentAsin();
+        const preflight = getVisibleEditPreflightStatus();
+        const result = {
+          at: nowIso(),
+          manual: Boolean(options.manual),
+          currentEditId,
+          mode: 'category-and-price-only',
+          category,
+          categoryFinalize,
+          priceFill,
+          preflight,
+          scroll: {
+            before: beforeScrollY,
+            after: window.scrollY,
+            blocked: editFieldLocks.scrollBlocked,
+          },
+        };
+        state.visibleEditRuleResult = result;
+        window.__DXM_AUTOMATION_V1_LAST_RESULT__ = result;
+        if (!state.report) state.report = {};
+        state.report.visibleEditRuleResult = result;
+        log(`\u7f16\u8f91\u9875\u7b2c\u4e00\u6279\u5b57\u6bb5\u9a8c\u8bc1\uff1a\u7c7b\u76ee${category.ok ? '\u5df2\u9009' : '\u672a\u9009'}\uff0c\u7c7b\u76ee\u5f39\u7a97${categoryFinalize.closed ? '\u5df2\u6536\u5c3e' : '\u672a\u6536\u5c3e'}\uff0c\u4ef7\u683c${priceFill.ok ? '\u5df2\u5199\u5165' : '\u672a\u901a\u8fc7'}\uff0c\u9884\u68c0${preflight.pass ? '\u901a\u8fc7' : '\u672a\u901a\u8fc7'}`, result);
+        updateUi();
+        return result;
+      } finally {
+        visibleEditRulesPipelineRunning = false;
+      }
+    });
+  }
+
+  async function applyVisibleShippingAndPostageOnly(options = {}) {
+    if (!isEditPage()) return { skipped: true, reason: 'not edit page' };
+    const currentEditId = new URLSearchParams(location.search).get('id') || '';
+    if (visibleEditRulesPipelineRunning) {
+      return state.visibleEditRuleResult || { skipped: true, reason: 'visible edit pipeline already running' };
+    }
+    visibleEditRulesPipelineRunning = true;
+    return withExclusiveEditExecution(async () => {
+      try {
+        const beforeScrollY = window.scrollY;
+        const shipsFromBefore = getVisibleShipsFromStatus();
+        const shipsFrom = selectVisibleShipsFromUnitedStates();
+        const shipsFromAfter = getVisibleShipsFromStatus();
+        const postage = await selectPostageTemplate111();
+        const templates = verifyEditTemplateSelections();
+        const preflight = getVisibleEditPreflightStatus();
+        const result = {
+          at: nowIso(),
+          manual: Boolean(options.manual),
+          currentEditId,
+          mode: 'shipping-and-postage-only',
+          shipsFromBefore,
+          shipsFrom,
+          shipsFromAfter,
+          postage,
+          templates,
+          preflight,
+          scroll: {
+            before: beforeScrollY,
+            after: window.scrollY,
+            blocked: editFieldLocks.scrollBlocked,
+          },
+        };
+        state.visibleEditRuleResult = result;
+        window.__DXM_AUTOMATION_V1_LAST_RESULT__ = result;
+        if (!state.report) state.report = {};
+        state.report.visibleEditRuleResult = result;
+        log(`\u7f16\u8f91\u9875\u7b2c\u4e8c\u6279\u5b57\u6bb5\u9a8c\u8bc1\uff1a\u53d1\u8d27\u5730${shipsFromAfter.ok ? '\u5df2\u9009\u7f8e\u56fd' : '\u672a\u9009'}\uff0c\u8fd0\u8d39111${templates.postage111 ? '\u5df2\u8bfb\u56de' : '\u672a\u8bfb\u56de'}\uff0c\u9884\u68c0${preflight.pass ? '\u901a\u8fc7' : '\u672a\u901a\u8fc7'}`, result);
+        updateUi();
+        return result;
+      } finally {
+        visibleEditRulesPipelineRunning = false;
+      }
+    });
+  }
+
+  async function applyVisibleRequiredAttributesOnly(options = {}) {
+    if (!isEditPage()) return { skipped: true, reason: 'not edit page' };
+    const currentEditId = new URLSearchParams(location.search).get('id') || '';
+    if (visibleEditRulesPipelineRunning) {
+      return state.visibleEditRuleResult || { skipped: true, reason: 'visible edit pipeline already running' };
+    }
+    visibleEditRulesPipelineRunning = true;
+    return withExclusiveEditExecution(async () => {
+      try {
+        const beforeScrollY = window.scrollY;
+        const fieldTimeoutMs = getRequiredAttributeFieldTimeoutMs(options, 8000);
+        const requiredAttributes = await fillVisibleRequiredAttributeFields({ fieldTimeoutMs });
+        const requiredStatus = getVisibleRequiredAttributeStatus();
+        const unsafeRequiredAttributeDisplays = getUnsafeRequiredAttributeDisplays();
+        const preflight = getVisibleEditPreflightStatus();
+        const result = {
+          at: nowIso(),
+          manual: Boolean(options.manual),
+          currentEditId,
+          mode: 'required-attributes-only',
+          fieldTimeoutMs,
+          requiredAttributes,
+          requiredStatus,
+          unsafeRequiredAttributeDisplays,
+          preflight,
+          scroll: {
+            before: beforeScrollY,
+            after: window.scrollY,
+            blocked: editFieldLocks.scrollBlocked,
+          },
+        };
+        state.visibleEditRuleResult = result;
+        window.__DXM_AUTOMATION_V1_LAST_RESULT__ = result;
+        if (!state.report) state.report = {};
+        state.report.visibleEditRuleResult = result;
+        log(`\u7f16\u8f91\u9875\u7b2c\u4e09\u6279\u5b57\u6bb5\u9a8c\u8bc1\uff1a\u5fc5\u586b\u5c5e\u6027${requiredStatus.ok ? '\u5df2\u8bfb\u56de' : '\u672a\u901a\u8fc7'}\uff0c\u9884\u68c0${preflight.pass ? '\u901a\u8fc7' : '\u672a\u901a\u8fc7'}`, result);
+        updateUi();
+        return result;
+      } finally {
+        visibleEditRulesPipelineRunning = false;
+      }
+    });
+  }
+
+  async function applyVisibleRequiredAttributeFieldOnly(options = {}) {
+    if (!isEditPage()) return { skipped: true, reason: 'not edit page' };
+    const currentEditId = new URLSearchParams(location.search).get('id') || '';
+    const fieldId = String(options.field || options.fieldId || '').trim();
+    if (!fieldId) return { ok: false, reason: 'required attribute field is required', currentEditId };
+    if (visibleEditRulesPipelineRunning) {
+      return state.visibleEditRuleResult || { skipped: true, reason: 'visible edit pipeline already running' };
+    }
+    visibleEditRulesPipelineRunning = true;
+    return withExclusiveEditExecution(async () => {
+      try {
+        const beforeScrollY = window.scrollY;
+        const fieldTimeoutMs = getRequiredAttributeFieldTimeoutMs(options, 8000);
+        const before = getVisibleRequiredAttributeStatus();
+        const field = await runSingleRequiredAttributeStep(fieldId, { ...options, fieldTimeoutMs });
+        await sleep(350);
+        const requiredStatus = getVisibleRequiredAttributeStatus();
+        const unsafeRequiredAttributeDisplays = getUnsafeRequiredAttributeDisplays();
+        const preflight = getVisibleEditPreflightStatus();
+        const result = {
+          at: nowIso(),
+          manual: Boolean(options.manual),
+          currentEditId,
+          mode: 'required-attribute-field-only',
+          requestedField: fieldId,
+          fieldTimeoutMs,
+          before,
+          field,
+          requiredStatus,
+          unsafeRequiredAttributeDisplays,
+          preflight,
+          scroll: {
+            before: beforeScrollY,
+            after: window.scrollY,
+            blocked: editFieldLocks.scrollBlocked,
+          },
+        };
+        state.visibleEditRuleResult = result;
+        window.__DXM_AUTOMATION_V1_LAST_RESULT__ = result;
+        if (!state.report) state.report = {};
+        state.report.visibleEditRuleResult = result;
+        log(`编辑页必填属性单字段验证：${fieldId} ${field.ok ? '已读回' : '未通过'}，预检${preflight.pass ? '通过' : '未通过'}`, result);
+        updateUi();
+        return result;
+      } finally {
+        visibleEditRulesPipelineRunning = false;
+      }
+    });
+  }
+
+  async function applyVisibleVariationAndFinalPreflightOnly(options = {}) {
+    if (!isEditPage()) return { skipped: true, reason: 'not edit page' };
+    const currentEditId = new URLSearchParams(location.search).get('id') || '';
+    if (visibleEditRulesPipelineRunning) {
+      return state.visibleEditRuleResult || { skipped: true, reason: 'visible edit pipeline already running' };
+    }
+    visibleEditRulesPipelineRunning = true;
+    return withExclusiveEditExecution(async () => {
+      try {
+        if (!state.editData) {
+          try {
+            await loadEditJson();
+          } catch (_) {
+            // Visible page and local stores are enough for final field preflight.
+          }
+        }
+        const beforeScrollY = window.scrollY;
+        const title = applyVisibleTitleRule();
+        const packageSale = disablePackageSaleIfChecked();
+        let variation = null;
+        try {
+          variation = fillVisibleVariationFields();
+        } catch (error) {
+          variation = { changed: false, ok: false, allowed: false, blocked: true, blockReason: error.message };
+        }
+        const textSanitization = applyVisiblePlatformTextSanitization();
+        const preflight = getVisibleEditPreflightStatus();
+        const variationRequiredFields = getVisibleVariationRequiredFieldStatus();
+        const result = {
+          at: nowIso(),
+          manual: Boolean(options.manual),
+          currentEditId,
+          mode: 'variation-and-final-preflight-only',
+          title,
+          packageSale,
+          variation,
+          variationRequiredFields,
+          textSanitization,
+          preflight,
+          safeToSaveToWaitPublish: Boolean(preflight && preflight.pass),
+          scroll: {
+            before: beforeScrollY,
+            after: window.scrollY,
+            blocked: editFieldLocks.scrollBlocked,
+          },
+        };
+        state.visibleEditRuleResult = result;
+        window.__DXM_AUTOMATION_V1_LAST_RESULT__ = result;
+        if (!state.report) state.report = {};
+        state.report.visibleEditRuleResult = result;
+        log(`\u7f16\u8f91\u9875\u7b2c\u56db\u6279\u5b57\u6bb5\u9a8c\u8bc1\uff1a\u6807\u9898${title.length <= EDIT_PAGE_RULES.titleMaxChars ? '\u5408\u89c4' : '\u8d85\u957f'}\uff0c\u53d8\u79cd${variation && variation.allowed ? '\u5df2\u5904\u7406' : '\u672a\u901a\u8fc7'}\uff0c\u6700\u7ec8\u9884\u68c0${preflight.pass ? '\u901a\u8fc7' : '\u672a\u901a\u8fc7'}`, result);
+        updateUi();
+        return result;
+      } finally {
+        visibleEditRulesPipelineRunning = false;
+      }
+    });
+  }
+
+  function resetVisibleEditPipelineLock(reason = 'manual_reset') {
+    const result = {
+      at: nowIso(),
+      reason,
+      wasRunning: visibleEditRulesPipelineRunning,
+      editLockActive: editFieldLocks.active,
+      scrollBlocked: editFieldLocks.scrollBlocked,
+      lockViolationCount: editFieldLocks.lockViolations.length,
+    };
+    visibleEditRulesPipelineRunning = false;
+    editFieldLocks.active = false;
+    editFieldLocks.fields = {};
+    editFieldLocks.scrollBlocked = 0;
+    editFieldLocks.lockViolations = [];
+    window.__DXM_AUTOMATION_V1_LAST_LOCK_RESET__ = result;
+    return result;
+  }
+
+  function preflightHasRisk(preflight, pattern) {
+    const risks = preflight && Array.isArray(preflight.risks) ? preflight.risks : [];
+    return risks.some((risk) => pattern.test(String(risk || '')));
+  }
+
+  async function applyVisibleRemainingEditPageRules(options = {}) {
+    if (!isEditPage()) return { skipped: true, reason: 'not edit page' };
+    const currentEditId = new URLSearchParams(location.search).get('id') || '';
+    if (EDIT_PAGE_MINIMAL_EXCLUSIVE_MODE) {
+      if (currentEditId !== EDIT_PAGE_EXCLUSIVE_SAMPLE_ID) {
+        return { skipped: true, reason: 'minimal exclusive mode is limited to the authorized sample', currentEditId };
+      }
+      return applyMinimalExclusiveEditPageRules();
+    }
+    let reset = null;
+    if (visibleEditRulesPipelineRunning && options.forceReset !== false) {
+      reset = resetVisibleEditPipelineLock(options.resetReason || 'resume_remaining_force_reset');
+    }
+    if (visibleEditRulesPipelineRunning) {
+      return state.visibleEditRuleResult || { skipped: true, reason: 'visible edit pipeline already running' };
+    }
+    visibleEditRulesPipelineRunning = true;
+    return withExclusiveEditExecution(async () => {
+      try {
+        if (!state.editData) {
+          try {
+            await loadEditJson();
+          } catch (_) {
+            // Visible page plus local stores are enough for segmented recovery.
+          }
+        }
+        const beforeScrollY = window.scrollY;
+        const stages = [];
+        const before = getVisibleEditPreflightStatus();
+        const stageTimeoutMs = getRecoverStageTimeoutMs(options, 0);
+        const stageTimedOut = (startedAt) => Boolean(stageTimeoutMs && Date.now() - startedAt >= stageTimeoutMs);
+        const stopStage = (stageId, startedAt, detail = {}) => {
+          const timedOut = Boolean(detail.timedOut || stageTimedOut(startedAt));
+          const preflight = getVisibleEditPreflightStatus();
+          const result = {
+            at: nowIso(),
+            manual: Boolean(options.manual),
+            mode: 'resume-remaining-edit-page-pipeline',
+            currentEditId,
+            reset,
+            before,
+            stages,
+            preflight,
+            ok: false,
+            timedOut,
+            stoppedAt: stageId,
+            reason: detail.reason || (timedOut ? `stage timeout: ${stageId}` : `stage stopped: ${stageId}`),
+            detail,
+            safeToSaveToWaitPublish: false,
+            scroll: {
+              before: beforeScrollY,
+              after: window.scrollY,
+              blocked: editFieldLocks.scrollBlocked,
+            },
+          };
+          state.visibleEditRuleResult = result;
+          window.__DXM_AUTOMATION_V1_LAST_RESULT__ = result;
+          if (!state.report) state.report = {};
+          state.report.visibleEditRuleResult = result;
+          log(`编辑页剩余字段恢复停止：${stageId}，${result.reason}`, result);
+          updateUi();
+          return result;
+        };
+        const publishStageProgress = (stageId, detail = {}) => {
+          const progress = {
+            at: nowIso(),
+            manual: Boolean(options.manual),
+            mode: 'remaining-edit-page-pipeline-progress',
+            currentEditId,
+            currentStage: stageId,
+            inProgress: true,
+            reset,
+            before,
+            stages: stages.map((stage) => ({ id: stage.id })),
+            detail,
+            scroll: {
+              before: beforeScrollY,
+              after: window.scrollY,
+              blocked: editFieldLocks.scrollBlocked,
+            },
+          };
+          state.visibleEditRuleResult = progress;
+          window.__DXM_AUTOMATION_V1_LAST_RESULT__ = progress;
+          if (!state.report) state.report = {};
+          state.report.visibleEditRuleResult = progress;
+          updateUi();
+          return progress;
+        };
+        const runBoundedStage = async (stageId, task, timeoutMs = stageTimeoutMs) => {
+          const startedAt = Date.now();
+          publishStageProgress(stageId, { startedAt: new Date(startedAt).toISOString(), timeoutMs });
+          if (!timeoutMs) return { timedOut: false, startedAt, value: await task() };
+          let timer = null;
+          try {
+            return await Promise.race([
+              Promise.resolve().then(task).then((value) => ({ timedOut: false, startedAt, value })),
+              new Promise((resolve) => {
+                timer = window.setTimeout(() => {
+                  resolve({
+                    timedOut: true,
+                    startedAt,
+                    value: buildStageTimeoutResult(stageId, startedAt + timeoutMs, {
+                      reason: `stage hard timeout: ${stageId}`,
+                    }),
+                  });
+                }, timeoutMs);
+              }),
+            ]);
+          } finally {
+            if (timer) window.clearTimeout(timer);
+          }
+        };
+        const stageResolvedByPreflight = (stageId, preflight) => {
+          if (!preflight) return false;
+          if (stageId === 'pc-description-images') {
+            return Boolean(preflight.pcDescriptionImages && preflight.pcDescriptionImages.ok && !preflightHasRisk(preflight, /PC description/i));
+          }
+          if (stageId === 'category-price') {
+            return Boolean(preflight.templates && preflight.templates.categorySelected && preflight.price && preflight.price.ok && !preflightHasRisk(preflight, /product category|category path|category does not match|AliExpress category evidence|price invalid/i));
+          }
+          if (stageId === 'custom-attributes') {
+            return Boolean(preflight.customAttributeInvalidCount === 0 && !preflightHasRisk(preflight, /custom attributes invalid/i));
+          }
+          if (stageId === 'shipping-postage') {
+            return Boolean(preflight.templates && preflight.templates.postage111 && preflight.shipsFrom && preflight.shipsFrom.ok && !preflightHasRisk(preflight, /ships from|postage template/i));
+          }
+          if (stageId === 'variation') {
+            return Boolean(preflight.variationRequiredFields && preflight.variationRequiredFields.ok && preflight.packageSale && !preflight.packageSale.checked && !preflightHasRisk(preflight, /variation parameter|variation required fields|package sale/i));
+          }
+          if (stageId === 'marketing-images') {
+            return Boolean(preflight.marketingImages && preflight.marketingImages.ready && !preflightHasRisk(preflight, /marketing images/i));
+          }
+          if (/^required-attributes/.test(stageId)) {
+            return Boolean(preflight.requiredAttributes && preflight.requiredAttributes.ok && !preflightHasRisk(preflight, /required attributes|unsafe required attribute/i));
+          }
+          return false;
+        };
+        const recoverTimedOutStageByReadback = async (stageId, detail = {}) => {
+          await sleep(Number(options.timeoutRecoveryWaitMs || 900));
+          const afterReadback = getVisibleEditPreflightStatus();
+          return {
+            recovered: stageResolvedByPreflight(stageId, afterReadback),
+            stageId,
+            afterReadback,
+            detail,
+          };
+        };
+
+        const title = applyVisibleTitleRule();
+        stages.push({ id: 'title', result: title });
+        const description = applyVisiblePcDescriptionRule(title.value || '');
+        stages.push({ id: 'description', result: description });
+        const descriptionImageStatus = await waitForVisiblePcDescriptionImageStatus();
+        stages.push({ id: 'pc-description-images', result: descriptionImageStatus });
+        if (!descriptionImageStatus.ok) {
+          const recovery = await recoverTimedOutStageByReadback('pc-description-images', { description, descriptionImageStatus });
+          stages[stages.length - 1].timeoutRecovery = recovery;
+          if (recovery.recovered) {
+            stages[stages.length - 1].recoveredByReadback = true;
+          } else {
+          return stopStage('pc-description-images', Date.now(), {
+            reason: descriptionImageStatus.sourceImageCount < EDIT_PAGE_RULES.pcDescriptionMinImages
+              ? `PC description source images missing: ${descriptionImageStatus.sourceImageCount}/${EDIT_PAGE_RULES.pcDescriptionMinImages}`
+              : `PC description image-first/current product images incomplete: current ${descriptionImageStatus.currentProductImageCount}/${EDIT_PAGE_RULES.pcDescriptionMinImages}, leading ${descriptionImageStatus.leadingImageCount}/${EDIT_PAGE_RULES.pcDescriptionMinImages}`,
+            description,
+            descriptionImageStatus,
+            recovery,
+          });
+          }
+        }
+
+        let current = getVisibleEditPreflightStatus();
+        const needsCategory = !current.templates.categorySelected
+          || preflightHasRisk(current, /product category|category path|category does not match|AliExpress category evidence/i);
+        const needsPrice = !current.price || !current.price.ok;
+        if (needsCategory || needsPrice) {
+          const categoryPriceStage = await runBoundedStage('category-price', async () => {
+            const category = needsCategory ? await selectVisibleProductCategory() : { skipped: true, reason: 'category already selected' };
+            const categoryPlan = buildCategoryModalSearchPlan(getCurrentEditTitleText());
+            const categoryFinalize = category.ok && getVisibleCategoryModal()
+              ? await finalizeCategorySelectionAfterVisibleWrite(categoryPlan)
+              : { closed: true, mode: category.ok ? 'not-open-after-category' : 'category-not-run-or-not-ok', selectedText: category.selectedText || current.templates.categorySelectedText || '' };
+            const priceFill = fillVisibleGoodsValueFromCurrentAsin();
+            return { category, categoryFinalize, priceFill };
+          });
+          const categoryPriceStartedAt = categoryPriceStage.startedAt;
+          const { category, categoryFinalize, priceFill } = categoryPriceStage.value || {};
+          stages.push({ id: 'category-price', category, categoryFinalize, priceFill });
+          if (categoryPriceStage.timedOut || stageTimedOut(categoryPriceStartedAt)) {
+            const recovery = await recoverTimedOutStageByReadback('category-price', { category, categoryFinalize, priceFill });
+            stages[stages.length - 1].timeoutRecovery = recovery;
+            if (recovery.recovered) {
+              stages[stages.length - 1].recoveredByReadback = true;
+              current = recovery.afterReadback;
+            } else {
+            return stopStage('category-price', categoryPriceStartedAt, { timedOut: true, category, categoryFinalize, priceFill, reason: 'stage hard timeout: category-price' });
+            }
+          }
+          if (isCategoryCommitFailed(categoryFinalize)) {
+            const preflight = getVisibleEditPreflightStatus();
+            const result = {
+              at: nowIso(),
+              manual: Boolean(options.manual),
+              currentEditId,
+              mode: 'remaining-edit-page-pipeline',
+              stoppedAt: 'categoryFinalize',
+              reset,
+              before,
+              stages,
+              preflight,
+              scroll: {
+                before: beforeScrollY,
+                after: window.scrollY,
+                blocked: editFieldLocks.scrollBlocked,
+              },
+            };
+            state.visibleEditRuleResult = result;
+            window.__DXM_AUTOMATION_V1_LAST_RESULT__ = result;
+            if (!state.report) state.report = {};
+            state.report.visibleEditRuleResult = result;
+            log(`\u7f16\u8f91\u9875\u5206\u6bb5\u6d41\u6c34\u7ebf\u505c\u6b62\uff1a\u7c7b\u76ee\u56de\u586b\u672a\u786e\u8ba4`, result);
+            updateUi();
+            return result;
+          }
+        }
+
+        current = getVisibleEditPreflightStatus();
+        if (!current.requiredAttributes.ok || preflightHasRisk(current, /required attributes|unsafe required attribute/i)) {
+          const fixedRequiredFieldTimeoutMs = Number(options.fixedFieldTimeoutMs || options.fieldTimeoutMs || Math.min(stageTimeoutMs || 8000, 8000) || 8000);
+          const runFixedRequiredFieldStage = async (fieldId) => {
+            const stageId = `required-attributes.${fieldId}`;
+            const fieldTimeoutMs = fieldId === 'material'
+              ? Math.max(fixedRequiredFieldTimeoutMs, 10000)
+              : fixedRequiredFieldTimeoutMs;
+            const fixedRequiredFieldHardTimeoutMs = fieldTimeoutMs ? fieldTimeoutMs + 5000 : 0;
+            const fixedStage = await runBoundedStage(stageId, async () => {
+              try {
+                if (fieldId === 'material') {
+                  await closeVisibleSelectDropdowns();
+                  await ensureRequiredAttributeExpanded('material');
+                }
+                const field = await runSingleRequiredAttributeStep(fieldId, {
+                  manual: Boolean(options.manual),
+                  fixedRecovery: true,
+                  deadlineAt: makeDeadlineAt(fieldTimeoutMs),
+                });
+                const requiredStatus = getVisibleRequiredAttributeStatus();
+                const unsafeRequiredAttributeDisplays = getUnsafeRequiredAttributeDisplays();
+                return { field, requiredStatus, unsafeRequiredAttributeDisplays };
+              } finally {
+                if (fieldId === 'material') {
+                  await closeVisibleSelectDropdowns();
+                }
+              }
+            }, fixedRequiredFieldHardTimeoutMs);
+            const fixedStartedAt = fixedStage.startedAt;
+            let { field, requiredStatus, unsafeRequiredAttributeDisplays } = fixedStage.value || {};
+            if (!requiredStatus) requiredStatus = getVisibleRequiredAttributeStatus();
+            if (!unsafeRequiredAttributeDisplays) unsafeRequiredAttributeDisplays = getUnsafeRequiredAttributeDisplays();
+            const readbackField = requiredStatus && Array.isArray(requiredStatus.fields)
+              ? requiredStatus.fields.find((item) => item && item.id === fieldId)
+              : null;
+            if ((!field || !field.ok) && readbackField && readbackField.ok) {
+              field = {
+                id: fieldId,
+                ok: true,
+                changed: true,
+                locked: true,
+                selectedText: readbackField.selectedText || '',
+                mode: fixedStage.timedOut ? 'field-ok-after-hard-timeout-readback' : 'field-ok-after-readback',
+                timedOut: Boolean(fixedStage.timedOut),
+              };
+            }
+            const stageEntry = {
+              id: stageId,
+              field,
+              requiredStatus,
+              unsafeRequiredAttributeDisplays,
+              timedOut: Boolean(fixedStage.timedOut || (field && field.timedOut)),
+            };
+            stages.push(stageEntry);
+            if (!field || !field.ok) {
+              stageEntry.nonFatal = true;
+              stageEntry.reason = (field && field.reason) || `stage hard timeout: ${stageId}`;
+              stageEntry.continuedAfterFailure = true;
+            }
+            return null;
+          };
+          const needsFixedRequiredField = (fieldId, status = current.requiredAttributes) => {
+            const missing = status && Array.isArray(status.missing) ? status.missing : [];
+            if (missing.includes(fieldId)) return true;
+            const normalized = String(fieldId || '').replace(/_/g, ' ');
+            return missing.some((item) => normalizeSelectMatchText(item).includes(normalizeSelectMatchText(normalized)));
+          };
+          if (needsFixedRequiredField('high_concerned_chemical')) {
+            const highStop = await runFixedRequiredFieldStage('high_concerned_chemical');
+            if (highStop) return highStop;
+            current = getVisibleEditPreflightStatus();
+          }
+          if (needsFixedRequiredField('origin', current.requiredAttributes)) {
+            const originStop = await runFixedRequiredFieldStage('origin');
+            if (originStop) return originStop;
+            current = getVisibleEditPreflightStatus();
+          }
+          if (needsFixedRequiredField('material', current.requiredAttributes)) {
+            const materialStop = await runFixedRequiredFieldStage('material');
+            if (materialStop) return materialStop;
+            current = getVisibleEditPreflightStatus();
+          }
+        }
+
+        current = getVisibleEditPreflightStatus();
+        if (!current.requiredAttributes.ok || preflightHasRisk(current, /required attributes|unsafe required attribute/i)) {
+          const requiredStage = await runBoundedStage('required-attributes', async () => {
+            const requiredAttributes = await fillVisibleRequiredAttributeFields({
+              deadlineAt: makeDeadlineAt(stageTimeoutMs),
+              skipFieldIds: ['high_concerned_chemical', 'origin', 'material'],
+            });
+            const requiredStatus = getVisibleRequiredAttributeStatus();
+            const unsafeRequiredAttributeDisplays = getUnsafeRequiredAttributeDisplays();
+            return { requiredAttributes, requiredStatus, unsafeRequiredAttributeDisplays };
+          });
+          const requiredStartedAt = requiredStage.startedAt;
+          const { requiredAttributes, requiredStatus, unsafeRequiredAttributeDisplays } = requiredStage.value || {};
+          if (requiredStage.timedOut) {
+            const requiredStatusNow = getVisibleRequiredAttributeStatus();
+            const unsafeRequiredAttributeDisplaysNow = getUnsafeRequiredAttributeDisplays();
+            if (requiredStatusNow && requiredStatusNow.ok && !(unsafeRequiredAttributeDisplaysNow && unsafeRequiredAttributeDisplaysNow.length)) {
+              stages.push({
+                id: 'required-attributes',
+                requiredAttributes: requiredAttributes || { ok: true, timedOut: true, mode: 'ok-after-hard-timeout-readback' },
+                requiredStatus: requiredStatus || requiredStatusNow,
+                unsafeRequiredAttributeDisplays: unsafeRequiredAttributeDisplays || unsafeRequiredAttributeDisplaysNow,
+                timedOut: true,
+                recoveredByReadback: true,
+              });
+              current = getVisibleEditPreflightStatus();
+            } else {
+              const missingField = requiredStatusNow && Array.isArray(requiredStatusNow.missing)
+                ? requiredStatusNow.missing.find((item) => !String(item || '').startsWith('red_star:')) || requiredStatusNow.missing[0]
+                : '';
+              const fieldStoppedAt = missingField ? `required-attributes.${missingField}` : 'required-attributes';
+              stages.push({
+                id: 'required-attributes',
+                requiredAttributes,
+                requiredStatus: requiredStatus || requiredStatusNow,
+                unsafeRequiredAttributeDisplays: unsafeRequiredAttributeDisplays || unsafeRequiredAttributeDisplaysNow,
+                timedOut: true,
+                nonFatal: true,
+                continuedAfterFailure: true,
+                reason: `stage hard timeout: ${fieldStoppedAt}`,
+              });
+              current = getVisibleEditPreflightStatus();
+            }
+          } else {
+            stages.push({ id: 'required-attributes', requiredAttributes, requiredStatus, unsafeRequiredAttributeDisplays });
+          }
+          if (!requiredStage.timedOut && (requiredAttributes.timedOut || stageTimedOut(requiredStartedAt))) {
+            const requiredStatusNow = getVisibleRequiredAttributeStatus();
+            const unsafeRequiredAttributeDisplaysNow = getUnsafeRequiredAttributeDisplays();
+            if (requiredStatusNow && requiredStatusNow.ok && !(unsafeRequiredAttributeDisplaysNow && unsafeRequiredAttributeDisplaysNow.length)) {
+              stages[stages.length - 1] = {
+                id: 'required-attributes',
+                requiredAttributes,
+                requiredStatus: requiredStatus || requiredStatusNow,
+                unsafeRequiredAttributeDisplays: unsafeRequiredAttributeDisplays || unsafeRequiredAttributeDisplaysNow,
+                timedOut: true,
+                recoveredByReadback: true,
+              };
+              current = getVisibleEditPreflightStatus();
+            } else {
+              stages[stages.length - 1] = {
+                id: 'required-attributes',
+                requiredAttributes,
+                requiredStatus,
+                unsafeRequiredAttributeDisplays,
+                timedOut: true,
+                nonFatal: true,
+                continuedAfterFailure: true,
+                reason: requiredAttributes.reason || 'stage timeout: required-attributes',
+              };
+              current = getVisibleEditPreflightStatus();
+            }
+          }
+        }
+
+        current = getVisibleEditPreflightStatus();
+        if (current.customAttributeInvalidCount > 0 || preflightHasRisk(current, /custom attributes invalid/i)) {
+          const customStage = await runBoundedStage('custom-attributes', async () => clearVisibleCustomAttributes());
+          const customStartedAt = customStage.startedAt;
+          const customAttributes = customStage.value;
+          stages.push({ id: 'custom-attributes', customAttributes });
+          if (customStage.timedOut || stageTimedOut(customStartedAt)) {
+            const recovery = await recoverTimedOutStageByReadback('custom-attributes', { customAttributes });
+            stages[stages.length - 1].timeoutRecovery = recovery;
+            if (recovery.recovered) {
+              stages[stages.length - 1].recoveredByReadback = true;
+              current = recovery.afterReadback;
+            } else {
+              return stopStage('custom-attributes', customStartedAt, { timedOut: true, customAttributes, recovery, reason: 'stage hard timeout: custom-attributes' });
+            }
+          }
+        }
+
+        current = getVisibleEditPreflightStatus();
+        if (!current.shipsFrom.ok || !current.templates.postage111 || preflightHasRisk(current, /ships from|postage template/i)) {
+          const shippingStage = await runBoundedStage('shipping-postage', async () => {
+            const shipsFromBefore = getVisibleShipsFromStatus();
+            const shipsFrom = selectVisibleShipsFromUnitedStates();
+            const shipsFromAfter = getVisibleShipsFromStatus();
+            const postage = await selectPostageTemplate111FastPath({
+              deadlineAt: makeDeadlineAt(Math.min(stageTimeoutMs || 3000, 3000)),
+              timeoutStage: 'shipping-postage.fast-postage',
+            });
+            const templates = verifyEditTemplateSelections();
+            return { shipsFromBefore, shipsFrom, shipsFromAfter, postage, templates };
+          });
+          const shippingStartedAt = shippingStage.startedAt;
+          const { shipsFromBefore, shipsFrom, shipsFromAfter, postage, templates } = shippingStage.value || {};
+          stages.push({ id: 'shipping-postage', shipsFromBefore, shipsFrom, shipsFromAfter, postage, templates });
+          if (shippingStage.timedOut || (postage && postage.timedOut) || stageTimedOut(shippingStartedAt)) {
+            const recovery = await recoverTimedOutStageByReadback('shipping-postage', { shipsFromBefore, shipsFrom, shipsFromAfter, postage, templates });
+            stages[stages.length - 1].timeoutRecovery = recovery;
+            if (recovery.recovered) {
+              stages[stages.length - 1].recoveredByReadback = true;
+              current = recovery.afterReadback;
+            } else {
+              stages[stages.length - 1].timedOut = true;
+              stages[stages.length - 1].nonFatal = true;
+              stages[stages.length - 1].continuedAfterFailure = true;
+              stages[stages.length - 1].reason = (postage && postage.reason) || 'stage hard timeout: shipping-postage';
+              current = recovery.afterReadback || getVisibleEditPreflightStatus();
+            }
+          }
+        }
+
+        current = getVisibleEditPreflightStatus();
+        if (current.packageSale.checked || !current.variationRequiredFields.ok || preflightHasRisk(current, /variation parameter|variation required fields|package sale/i)) {
+          const variationStage = await runBoundedStage('variation', async () => {
+            const packageSale = disablePackageSaleIfChecked();
+            let variation = null;
+            try {
+              variation = fillVisibleVariationFields();
+            } catch (error) {
+              variation = { changed: false, ok: false, allowed: false, blocked: true, blockReason: error.message };
+            }
+            return { packageSale, variation };
+          });
+          const { packageSale, variation } = variationStage.value || {};
+          stages.push({ id: 'variation', packageSale, variation });
+          if (variationStage.timedOut) {
+            const recovery = await recoverTimedOutStageByReadback('variation', { packageSale, variation });
+            stages[stages.length - 1].timeoutRecovery = recovery;
+            if (recovery.recovered) {
+              stages[stages.length - 1].recoveredByReadback = true;
+              current = recovery.afterReadback;
+            } else {
+            return stopStage('variation', variationStage.startedAt, {
+              timedOut: true,
+              reason: 'stage hard timeout: variation',
+              packageSale,
+              variation,
+              recovery,
+            });
+            }
+          }
+        }
+
+        current = getVisibleEditPreflightStatus();
+        if (!current.marketingImages.ready || preflightHasRisk(current, /marketing images/i)) {
+          const marketingStage = await runBoundedStage('marketing-images', async () => {
+            const beforeMarketing = getMarketingImageStatus();
+            let marketing = null;
+            try {
+              marketing = await triggerMarketingImageGeneration();
+            } catch (error) {
+              marketing = { changed: false, ok: false, reason: error.message };
+            }
+            const afterMarketing = getMarketingImageStatus();
+            return { beforeMarketing, marketing, afterMarketing };
+          });
+          const marketingStartedAt = marketingStage.startedAt;
+          const marketingValue = marketingStage.value || {};
+          const afterMarketing = marketingValue.afterMarketing || getMarketingImageStatus();
+          stages.push({ id: 'marketing-images', ...marketingValue, afterMarketing });
+          if (marketingStage.timedOut || stageTimedOut(marketingStartedAt) || !afterMarketing.ready) {
+            const recovery = await recoverTimedOutStageByReadback('marketing-images', { ...marketingValue, afterMarketing });
+            stages[stages.length - 1].timeoutRecovery = recovery;
+            if (recovery.recovered) {
+              stages[stages.length - 1].recoveredByReadback = true;
+              current = recovery.afterReadback;
+            } else {
+            return stopStage('marketing-images', marketingStartedAt, {
+              timedOut: Boolean(marketingStage.timedOut),
+              reason: afterMarketing.ready ? 'stage hard timeout: marketing-images' : `marketing images incomplete: ${afterMarketing.count}/${EDIT_PAGE_RULES.marketingImageCount}`,
+              ...marketingValue,
+              afterMarketing,
+              recovery,
+            });
+            }
+          }
+        }
+
+        const textSanitization = applyVisiblePlatformTextSanitization();
+        stages.push({ id: 'text-sanitization', result: textSanitization });
+
+        const preflight = getVisibleEditPreflightStatus();
+        const result = {
+          at: nowIso(),
+          manual: Boolean(options.manual),
+          mode: 'resume-remaining-edit-page-pipeline',
+          currentEditId,
+          reset,
+          before,
+          stages,
+          preflight,
+          ok: Boolean(preflight && preflight.pass),
+          safeToSaveToWaitPublish: Boolean(preflight && preflight.pass),
+          scroll: {
+            before: beforeScrollY,
+            after: window.scrollY,
+            blocked: editFieldLocks.scrollBlocked,
+          },
+        };
+        state.visibleEditRuleResult = result;
+        window.__DXM_AUTOMATION_V1_LAST_RESULT__ = result;
+        if (!state.report) state.report = {};
+        state.report.visibleEditRuleResult = result;
+        log(`编辑页剩余字段恢复已执行：阶段${stages.map((stage) => stage.id).join(' -> ')}，最终预检${preflight.pass ? '通过' : '未通过'}`, result);
+        updateUi();
+        return result;
+      } finally {
+        visibleEditRulesPipelineRunning = false;
+      }
+    });
   }
 
   async function applyVisibleEditPageRules(options = {}) {
     if (!isEditPage()) return { skipped: true, reason: 'not edit page' };
-    if (!state.editData) {
-      try {
-        await loadEditJson();
-      } catch (_) {
-        // Visible edit rules can still run without edit.json.
+    const currentEditId = new URLSearchParams(location.search).get('id') || '';
+    if (EDIT_PAGE_MINIMAL_EXCLUSIVE_MODE) {
+      if (currentEditId !== EDIT_PAGE_EXCLUSIVE_SAMPLE_ID) {
+        return { skipped: true, reason: 'minimal exclusive mode is limited to the authorized sample', currentEditId };
       }
+      return applyMinimalExclusiveEditPageRules();
     }
-    const title = applyVisibleTitleRule();
-    const marketing = await triggerMarketingImageGeneration();
-    const description = applyVisiblePcDescriptionRule(title.value || '');
-    const textSanitization = applyVisiblePlatformTextSanitization();
-    let variation = null;
-    try {
-      variation = fillVisibleVariationFields();
-    } catch (error) {
-      variation = { changed: false, reason: error.message };
+    if (visibleEditRulesPipelineRunning) {
+      return state.visibleEditRuleResult || { skipped: true, reason: 'visible edit pipeline already running' };
     }
-    const category = await selectVisibleProductCategory();
-    const requiredAttributes = await fillVisibleRequiredAttributeFields();
-    const shipsFrom = selectVisibleShipsFromUnitedStates();
-    const customAttributes = await clearVisibleCustomAttributes();
-    const postage = await selectPostageTemplate111();
-    const preflight = getVisibleEditPreflightStatus();
-    const result = {
-      at: nowIso(),
-      manual: Boolean(options.manual),
-      preSave: Boolean(options.preSave),
-      title,
-      description,
-      textSanitization,
-      variation,
-      category,
-      requiredAttributes,
-      shipsFrom,
-      customAttributes,
-      postage,
-      marketing,
-      preflight,
-    };
-    state.visibleEditRuleResult = result;
-    if (!state.report) state.report = {};
-    state.report.visibleEditRuleResult = result;
-    log(`\u7f16\u8f91\u9875\u89c4\u5219\u5df2\u5e94\u7528\uff1a\u6807\u9898${title.changed ? '\u5df2\u6539' : '\u672a\u6539'}\uff0c\u63cf\u8ff0${description.changed ? '\u5df2\u6539' : '\u672a\u6539'}\uff0c\u7c7b\u76ee${category.ok ? '\u5df2\u9009' : '\u672a\u9009'}\uff0c\u5fc5\u586b\u5c5e\u6027${requiredAttributes.ok ? '\u5df2\u5904\u7406' : '\u672a\u5b8c\u6210'}\uff0c\u53d1\u8d27\u5730${shipsFrom.ok ? '\u5df2\u9009\u7f8e\u56fd' : '\u672a\u9009'}\uff0c\u81ea\u5b9a\u4e49\u5c5e\u6027${customAttributes.ok ? '\u5df2\u5904\u7406' : '\u672a\u5408\u89c4'}\uff0c\u8fd0\u8d39111${postage.changed ? '\u5df2\u9009' : '\u672a\u9009'}\uff0c\u9884\u68c0${preflight.pass ? '\u901a\u8fc7' : '\u672a\u901a\u8fc7'}`, result);
-    updateUi();
-    return result;
+    visibleEditRulesPipelineRunning = true;
+    return withExclusiveEditExecution(async () => {
+      try {
+      if (!state.editData) {
+        try {
+          await loadEditJson();
+        } catch (_) {
+          // Visible edit rules can still run without edit.json.
+        }
+      }
+      const beforeScrollY = window.scrollY;
+      const title = applyVisibleTitleRule();
+      const description = applyVisiblePcDescriptionRule(title.value || '');
+      const category = await selectVisibleProductCategory();
+      if (!category.ok) {
+        const preflight = getVisibleEditPreflightStatus();
+        const result = {
+          at: nowIso(),
+          manual: Boolean(options.manual),
+          preSave: Boolean(options.preSave),
+          retryAfterSaveError: Boolean(options.retryAfterSaveError),
+          currentEditId,
+          mode: 'sequential-edit-page-pipeline',
+          stoppedAt: 'category',
+          title,
+          description,
+          category,
+          preflight,
+          scroll: {
+            before: beforeScrollY,
+            after: window.scrollY,
+            blocked: editFieldLocks.scrollBlocked,
+          },
+        };
+        state.visibleEditRuleResult = result;
+        window.__DXM_AUTOMATION_V1_LAST_RESULT__ = result;
+        if (!state.report) state.report = {};
+        state.report.visibleEditRuleResult = result;
+        log(`\u7f16\u8f91\u9875\u987a\u5e8f\u6d41\u6c34\u7ebf\u505c\u6b62\uff1a\u7c7b\u76ee\u672a\u786e\u8ba4\uff0c\u62e6\u622a\u6eda\u52a8${editFieldLocks.scrollBlocked}\u6b21`, result);
+        updateUi();
+        return result;
+      }
+      const categoryPlan = buildCategoryModalSearchPlan(getCurrentEditTitleText());
+      const categoryFinalize = getVisibleCategoryModal()
+        ? await finalizeCategorySelectionAfterVisibleWrite(categoryPlan)
+        : { closed: true, mode: 'not-open-after-category', selectedText: category.selectedText || '' };
+      if (isCategoryCommitFailed(categoryFinalize)) {
+        const preflight = getVisibleEditPreflightStatus();
+        const result = {
+          at: nowIso(),
+          manual: Boolean(options.manual),
+          preSave: Boolean(options.preSave),
+          retryAfterSaveError: Boolean(options.retryAfterSaveError),
+          currentEditId,
+          mode: 'sequential-edit-page-pipeline',
+          stoppedAt: 'categoryFinalize',
+          title,
+          description,
+          category,
+          categoryFinalize,
+          preflight,
+          scroll: {
+            before: beforeScrollY,
+            after: window.scrollY,
+            blocked: editFieldLocks.scrollBlocked,
+          },
+        };
+        state.visibleEditRuleResult = result;
+        window.__DXM_AUTOMATION_V1_LAST_RESULT__ = result;
+        if (!state.report) state.report = {};
+        state.report.visibleEditRuleResult = result;
+        log(`\u7f16\u8f91\u9875\u987a\u5e8f\u6d41\u6c34\u7ebf\u505c\u6b62\uff1a\u7c7b\u76ee\u56de\u586b\u672a\u786e\u8ba4`, result);
+        updateUi();
+        return result;
+      }
+      const priceFill = fillVisibleGoodsValueFromCurrentAsin();
+      const fieldTimeoutMs = getRequiredAttributeFieldTimeoutMs(options, 8000);
+      const requiredAttributes = await fillVisibleRequiredAttributeFields({ fieldTimeoutMs });
+      const customAttributes = await clearVisibleCustomAttributes();
+      let marketing = null;
+      try {
+        marketing = await triggerMarketingImageGeneration();
+      } catch (error) {
+        marketing = { changed: false, ok: false, reason: error.message };
+      }
+      const shipsFrom = selectVisibleShipsFromUnitedStates();
+      const packageSale = disablePackageSaleIfChecked();
+      let variation = null;
+      try {
+        variation = fillVisibleVariationFields();
+      } catch (error) {
+        variation = { changed: false, reason: error.message };
+      }
+      const postage = await selectPostageTemplate111();
+      const textSanitization = applyVisiblePlatformTextSanitization();
+      const preflight = getVisibleEditPreflightStatus();
+      const result = {
+        at: nowIso(),
+        manual: Boolean(options.manual),
+        preSave: Boolean(options.preSave),
+          retryAfterSaveError: Boolean(options.retryAfterSaveError),
+          currentEditId,
+          mode: 'sequential-edit-page-pipeline',
+          fieldTimeoutMs,
+          title,
+        description,
+        category,
+        categoryFinalize,
+        priceFill,
+        requiredAttributes,
+        customAttributes,
+        marketing,
+        shipsFrom,
+        packageSale,
+        variation,
+        postage,
+        textSanitization,
+        preflight,
+        scroll: {
+          before: beforeScrollY,
+          after: window.scrollY,
+          blocked: editFieldLocks.scrollBlocked,
+        },
+      };
+      state.visibleEditRuleResult = result;
+      window.__DXM_AUTOMATION_V1_LAST_RESULT__ = result;
+      if (!state.report) state.report = {};
+      state.report.visibleEditRuleResult = result;
+      log(`\u7f16\u8f91\u9875\u987a\u5e8f\u6d41\u6c34\u7ebf\u5df2\u6267\u884c\uff1a\u6807\u9898${title.changed ? '\u5df2\u6539' : '\u672a\u6539'}\uff0c\u63cf\u8ff0${description.changed ? '\u5df2\u6539' : '\u672a\u6539'}\uff0c\u7c7b\u76ee${category.ok ? '\u5df2\u9009' : '\u672a\u9009'}\uff0c\u5fc5\u586b\u5c5e\u6027${requiredAttributes.ok ? '\u5df2\u5904\u7406' : '\u672a\u5b8c\u6210'}\uff0c\u81ea\u5b9a\u4e49\u5c5e\u6027${customAttributes.ok ? '\u5df2\u5904\u7406' : '\u672a\u5408\u89c4'}\uff0c\u8425\u9500\u56fe${marketing && marketing.changed ? '\u5df2\u68c0\u67e5' : '\u672a\u751f\u6210'}\uff0c\u53d1\u8d27\u5730${shipsFrom.ok ? '\u5df2\u9009\u7f8e\u56fd' : '\u672a\u9009'}\uff0c\u8fd0\u8d39111${postage.ok ? '\u5df2\u9009' : '\u672a\u9009'}\uff0c\u9884\u68c0${preflight.pass ? '\u901a\u8fc7' : '\u672a\u901a\u8fc7'}\uff0c\u62e6\u622a\u6eda\u52a8${editFieldLocks.scrollBlocked}\u6b21`, result);
+      updateUi();
+      return result;
+      } finally {
+      visibleEditRulesPipelineRunning = false;
+      }
+    });
   }
 
+  window.__DXM_AUTOMATION_V1_APPLY_EDIT_RULES__ = applyVisibleEditPageRules;
+  window.__DXM_AUTOMATION_V1_READONLY_PREFLIGHT__ = getReadonlyEditPreflightReadback;
+  window.__DXM_AUTOMATION_V1_FILL_VISIBLE_PRICE__ = fillVisibleGoodsValueFromCurrentAsin;
+  window.__DXM_AUTOMATION_V1_FINALIZE_CATEGORY__ = finalizeCategorySelectionAfterVisibleWrite;
+  window.__DXM_AUTOMATION_V1_CATEGORY_PRICE_ONLY__ = applyVisibleCategoryAndPriceOnly;
+  window.__DXM_AUTOMATION_V1_SHIPPING_POSTAGE_ONLY__ = applyVisibleShippingAndPostageOnly;
+  window.__DXM_AUTOMATION_V1_REQUIRED_ATTRS_ONLY__ = applyVisibleRequiredAttributesOnly;
+  window.__DXM_AUTOMATION_V1_REQUIRED_ATTR_FIELD_ONLY__ = applyVisibleRequiredAttributeFieldOnly;
+  window.__DXM_AUTOMATION_V1_VARIATION_PREFLIGHT_ONLY__ = applyVisibleVariationAndFinalPreflightOnly;
+  window.__DXM_AUTOMATION_V1_RESET_PIPELINE_LOCK__ = resetVisibleEditPipelineLock;
+  window.__DXM_AUTOMATION_V1_APPLY_REMAINING_EDIT_RULES__ = applyVisibleRemainingEditPageRules;
+  window.__DXM_AUTOMATION_V1_RECOVER_TO_WAIT_PUBLISH__ = recoverCurrentEditToWaitPublish;
+
   function scheduleVisibleEditRulesAutoApply() {
-    if (!isEditPage()) {
-      visibleEditRulesAutoAppliedUrl = '';
-      return;
-    }
-    const pageKey = `${location.pathname}${location.search}${location.hash}`;
-    if (visibleEditRulesAutoAppliedUrl === pageKey) return;
-    visibleEditRulesAutoAppliedUrl = pageKey;
-    [2500, 9000].forEach((delay) => {
-      window.setTimeout(() => {
-        applyVisibleEditPageRules({ manual: false }).catch((error) => log(`\u7f16\u8f91\u9875\u89c4\u5219\u81ea\u52a8\u5e94\u7528\u5931\u8d25\uff1a${error.message}`));
-      }, delay);
-    });
+    visibleEditRulesAutoAppliedUrl = isEditPage() ? `${location.pathname}${location.search}${location.hash}` : '';
   }
 
   function startVisibleEditRulesWatcher() {
     if (visibleEditRulesWatcherStarted) return;
     visibleEditRulesWatcherStarted = true;
-    window.setInterval(scheduleVisibleEditRulesAutoApply, 1500);
+    scheduleVisibleEditRulesAutoApply();
   }
 
   function getVisibleVariationTable() {
@@ -4788,7 +10970,10 @@
   }
 
   function getHeaderMap(table) {
-    const headers = Array.from(table.querySelectorAll('thead th, tr:first-child th, tr:first-child td'));
+    const headerRow = table.tHead && table.tHead.rows && table.tHead.rows[0]
+      ? table.tHead.rows[0]
+      : Array.from(table.querySelectorAll('tr')).find((row) => row.querySelector('th'));
+    const headers = headerRow ? Array.from(headerRow.children) : [];
     const map = {};
     headers.forEach((cell, index) => {
       const text = (cell.innerText || '').replace(/\s+/g, '');
@@ -4816,6 +11001,57 @@
     return Array.from(cell.querySelectorAll('input')).filter((input) => input.type !== 'hidden')[offset] || null;
   }
 
+  function isVariationTextInput(input) {
+    if (!input || input.type === 'hidden' || input.disabled) return false;
+    const role = String(input.getAttribute('role') || '').toLowerCase();
+    if (role === 'combobox') return false;
+    const type = String(input.getAttribute('type') || 'text').toLowerCase();
+    return !type || ['text', 'number', 'tel'].includes(type);
+  }
+
+  function getCellTextInputs(row, index) {
+    const cells = Array.from(row.children);
+    const cell = cells[index];
+    if (!cell) return [];
+    return Array.from(cell.querySelectorAll('input'))
+      .filter(isVariationTextInput)
+      .sort((a, b) => {
+        const ar = a.getBoundingClientRect();
+        const br = b.getBoundingClientRect();
+        const aVisible = visibleElement(a) ? 0 : 1;
+        const bVisible = visibleElement(b) ? 0 : 1;
+        return aVisible - bVisible || ar.left - br.left || ar.top - br.top;
+      });
+  }
+
+  function getVariationSizeInputs(row, sizeIndex) {
+    if (sizeIndex == null) return [];
+    const cells = Array.from(row.children);
+    const inputs = [];
+    for (let index = sizeIndex; index < cells.length && inputs.length < 3 && index <= sizeIndex + 3; index += 1) {
+      for (const input of getCellTextInputs(row, index)) {
+        if (!inputs.includes(input)) inputs.push(input);
+        if (inputs.length >= 3) break;
+      }
+    }
+    return inputs.slice(0, 3);
+  }
+
+  function readVariationSizeValues(row, sizeIndex) {
+    const inputs = getVariationSizeInputs(row, sizeIndex);
+    return [0, 1, 2].map((index) => (inputs[index] ? getInputText(inputs[index]) : ''));
+  }
+
+  function fillVariationSizeRow(row, sizeIndex, defaults) {
+    const inputs = getVariationSizeInputs(row, sizeIndex);
+    const values = [defaults.length, defaults.width, defaults.height];
+    let changed = 0;
+    values.forEach((value, index) => {
+      if (inputs[index] && !isBlank(value)) changed += setInputValue(inputs[index], value) ? 1 : 0;
+    });
+    return { changed, values: readVariationSizeValues(row, sizeIndex), inputCount: inputs.length };
+  }
+
   function fillVisibleShipFromCell(row, index) {
     if (index == null) return false;
     const cell = Array.from(row.children)[index];
@@ -4836,13 +11072,14 @@
     const product = getProductFromEdit(state.editData) || {};
     const asin = extractAsin(`${product.sourceUrl || ''} ${product.sourceId || ''} ${product.platformProductId || ''} ${product.subject || ''}`);
     const amazonItem = getAmazonBatchItem(product);
-    const sourcePrice = inferSourcePrice(product, amazonItem);
-    const supplyPrice = firstNonEmpty(getDefaultSupplyPrice(), calculateSupplyPriceCny(sourcePrice));
+    const priceState = getStrictPriceState();
+    const supplyPrice = priceState.ok ? priceState.supplyPrice : '';
     const inferredAmazonWeightKg = inferAmazonWeightKg(product, amazonItem);
     const inferredAmazonDimensionsCm = inferAmazonDimensionsCm(product, amazonItem);
     return {
       skuCode: asin || state.productId,
       supplyPrice,
+      priceState,
       logisticValue: '0',
       stock: getDefaultStock(),
       weight: firstNonEmpty(inferredAmazonWeightKg, getDefaultWeightKg()),
@@ -4852,14 +11089,285 @@
     };
   }
 
-  function selectVisibleColorClear() {
-    const labels = Array.from(document.querySelectorAll('label'))
+  function getVisiblePriceStatus() {
+    const priceState = getStrictPriceState();
+    const table = getVisibleVariationTable();
+    if (!priceState.ok) {
+      return { ok: false, reason: priceState.reason || 'missing trusted Amazon original price', priceState };
+    }
+    if (!table) {
+      return { ok: false, reason: 'visible variation table not found', priceState };
+    }
+    const map = getHeaderMap(table);
+    if (map.goodsValue == null) {
+      return { ok: false, reason: 'goods value column not found', priceState };
+    }
+    const rows = getVariationRows(table);
+    const values = rows.map((row) => {
+      const input = getCellInput(row, map.goodsValue);
+      return input ? getInputText(input) : '';
+    });
+    const mismatches = values.filter((value) => !priceEqualsExpected(value, priceState.supplyPrice));
+    return {
+      ok: rows.length > 0 && mismatches.length === 0,
+      reason: rows.length
+        ? mismatches.length
+          ? `visible goods value mismatch: expected ${priceState.supplyPrice}, actual ${values.join(', ')}`
+          : ''
+        : 'variation rows not found',
+      expectedSupplyPrice: priceState.supplyPrice,
+      values,
+      priceState,
+    };
+  }
+
+  function getVisibleVariationRequiredFieldStatus() {
+    const table = getVisibleVariationTable();
+    if (!table) return { ok: false, reason: 'visible variation table not found', rows: 0, fields: [], missing: ['variation_table'] };
+    const map = getHeaderMap(table);
+    const rows = getVariationRows(table);
+    const defaults = getVisibleFillDefaults();
+    const fields = [];
+    const missing = [];
+    const readInput = (row, index, offset = 0) => {
+      const input = getCellInput(row, index, offset);
+      return input ? getInputText(input) : '';
+    };
+    const numericOrZero = (value) => {
+      if (String(value || '').trim() === '0') return true;
+      return positiveNumber(value) != null;
+    };
+    const addColumnCheck = (id, index, checker, expected = '') => {
+      if (index == null) return;
+      const values = rows.map((row) => readInput(row, index));
+      const badRows = values
+        .map((value, rowIndex) => ({ value, rowIndex }))
+        .filter((item) => !checker(item.value, item.rowIndex));
+      fields.push({
+        id,
+        ok: rows.length > 0 && badRows.length === 0,
+        expected,
+        values,
+        badRows,
+      });
+      if (!rows.length || badRows.length) missing.push(id);
+    };
+
+    addColumnCheck('logisticValue', map.logisticValue, numericOrZero, defaults.logisticValue);
+    addColumnCheck('stock', map.stock, (value) => String(value || '').trim() === String(defaults.stock || '').trim(), defaults.stock);
+    addColumnCheck('skuCode', map.skuCode, (value, rowIndex) => {
+      const expectedSku = rows.length > 1 ? `${defaults.skuCode}-${rowIndex + 1}` : defaults.skuCode;
+      return normalizeCategoryText(value) === normalizeCategoryText(expectedSku);
+    }, rows.length > 1 ? `${defaults.skuCode}-N` : defaults.skuCode);
+    addColumnCheck('weight', map.weight, positiveNumber, defaults.weight);
+
+    if (map.size != null) {
+      const sizeRows = rows.map((row, rowIndex) => {
+        const values = readVariationSizeValues(row, map.size);
+        return {
+          rowIndex,
+          values,
+          inputCount: getVariationSizeInputs(row, map.size).length,
+          ok: values.every((value) => positiveNumber(value) != null),
+        };
+      });
+      fields.push({
+        id: 'size',
+        ok: rows.length > 0 && sizeRows.every((row) => row.ok),
+        expected: [defaults.length, defaults.width, defaults.height].join(' x '),
+        values: sizeRows.map((row) => row.values.join(' x ')),
+        badRows: sizeRows.filter((row) => !row.ok),
+      });
+      if (!rows.length || sizeRows.some((row) => !row.ok)) missing.push('size');
+    }
+
+    if (map.shipFrom != null) {
+      const shipRows = rows.map((row, rowIndex) => {
+        const cell = Array.from(row.children)[map.shipFrom];
+        const selectedText = cell ? getSelectedTextInContainer(cell) || elementText(cell) : '';
+        return {
+          rowIndex,
+          selectedText,
+          ok: /united states|美国/i.test(selectedText),
+        };
+      });
+      fields.push({
+        id: 'shipFrom',
+        ok: rows.length > 0 && shipRows.every((row) => row.ok),
+        expected: 'United States',
+        values: shipRows.map((row) => row.selectedText),
+        badRows: shipRows.filter((row) => !row.ok),
+      });
+      if (!rows.length || shipRows.some((row) => !row.ok)) missing.push('shipFrom');
+    }
+
+    return {
+      ok: rows.length > 0 && fields.every((field) => field.ok),
+      reason: missing.length ? `variation required fields incomplete: ${missing.join(', ')}` : '',
+      rows: rows.length,
+      fields,
+      missing,
+    };
+  }
+
+  function fillVisibleGoodsValueFromCurrentAsin() {
+    const priceState = getStrictPriceState();
+    const table = getVisibleVariationTable();
+    if (!priceState.ok) {
+      return { changed: false, ok: false, reason: priceState.reason || 'missing trusted Amazon displayed price', priceState };
+    }
+    if (!table) {
+      return { changed: false, ok: false, reason: 'visible variation table not found', priceState };
+    }
+    const map = getHeaderMap(table);
+    if (map.goodsValue == null) {
+      return { changed: false, ok: false, reason: 'goods value column not found', priceState };
+    }
+    const rows = getVariationRows(table);
+    let changed = 0;
+    rows.forEach((row) => {
+      const input = getCellInput(row, map.goodsValue);
+      if (input) changed += setInputValue(input, priceState.supplyPrice) ? 1 : 0;
+    });
+    const status = getVisiblePriceStatus();
+    return {
+      changed: changed > 0,
+      changedFields: changed,
+      ok: status.ok,
+      reason: status.reason || '',
+      expectedSupplyPrice: priceState.supplyPrice,
+      values: status.values || [],
+      rows: rows.length,
+      priceState,
+    };
+  }
+
+  const VISIBLE_COLOR_RULES = [
+    { id: 'black', pattern: /\bblack\b|\u9ed1/i, label: /\bblack\b|\u9ed1/i },
+    { id: 'white', pattern: /\bwhite\b|\u767d/i, label: /\bwhite\b|\u767d/i },
+    { id: 'gray', pattern: /\bgr[ae]y\b|\u7070/i, label: /\bgr[ae]y\b|\u7070/i },
+    { id: 'clear', pattern: /\bclear\b|\btransparent\b|\u900f\u660e/i, label: /\bclear\b|\btransparent\b|\u900f\u660e/i },
+    { id: 'blue', pattern: /\bblue\b|\u84dd/i, label: /\bblue\b|\u84dd/i },
+    { id: 'green', pattern: /\bgreen\b|\u7eff/i, label: /\bgreen\b|\u7eff/i },
+    { id: 'red', pattern: /\bred\b|\u7ea2/i, label: /\bred\b|\u7ea2/i },
+    { id: 'pink', pattern: /\bpink\b|\u7c89/i, label: /\bpink\b|\u7c89/i },
+    { id: 'purple', pattern: /\bpurple\b|\u7d2b/i, label: /\bpurple\b|\u7d2b/i },
+    { id: 'yellow', pattern: /\byellow\b|\u9ec4/i, label: /\byellow\b|\u9ec4/i },
+    { id: 'orange', pattern: /\borange\b|\u6a59/i, label: /\borange\b|\u6a59/i },
+    { id: 'brown', pattern: /\bbrown\b|\u68d5|\u8910/i, label: /\bbrown\b|\u68d5|\u8910/i },
+    { id: 'beige', pattern: /\bbeige\b|\bcream\b|\u7c73|\u5976\u6cb9/i, label: /\bbeige\b|\bcream\b|\u7c73|\u5976\u6cb9/i },
+    { id: 'silver', pattern: /\bsilver\b|\u94f6/i, label: /\bsilver\b|\u94f6/i },
+    { id: 'gold', pattern: /\bgold\b|\u91d1/i, label: /\bgold\b|\u91d1/i },
+  ];
+
+  function getVisibleColorEvidenceText() {
+    const product = getProductFromEdit(state.editData) || {};
+    const amazonItem = getAmazonBatchItem(product) || {};
+    const titleInput = findProductTitleInput();
+    return [
+      titleInput ? getInputText(titleInput) : '',
+      product.subject,
+      product.title,
+      product.productTitle,
+      product.description,
+      product.detail,
+      product.variationListStr,
+      amazonItem.title,
+      amazonItem.color,
+      amazonItem.variant,
+      amazonItem.variation,
+    ].filter(Boolean).join(' ');
+  }
+
+  function inferVisibleColorPreference() {
+    const text = normalizeCategoryText(getVisibleColorEvidenceText());
+    if (!text) return { type: 'unknown', reason: 'no color evidence text' };
+    if (/\bmulti[-\s]?color\b|\bmulticolor\b|\bmultiple colors?\b|\bassorted\b|\u591a\u8272|\u6df7\u8272/i.test(text)) {
+      return { type: 'multi', reason: 'source explicitly indicates multiple colors' };
+    }
+    const matches = VISIBLE_COLOR_RULES.filter((rule) => rule.pattern.test(text));
+    if (matches.length === 1) return { type: 'single', rule: matches[0], reason: `source indicates ${matches[0].id}` };
+    if (matches.length > 1) return { type: 'multi', reason: `source contains multiple color terms: ${matches.map((item) => item.id).join(',')}` };
+    return { type: 'unknown', reason: 'no supported single color term found' };
+  }
+
+  function labelColorText(label) {
+    return elementText(label).replace(/\uff08/g, '(').replace(/\uff09/g, ')');
+  }
+
+  function findMultiColorLabel(labels) {
+    return labels.find((node) => /\bmulti\b|\u591a\u8272/i.test(labelColorText(node)));
+  }
+
+  function getVisibleColorLabels() {
+    const colorSection = Array.from(getEditFormScope().querySelectorAll('.ant-form-item,.form-group,.row,div,td,tr'))
+      .filter((node) => !node.closest(`#${PANEL_ID}`) && visibleElement(node))
+      .map((node) => ({ node, text: elementText(node), rect: node.getBoundingClientRect() }))
+      .filter((item) => /\u989c\u8272|color/i.test(item.text) && item.node.querySelector('input[type="checkbox"],input[type="radio"]') && item.text.length < 800)
+      .sort((a, b) => a.text.length - b.text.length || a.rect.top - b.rect.top)[0];
+    const scope = colorSection ? colorSection.node : getEditFormScope();
+    const labels = Array.from(scope.querySelectorAll('label'))
       .filter((node) => !node.closest(`#${PANEL_ID}`) && visibleElement(node));
-    const label = labels.find((node) => /\u900f\u660e|clear/i.test(elementText(node)) && node.querySelector('input[type="checkbox"]'));
-    const input = label && label.querySelector('input[type="checkbox"]');
-    if (!input) return { changed: false, ok: true, skipped: true, reason: 'clear color checkbox not visible' };
-    const changed = setCheckboxChecked(input, true);
-    return { changed, ok: Boolean(input.checked), selectedText: checkboxNearbyText(input) };
+    return labels.filter((node) => node.querySelector('input[type="checkbox"],input[type="radio"]'));
+  }
+
+  function getVisibleColorParamStatus() {
+    const colorLabels = getVisibleColorLabels();
+    if (!colorLabels.length) return { ok: true, skipped: true, reason: 'color checkbox not visible', optionCount: 0 };
+    const checked = colorLabels
+      .map((label) => {
+        const input = label.querySelector('input[type="checkbox"],input[type="radio"]');
+        return input && input.checked ? { label, input, text: labelColorText(label) } : null;
+      })
+      .filter(Boolean);
+    return {
+      ok: checked.length > 0,
+      selectedTexts: checked.map((item) => item.text),
+      optionCount: colorLabels.length,
+      missing: checked.length === 0,
+    };
+  }
+
+  function selectVisibleColorClear() {
+    const colorLabels = getVisibleColorLabels();
+    if (!colorLabels.length) return { changed: false, ok: true, skipped: true, reason: 'color checkbox not visible' };
+    const preference = inferVisibleColorPreference();
+    let label = colorLabels.length === 1 ? colorLabels[0] : null;
+    let mode = 'single-visible-option';
+    if (!label && preference.type === 'single') {
+      label = colorLabels.find((node) => preference.rule.label.test(labelColorText(node)));
+      mode = 'source-single-color';
+    }
+    if (!label && (preference.type === 'multi' || preference.type === 'unknown')) {
+      label = findMultiColorLabel(colorLabels);
+      mode = preference.type === 'multi' ? 'source-multi-color' : 'fallback-multi-uncertain';
+    }
+    if (!label) {
+      label = findMultiColorLabel(colorLabels);
+      mode = 'fallback-multi-single-color-option-missing';
+    }
+    if (!label) return { changed: false, ok: false, reason: 'no matching Color option visible', colorPreference: preference, optionCount: colorLabels.length };
+    const input = label.querySelector('input[type="checkbox"],input[type="radio"]');
+    let changed = false;
+    if (input && input.type === 'checkbox') {
+      for (const colorLabel of colorLabels) {
+        const colorInput = colorLabel.querySelector('input[type="checkbox"]');
+        if (colorInput) changed = setCheckboxChecked(colorInput, colorInput === input) || changed;
+      }
+    } else {
+      changed = setCheckboxChecked(input, true);
+    }
+    const status = getVisibleColorParamStatus();
+    return {
+      changed,
+      ok: Boolean(input && input.checked && status.ok),
+      selectedText: checkboxNearbyText(input),
+      selectedTexts: status.selectedTexts || [],
+      optionCount: colorLabels.length,
+      mode,
+      colorPreference: preference,
+      defaultRule: preference.type === 'unknown' ? 'unknown color defaults to 多色(MULTI)' : '',
+    };
   }
 
   function fillVisibleVariationFields() {
@@ -4871,12 +11379,23 @@
     const rows = getVariationRows(table);
     if (!rows.length) throw new Error('\u53d8\u79cd\u4fe1\u606f\u8868\u683c\u6ca1\u6709\u53ef\u586b\u5199\u884c');
     const defaults = getVisibleFillDefaults();
-    const shipsFromParam = selectVisibleShipsFromUnitedStates();
-    const colorParam = selectVisibleColorClear();
+    const shipsFromStatus = getVisibleShipsFromStatus();
+    const shipsFromParam = shipsFromStatus.ok
+      ? { changed: false, ok: true, selectedText: shipsFromStatus.selectedText, mode: 'already-selected-global' }
+      : selectVisibleShipsFromUnitedStates();
+    const colorStatus = getVisibleColorParamStatus();
+    const needsVariationAttribute = hasVisibleNativeValidationText(/\u8bf7\u9009\u62e9\u5fc5\u9009\u53d8\u79cd\u5c5e\u6027/) || colorStatus.missing;
+    const colorParam = needsVariationAttribute || colorStatus.optionCount > 0
+      ? selectVisibleColorClear()
+      : { changed: false, ok: true, skipped: true, reason: 'variation color is not visible' };
+    const packageSaleState = getPackageSaleState();
+    const packageSale = packageSaleState.checked
+      ? disablePackageSaleIfChecked()
+      : { changed: false, ok: true, skipped: true, reason: 'package sale already unchecked' };
 
     let count = 0;
     rows.forEach((row, rowIndex) => {
-      if (map.goodsValue != null && defaults.supplyPrice) count += setInputValue(getCellInput(row, map.goodsValue), defaults.supplyPrice) ? 1 : 0;
+      if (map.goodsValue != null && defaults.priceState && defaults.priceState.ok) count += setInputValue(getCellInput(row, map.goodsValue), defaults.supplyPrice) ? 1 : 0;
       if (map.logisticValue != null) count += setInputValue(getCellInput(row, map.logisticValue), defaults.logisticValue) ? 1 : 0;
       if (map.stock != null) count += setInputValue(getCellInput(row, map.stock), defaults.stock) ? 1 : 0;
       if (map.skuCode != null) {
@@ -4886,13 +11405,12 @@
       if (map.weight != null) count += setInputValue(getCellInput(row, map.weight), defaults.weight) ? 1 : 0;
       if (map.shipFrom != null) count += fillVisibleShipFromCell(row, map.shipFrom) ? 1 : 0;
       if (map.size != null) {
-        count += setInputValue(getCellInput(row, map.size, 0), defaults.length) ? 1 : 0;
-        count += setInputValue(getCellInput(row, map.size, 1), defaults.width) ? 1 : 0;
-        count += setInputValue(getCellInput(row, map.size, 2), defaults.height) ? 1 : 0;
+        count += fillVariationSizeRow(row, map.size, defaults).changed;
       }
     });
     log(`\u5df2\u8865\u5f53\u524d\u7f16\u8f91\u9875\u53d8\u79cd\u4fe1\u606f\uff1a${rows.length} \u884c\uff0c\u5199\u5165 ${count} \u4e2a\u5b57\u6bb5`);
     const blockedReasons = [];
+    if (!defaults.priceState || !defaults.priceState.ok) blockedReasons.push(`price: ${defaults.priceState && defaults.priceState.reason ? defaults.priceState.reason : 'missing trusted Amazon original price'}`);
     if (shipsFromParam.ok === false) blockedReasons.push(`shipsFrom: ${shipsFromParam.reason || shipsFromParam.selectedText || 'not United States'}`);
     if (colorParam.ok === false) blockedReasons.push(`color: ${colorParam.reason || colorParam.selectedText || 'not clear'}`);
     return {
@@ -4902,8 +11420,10 @@
       allowed: blockedReasons.length === 0,
       blocked: blockedReasons.length > 0,
       blockReason: blockedReasons.join('; '),
+      price: defaults.priceState,
       shipsFromParam,
       colorParam,
+      packageSale,
     };
   }
 
@@ -5325,7 +11845,7 @@
         <input type="text" data-field="taskExchangeRate" placeholder="\u4efb\u52a1\u6c47\u7387\uff0c\u4f8b\u5982 7" value="${getTaskExchangeRate()}">
         <input type="text" data-field="taskPriceMultiplier" placeholder="\u4efb\u52a1\u500d\u7387\uff0c\u4f8b\u5982 5-20 \u586b 1.55" value="${getTaskPriceMultiplier()}">
         <input type="text" data-field="defaultSourcePrice" placeholder="\u4e9a\u9a6c\u900a\u539f\u4ef7 USD\uff1b\u4f9b\u8d27\u4ef7\u6309\u516c\u5f0f\u81ea\u52a8\u7b97" value="${getDefaultSourcePrice()}">
-        <input type="text" data-field="defaultSupplyPrice" placeholder="\u53ef\u9009\uff1a\u624b\u52a8\u8986\u76d6\u4f9b\u8d27\u4ef7 CNY" value="${getDefaultSupplyPrice()}">
+        <input type="text" data-field="defaultSupplyPrice" placeholder="\u5df2\u7981\u7528\uff1a\u4f9b\u8d27\u4ef7\u53ea\u80fd\u7531 Amazon \u539f\u4ef7\u00d7\u4efb\u52a1\u516c\u5f0f\u751f\u6210" value="" disabled>
         <input type="text" data-field="defaultWeight" placeholder="\u9ed8\u8ba4\u91cd\u91cf kg" value="${getDefaultWeightKg()}">
         <div class="dxm-mini-grid">
           <input type="text" data-field="defaultLengthIn" placeholder="\u957f inch" value="${getDefaultLengthIn()}">
@@ -5426,6 +11946,11 @@
     });
 
     updateUi();
+    try {
+      writeReadonlyEditPreflightNode();
+    } catch (error) {
+      console.warn(`[${APP_NAME}] readonly preflight init failed`, error);
+    }
     log('\u6d4b\u8bd5\u5668\u5df2\u52a0\u8f7d\u3002\u9ed8\u8ba4\u4e0d\u4f1a\u771f\u5b9e\u63d0\u4ea4\u3002');
     scheduleVisibleEditRulesAutoApply();
   }
@@ -5520,4 +12045,3 @@
     startPanel();
   }
 })();
-

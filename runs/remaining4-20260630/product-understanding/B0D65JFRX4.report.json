@@ -1,0 +1,240 @@
+{
+  "ok": true,
+  "product": {
+    "productId": "167487782006920301",
+    "asin": "B0D65JFRX4",
+    "known_title": "Sink Drain Strainer - Sink Stopper Kitchen Drain, 3 in 1 Kitchen Sink Drain Strainer with Anti-Clogging Basket, Kitchen Gadgets Clearance Sink Accessories, Fit US Standard 3-1/2'' Sink Hole, Silver",
+    "sourceUrl": "https://www.amazon.com/dp/B0D65JFRX4",
+    "known_category": "Sink Strainers",
+    "brand_after_cleaning": "NONE",
+    "price_cny": 88.15,
+    "stock": 50,
+    "freight_template": "111",
+    "validation_note": "Remaining collection-box product; already in Halo Home Store draft collection box."
+  },
+  "api": {
+    "status": 200,
+    "model": "deepseek-v4-flash",
+    "usage": {
+      "prompt_tokens": 409,
+      "completion_tokens": 972,
+      "total_tokens": 1381,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      },
+      "completion_tokens_details": {
+        "reasoning_tokens": 425
+      },
+      "prompt_cache_hit_tokens": 0,
+      "prompt_cache_miss_tokens": 409
+    },
+    "content": "{\n  \"schemaVersion\": \"product-understanding-v1\",\n  \"asin\": \"B0D65JFRX4\",\n  \"productType\": \"Sink Strainer\",\n  \"primaryUse\": \"Drain strainer and stopper for kitchen sinks\",\n  \"recommendedCategory\": {\n    \"name\": \"Sink Strainers\",\n    \"path\": \"Home & Kitchen > Kitchen & Dining > Kitchen Utensils & Gadgets > Strainers > Sink Strainers\",\n    \"searchTerms\": [\n      \"sink strainer\",\n      \"kitchen sink strainer\",\n      \"drain strainer\",\n      \"anti-clogging sink strainer\",\n      \"sink stopper\",\n      \"kitchen drain strainer\",\n      \"3 in 1 sink strainer\",\n      \"silver sink strainer\",\n      \"3.5 inch sink strainer\",\n      \"US standard sink strainer\"\n    ],\n    \"confidence\": 0.95,\n    \"evidence\": [\n      \"Known category is 'Sink Strainers'\",\n      \"Product title clearly describes a sink drain strainer and stopper\",\n      \"Fits US standard 3-1/2'' sink hole, typical for kitchen sinks\",\n      \"Anti-clogging basket feature matches sink strainer use case\"\n    ]\n  },\n  \"attributes\": [\n    {\n      \"name\": \"Color\",\n      \"value\": \"Silver\",\n      \"source\": \"product_title\",\n      \"confidence\": 0.98\n    },\n    {\n      \"name\": \"Material\",\n      \"value\": \"Stainless Steel\",\n      \"source\": \"inference_from_type_and_color\",\n      \"confidence\": 0.85\n    },\n    {\n      \"name\": \"Size\",\n      \"value\": \"3.5 inch\",\n      \"source\": \"product_title\",\n      \"confidence\": 0.97\n    },\n    {\n      \"name\": \"Item Shape\",\n      \"value\": \"Round\",\n      \"source\": \"inference_from_type\",\n      \"confidence\": 0.95\n    },\n    {\n      \"name\": \"Features\",\n      \"value\": \"Anti-clogging basket, 3-in-1 function\",\n      \"source\": \"product_title\",\n      \"confidence\": 0.9\n    }\n  ],\n  \"risks\": [],\n  \"confidence\": 0.95,\n  \"ruleEngine\": {\n    \"passed\": true,\n    \"blockedBy\": [],\n    \"allowedForEditPage\": true,\n    \"notes\": \"Product already in Halo Home Store draft collection box. No classification blockers detected.\"\n  }\n}"
+  },
+  "raw": {
+    "schemaVersion": "product-understanding-v1",
+    "asin": "B0D65JFRX4",
+    "productType": "Sink Strainer",
+    "primaryUse": "Drain strainer and stopper for kitchen sinks",
+    "recommendedCategory": {
+      "name": "Sink Strainers",
+      "path": "Home & Kitchen > Kitchen & Dining > Kitchen Utensils & Gadgets > Strainers > Sink Strainers",
+      "searchTerms": [
+        "sink strainer",
+        "kitchen sink strainer",
+        "drain strainer",
+        "anti-clogging sink strainer",
+        "sink stopper",
+        "kitchen drain strainer",
+        "3 in 1 sink strainer",
+        "silver sink strainer",
+        "3.5 inch sink strainer",
+        "US standard sink strainer"
+      ],
+      "confidence": 0.95,
+      "evidence": [
+        "Known category is 'Sink Strainers'",
+        "Product title clearly describes a sink drain strainer and stopper",
+        "Fits US standard 3-1/2'' sink hole, typical for kitchen sinks",
+        "Anti-clogging basket feature matches sink strainer use case"
+      ]
+    },
+    "attributes": [
+      {
+        "name": "Color",
+        "value": "Silver",
+        "source": "product_title",
+        "confidence": 0.98
+      },
+      {
+        "name": "Material",
+        "value": "Stainless Steel",
+        "source": "inference_from_type_and_color",
+        "confidence": 0.85
+      },
+      {
+        "name": "Size",
+        "value": "3.5 inch",
+        "source": "product_title",
+        "confidence": 0.97
+      },
+      {
+        "name": "Item Shape",
+        "value": "Round",
+        "source": "inference_from_type",
+        "confidence": 0.95
+      },
+      {
+        "name": "Features",
+        "value": "Anti-clogging basket, 3-in-1 function",
+        "source": "product_title",
+        "confidence": 0.9
+      }
+    ],
+    "risks": [],
+    "confidence": 0.95,
+    "ruleEngine": {
+      "passed": true,
+      "blockedBy": [],
+      "allowedForEditPage": true,
+      "notes": "Product already in Halo Home Store draft collection box. No classification blockers detected."
+    }
+  },
+  "adapted": {
+    "schemaVersion": "product-understanding-v1",
+    "asin": "B0D65JFRX4",
+    "productType": "Sink Strainer",
+    "primaryUse": "Drain strainer and stopper for kitchen sinks",
+    "recommendedCategory": {
+      "name": "Sink Strainers",
+      "path": "Home & Kitchen > Kitchen & Dining > Kitchen Utensils & Gadgets > Strainers > Sink Strainers",
+      "searchTerms": [
+        "sink strainer",
+        "kitchen sink strainer",
+        "drain strainer",
+        "anti-clogging sink strainer",
+        "sink stopper",
+        "kitchen drain strainer",
+        "3 in 1 sink strainer",
+        "silver sink strainer",
+        "3.5 inch sink strainer",
+        "US standard sink strainer"
+      ],
+      "confidence": 0.95,
+      "evidence": [
+        "Known category is 'Sink Strainers'",
+        "Product title clearly describes a sink drain strainer and stopper",
+        "Fits US standard 3-1/2'' sink hole, typical for kitchen sinks",
+        "Anti-clogging basket feature matches sink strainer use case"
+      ]
+    },
+    "attributes": [
+      {
+        "name": "Color",
+        "value": "Silver",
+        "source": "product_title",
+        "confidence": 0.98
+      },
+      {
+        "name": "Material",
+        "value": "Stainless Steel",
+        "source": "inference_from_type_and_color",
+        "confidence": 0.85
+      },
+      {
+        "name": "Size",
+        "value": "3.5 inch",
+        "source": "product_title",
+        "confidence": 0.97
+      },
+      {
+        "name": "Item Shape",
+        "value": "Round",
+        "source": "inference_from_type",
+        "confidence": 0.95
+      },
+      {
+        "name": "Features",
+        "value": "Anti-clogging basket, 3-in-1 function",
+        "source": "product_title",
+        "confidence": 0.9
+      }
+    ],
+    "risks": [],
+    "confidence": 0.95,
+    "ruleEngine": {
+      "passed": true,
+      "blockedBy": [],
+      "allowedForEditPage": true,
+      "notes": "Adapter output only; local Rule Engine is authoritative before edit-page use."
+    }
+  },
+  "ruleEngine": {
+    "passed": true,
+    "errors": [],
+    "warnings": [],
+    "allowedForEditPage": true,
+    "normalized": {
+      "asin": "B0D65JFRX4",
+      "productType": "Sink Strainer",
+      "primaryUse": "Drain strainer and stopper for kitchen sinks",
+      "recommendedCategory": {
+        "name": "Sink Strainers",
+        "path": "Home & Kitchen > Kitchen & Dining > Kitchen Utensils & Gadgets > Strainers > Sink Strainers",
+        "searchTerms": [
+          "sink strainer",
+          "kitchen sink strainer",
+          "drain strainer",
+          "anti-clogging sink strainer",
+          "sink stopper",
+          "kitchen drain strainer",
+          "3 in 1 sink strainer",
+          "silver sink strainer",
+          "3.5 inch sink strainer",
+          "US standard sink strainer"
+        ],
+        "confidence": 0.95,
+        "evidence": [
+          "Known category is 'Sink Strainers'",
+          "Product title clearly describes a sink drain strainer and stopper",
+          "Fits US standard 3-1/2'' sink hole, typical for kitchen sinks",
+          "Anti-clogging basket feature matches sink strainer use case"
+        ]
+      },
+      "attributes": [
+        {
+          "name": "Color",
+          "value": "Silver",
+          "source": "product_title",
+          "confidence": 0.98
+        },
+        {
+          "name": "Material",
+          "value": "Stainless Steel",
+          "source": "inference_from_type_and_color",
+          "confidence": 0.85
+        },
+        {
+          "name": "Size",
+          "value": "3.5 inch",
+          "source": "product_title",
+          "confidence": 0.97
+        },
+        {
+          "name": "Item Shape",
+          "value": "Round",
+          "source": "inference_from_type",
+          "confidence": 0.95
+        },
+        {
+          "name": "Features",
+          "value": "Anti-clogging basket, 3-in-1 function",
+          "source": "product_title",
+          "confidence": 0.9
+        }
+      ],
+      "risks": [],
+      "confidence": 0.95,
+      "allowedForEditPage": true
+    }
+  }
+}

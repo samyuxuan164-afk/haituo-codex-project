@@ -1,0 +1,1 @@
+{"action":"evaluate","args":{"code":"(async () => { const r = await window.__DXM_AUTOMATION_V1_READONLY_PREFLIGHT__(); return JSON.stringify(r); })()"},"session":"dxm-validation-third-product"}

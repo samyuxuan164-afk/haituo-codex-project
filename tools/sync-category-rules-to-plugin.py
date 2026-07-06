@@ -20,10 +20,14 @@ def clean_rule(rule: dict[str, Any]) -> dict[str, Any]:
     return {
         "id": rule.get("id") or f"category-{rule.get('categoryId', '')}",
         "status": rule.get("status", "candidate"),
+        "type": rule.get("type", ""),
+        "scope": rule.get("scope", ""),
         "categoryId": str(rule.get("categoryId") or ""),
         "categoryPath": rule.get("categoryPath", ""),
         "match": rule.get("match") or {},
         "defaults": rule.get("defaults") or {},
+        "visibleCategorySearchTerms": rule.get("visibleCategorySearchTerms") or [],
+        "principles": rule.get("principles") or [],
         "evidence": rule.get("evidence") or [],
     }
 
@@ -44,7 +48,11 @@ def main() -> int:
     plugin_path = (root / args.plugin).resolve()
 
     rules_doc = load_json(rules_path)
-    rules = [clean_rule(rule) for rule in rules_doc.get("rules", []) if rule.get("categoryId")]
+    rules = [
+        clean_rule(rule)
+        for rule in rules_doc.get("rules", [])
+        if rule.get("status") == "active" and (rule.get("categoryId") or rule.get("visibleCategorySearchTerms"))
+    ]
     if not rules:
       raise SystemExit(f"No category rules found in {rules_path}")
 
@@ -53,7 +61,7 @@ def main() -> int:
     updated, count = PLUGIN_RULES_RE.subn(replacement, plugin)
     if count != 1:
         raise SystemExit("Could not find CATEGORY_RESOLVER_RULES block in plugin")
-    plugin_path.write_text(updated, encoding="utf-8", newline="")
+    plugin_path.write_text(updated, encoding="utf-8")
     print(f"Synced {len(rules)} category rule(s) into {plugin_path}")
     return 0
 

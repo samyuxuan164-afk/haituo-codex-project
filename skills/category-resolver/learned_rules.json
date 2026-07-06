@@ -64,21 +64,44 @@
     {
       "id": "bumpers-200291142",
       "status": "active",
+      "type": "categoryMapping",
+      "scope": "cabinet-door-furniture-bumper-pads-only",
       "categoryId": "200291142",
-      "categoryPath": "Home Improvement > Hardware > Furniture Hardware > Cabinet Bumpers",
+      "categoryPath": "家装（硬装）(Home Improvement)/五金(Hardware)/家具五金(Furniture Hardware)/柜门消音垫(Cabinet Bumpers)",
       "match": {
         "anyTitleTerms": [
           "bumper",
           "bumpers",
           "rubber bumper",
           "cabinet bumper",
+          "cabinet bumpers",
+          "cabinet door bumper",
+          "cabinet door bumpers",
+          "clear cabinet door bumpers",
+          "self-adhesive silicone pads",
+          "sound-dampening protectors",
           "door stopper",
           "furniture pad",
-          "self adhesive bumper"
+          "furniture pads",
+          "self adhesive bumper",
+          "self adhesive bumpers"
         ],
         "anySourceCategoryTerms": [
           "cabinet bumpers",
-          "rubber bumpers"
+          "rubber bumpers",
+          "furniture hardware",
+          "hardware"
+        ],
+        "negativeTitleTerms": [
+          "car bumper",
+          "bumper case",
+          "phone bumper",
+          "baby bumper",
+          "crib bumper",
+          "wall hook",
+          "coat hook",
+          "sink strainer",
+          "soap dish"
         ]
       },
       "defaults": {
@@ -109,8 +132,440 @@
           }
         ]
       },
+      "visibleCategorySearchTerms": [
+        "Cabinet Bumpers",
+        "柜门消音垫",
+        "Furniture Hardware",
+        "家具五金",
+        "Hardware"
+      ],
       "evidence": [
-        "analysis/save-json-3/choiceSave.pretty.json"
+        "analysis/save-json-3/choiceSave.pretty.json",
+        "2026-06-30 recovery: DXM visible category modal found 家装（硬装） > 五金 > 家具五金 > 柜门消音垫(Cabinet Bumpers) for B0GDRKKWRC"
+      ],
+      "principles": [
+        "For self-adhesive silicone/rubber pads used on cabinet doors, drawers, furniture, walls, or door handles, prefer Cabinet Bumpers under Home Improvement > Hardware > Furniture Hardware.",
+        "Do not use broad furniture pads if the exact Cabinet Bumpers leaf is visible.",
+        "Do not mix cabinet bumpers with wall hooks, automotive bumpers, phone bumpers, or sink/bathroom products."
+      ]
+    },
+    {
+      "id": "portable-soap-dishes-visible-dxm",
+      "status": "active",
+      "type": "categoryMapping",
+      "scope": "bathroom-portable-soap-dish-only",
+      "categoryId": "",
+      "categoryPath": "家居用品(Home & Garden)/家居日用品(Home Products)/浴室用品(Bathroom Products)/便携肥皂盒（非安装，非金属）(Portable Soap Dishes)",
+      "match": {
+        "anyTitleTerms": [
+          "soap dish",
+          "soap dishes",
+          "soap holder",
+          "soap tray",
+          "soap saver",
+          "self draining soap dish",
+          "self draining sink organizer tray",
+          "silicone soap dish",
+          "portable soap dish",
+          "便携肥皂盒",
+          "肥皂盒"
+        ],
+        "anySourceCategoryTerms": [
+          "soap dishes",
+          "bathroom products",
+          "bathroom accessories"
+        ],
+        "negativeTitleTerms": [
+          "soap dispenser",
+          "liquid soap",
+          "bath basket",
+          "bathroom accessories set",
+          "soap box"
+        ]
+      },
+      "visibleCategorySearchTerms": [
+        "浴室",
+        "Bathroom Products",
+        "Soap Dish",
+        "Portable Soap Dishes",
+        "便携肥皂盒"
+      ],
+      "evidence": [
+        "2026-06-30 live DXM v1.1.85 sample B0BPS66NC3 saved with category 便携肥皂盒（非安装，非金属）(Portable Soap Dishes)",
+        "2026-06-30 20-category batch: B0DYZQHGM5 saved to wait-to-publish with category 便携肥皂盒（非安装，非金属）(Portable Soap Dishes), CNY 64.99, stock 15"
+      ],
+      "principles": [
+        "For non-mounted non-metal soap dishes and self-draining soap trays, prefer Portable Soap Dishes.",
+        "Do not use Soap Box, Bath Baskets, or broad Bathroom Accessories Sets for this product family."
+      ]
+    },
+    {
+      "id": "drawer-organizer-storage-boxes-visible-dxm",
+      "status": "active",
+      "type": "categoryMapping",
+      "scope": "desk-drawer-storage-trays-only",
+      "categoryId": "",
+      "categoryPath": "家居用品(Home & Garden)/家用储存收藏用具(Home Storage & Organization)/收纳盒和收纳箱(Storage Boxes & Bins)",
+      "match": {
+        "anyTitleTerms": [
+          "desk drawer organizer",
+          "drawer organizer tray",
+          "drawer organizer",
+          "desk organizer with drawers",
+          "office drawer organizer",
+          "stationery organizer tray",
+          "makeup drawer organizer",
+          "抽屉收纳盒",
+          "桌面收纳",
+          "收纳盒"
+        ],
+        "anySourceCategoryTerms": [
+          "storage boxes",
+          "storage bins",
+          "home storage",
+          "drawer organizer"
+        ],
+        "negativeTitleTerms": [
+          "pen holder",
+          "cable organizer",
+          "soap dish",
+          "sink strainer",
+          "wall hook"
+        ]
+      },
+      "visibleCategorySearchTerms": [
+        "Storage Boxes & Bins",
+        "收纳盒和收纳箱",
+        "Home Storage & Organization",
+        "Storage Boxes",
+        "收纳盒",
+        "Drawer Organizers",
+        "Home Storage"
+      ],
+      "evidence": [
+        "2026-06-30 20-category recovery: B0DQ3X91R7 verified as desk/drawer organizer storage; DXM visible category selected 收纳盒和收纳箱(Storage Boxes & Bins)."
+      ],
+      "principles": [
+        "For desk/drawer organizer trays used for office, stationery, makeup, or home storage, prefer Storage Boxes & Bins when no more specific visible office category exists.",
+        "Search the exact leaf text Storage Boxes & Bins / 收纳盒和收纳箱 before broad 收纳盒, because broad 收纳盒 can incorrectly hit 电池收纳盒(Battery Storage Boxes).",
+        "Do not map pen cups, cable organizers, soap dishes, sink strainers, wall hooks, or battery storage boxes into this category."
+      ]
+    },
+    {
+      "id": "qtip-makeup-organizers-visible-dxm",
+      "status": "active",
+      "type": "categoryMapping",
+      "scope": "cotton-swab-bathroom-vanity-organizer-only",
+      "categoryId": "",
+      "categoryPath": "家居用品(Home & Garden)/家用储存收藏用具(Home Storage & Organization)/浴室收纳(非五金材质，非打孔安装）(Bathroom Storage & Organization)/化妆品收纳盒(Makeup Organizers)",
+      "match": {
+        "anyTitleTerms": [
+          "qtip holder",
+          "q-tip holder",
+          "cotton swab holder",
+          "cotton swab dispenser",
+          "cotton balls pads floss picks",
+          "bathroom vanity organizer",
+          "makeup storage organizer",
+          "apothecary jar",
+          "棉签盒",
+          "化妆品收纳盒"
+        ],
+        "anySourceCategoryTerms": [
+          "makeup organizers",
+          "bathroom storage",
+          "home storage"
+        ],
+        "negativeTitleTerms": [
+          "kitchen utensil holder",
+          "paper towel holder",
+          "toothbrush holder",
+          "shower caddy",
+          "drawer organizer tray"
+        ]
+      },
+      "visibleCategorySearchTerms": [
+        "化妆品收纳盒",
+        "Makeup Organizers",
+        "Bathroom Storage & Organization",
+        "棉签盒",
+        "Bathroom Storage",
+        "Vanity Organizer"
+      ],
+      "evidence": [
+        "2026-06-30 20-category recovery: B08PB79YXV verified as cotton-swab/bathroom vanity makeup organizer; DXM visible category selected 化妆品收纳盒(Makeup Organizers).",
+        "2026-07-01 Feature screenshot review: B08PB79YXV Feature dropdown exposed 无BPA塑料(Bpa-free plastic), 多用途(Multiple Uses), 可调节尺寸(Adjustable Size), and 其他(Other). BPA-free plastic is a good first choice only with explicit BPA-free evidence, and Other is a legal fallback if it commits; do not block on Feature solely to chase a better label.",
+        "2026-07-01 recovery closeout: B08PB79YXV was saved to wait-to-publish after real coordinate double-click category writeback and native-required Use=其他(others), Feature=其他(Other) repair. Offline readback showed 采集箱(0), 第1-26条，共 26 条记录."
+      ],
+      "principles": [
+        "For acrylic cotton swab, cotton ball, floss pick, and vanity jar organizers, prefer Makeup Organizers under Bathroom Storage & Organization.",
+        "Search 化妆品收纳盒 / Makeup Organizers before 棉签盒 when selecting DXM visible categories, because 棉签盒 may return no exact visible category even when Makeup Organizers exists.",
+        "For required Feature, prefer a clearly evidenced visible option, but 其他(Other) is acceptable when it commits; do not choose 无BPA塑料(Bpa-free plastic) without explicit BPA-free evidence and do not choose 可调节尺寸(Adjustable Size) for fixed-size jars.",
+        "If the category result row is visible but DOM click does not write back, use real coordinate double-click on the exact Makeup Organizers row and verify the main form category before saving.",
+        "Native save may expose Use and Feature even after script preflight passes; repair named fields with real dropdown options and selected-label readback before saving again.",
+        "Do not map kitchen, paper towel, toothbrush, shower, or generic drawer organizers into this category."
+      ]
+    },
+    {
+      "id": "silicone-trivet-placemats-adjacent-dxm",
+      "status": "active",
+      "type": "categoryMapping",
+      "scope": "silicone-trivet-pot-holder-hot-pad-only",
+      "categoryId": "",
+      "categoryPath": "家居用品(Home & Garden)/家纺成品(Home Textile)/餐桌布艺(Table Linen)/餐垫(Placemats)",
+      "match": {
+        "anyTitleTerms": [
+          "silicone pot holder",
+          "silicone pot holders",
+          "pot holder",
+          "pot holders",
+          "hot pad",
+          "hot pads",
+          "trivet",
+          "trivets",
+          "silicone trivet",
+          "silicone trivet mat",
+          "heat resistant mat",
+          "heat resistant pads",
+          "kitchen trivet",
+          "jar opener",
+          "spoon rest",
+          "隔热垫",
+          "锅垫",
+          "防烫垫",
+          "餐垫"
+        ],
+        "anySourceCategoryTerms": [
+          "pot holders",
+          "trivets",
+          "hot pads",
+          "kitchen mats",
+          "placemats",
+          "table linen"
+        ],
+        "negativeTitleTerms": [
+          "teapot",
+          "tea pot",
+          "coaster set",
+          "cup coaster",
+          "placemat set",
+          "tablecloth",
+          "oven mitt",
+          "glove",
+          "tea warmer"
+        ]
+      },
+      "visibleCategorySearchTerms": [
+        "餐垫",
+        "Placemats",
+        "Table Linen",
+        "Home Textile",
+        "家纺成品"
+      ],
+      "evidence": [
+        "2026-07-01 recovery: B0DFPHVNHG AliExpress evidence showed silicone heat-resistant trivet mat / pot holder / hot pad family; DXM exact searches 隔热垫, 锅垫, Pot Holders did not expose a safe exact leaf, while 餐垫(Placemats) was visible as a safe adjacent table-linen category.",
+        "2026-07-01 live execution: B0DFPHVNHG saved to wait-to-publish with DXM category 餐垫(Placemats), CNY 72.26, stock 15. Native required fields were repaired as Theme=其他(Other), Product application scenarios=厨房(Kitchen)+餐桌用(Dining table), Material=其他 (自行填写)(Other)."
+      ],
+      "principles": [
+        "AliExpress evidence only constrains the product family; Dianxiaomi does not need the exact same leaf text when no exact Pot Holders/Trivets category is visible.",
+        "For flat silicone heat-resistant pot holders, hot pads, and trivets, use the safe adjacent Placemats category when exact 隔热垫/锅垫/Pot Holders/Trivets searches are unavailable in Dianxiaomi.",
+        "Prefer 餐垫(Placemats) over 杯垫(Coaster) or 茶壶底座(Teapot Trivets) unless the product is clearly cup-only or teapot-only."
+      ]
+    },
+    {
+      "id": "coat-hooks-visible-dxm",
+      "status": "active",
+      "type": "categoryMapping",
+      "scope": "adhesive-wall-heavy-duty-hooks-only",
+      "categoryId": "",
+      "categoryPath": "家居用品(Home & Garden)/家用储存收藏用具(Home Storage & Organization)/钩子和导轨(Hooks & Rails)/衣帽挂钩(Coat Hooks)",
+      "match": {
+        "anyTitleTerms": [
+          "coat hook",
+          "coat hooks",
+          "wall hook",
+          "wall hooks",
+          "adhesive hook",
+          "adhesive hooks",
+          "heavy duty hook",
+          "heavy duty hooks",
+          "hooks for hanging",
+          "wall hangers without nails",
+          "衣帽挂钩",
+          "挂钩"
+        ],
+        "anySourceCategoryTerms": [
+          "hooks",
+          "hooks & rails",
+          "home storage"
+        ],
+        "negativeTitleTerms": [
+          "cable",
+          "wire",
+          "fishing hook",
+          "carabiner",
+          "faucet"
+        ]
+      },
+      "visibleCategorySearchTerms": [
+        "挂钩",
+        "Hooks",
+        "Coat Hooks",
+        "Wall Hooks",
+        "Hooks & Rails"
+      ],
+      "evidence": [
+        "2026-06-30 remaining batch: B09PFW8WRQ saved to wait-to-publish with category 衣帽挂钩(Coat Hooks)",
+        "2026-06-30 20-category batch: B0FWKSDJZ5 saved to wait-to-publish with category 衣帽挂钩(Coat Hooks), CNY 64.99, stock 15"
+      ],
+      "principles": [
+        "For adhesive heavy-duty wall hooks or no-nail wall hangers, prefer Coat Hooks under Hooks & Rails.",
+        "Do not mix wall hooks with cable organizers or faucet hardware."
+      ]
+    },
+    {
+      "id": "cable-organizers-visible-dxm",
+      "status": "active",
+      "type": "categoryMapping",
+      "scope": "desktop-office-adhesive-cable-holder-only",
+      "categoryId": "",
+      "categoryPath": "办公、文化及教育用品(Office & School Supplies)/桌上收纳用品(Desk Accessories & Organizer)/桌面理线器(Cable Organizers)",
+      "match": {
+        "anyTitleTerms": [
+          "cable holder",
+          "cable holders",
+          "cord holder",
+          "cord holders",
+          "wire holder",
+          "wire holders",
+          "cable clip",
+          "cable clips",
+          "wire clip",
+          "wire clips",
+          "cord organizer",
+          "cord organizers",
+          "cable organizer",
+          "cable organizers",
+          "wire management",
+          "cord management",
+          "desk cable organizer",
+          "adhesive cable clips",
+          "self adhesive cable clips",
+          "桌面理线器",
+          "理线器",
+          "理线夹",
+          "线夹"
+        ],
+        "anySourceCategoryTerms": [
+          "cable management",
+          "desk accessories",
+          "office supplies"
+        ],
+        "negativeTitleTerms": [
+          "conductive",
+          "glue paste",
+          "conductive wire glue",
+          "electrical cable tool",
+          "wire crimping",
+          "network cabling tool",
+          "导电线胶膏",
+          "线缆工具"
+        ]
+      },
+      "visibleCategorySearchTerms": [
+        "办公",
+        "Office & School Supplies",
+        "Desk Accessories",
+        "Cable Organizers",
+        "桌面理线器"
+      ],
+      "evidence": [
+        "2026-06-30 live DXM edit recovery for B0CNSYPZBQ selected 桌面理线器(Cable Organizers) and saved to wait-to-publish",
+        "runs/category-resolver/20260630-remaining3-poc/B0CNSYPZBQ.resolver.json"
+      ],
+      "principles": [
+        "For adhesive cable clips used on desks, nightstands, offices, mouse/charger cables, prefer Desk Accessories > Cable Organizers.",
+        "Do not use Cable Tools when the product is a passive adhesive desk cable holder rather than a tool.",
+        "Do not use Conductive Wire Glue Pastes for physical cable clips."
+      ]
+    },
+    {
+      "id": "kitchen-drains-strainers-200231151",
+      "status": "active",
+      "type": "categoryMapping",
+      "scope": "kitchen-sink-drain-strainer-only",
+      "categoryId": "200231151",
+      "categoryPath": "家装（硬装）(Home Improvement)/厨房设施(Kitchen Fixture)/厨房水槽配件(Kitchen Sink Accessories)/厨房水槽水漏、过滤网(Kitchen Drains & Strainers)",
+      "match": {
+        "anyTitleTerms": [
+          "sink strainer",
+          "sink strainers",
+          "kitchen sink strainer",
+          "sink drain strainer",
+          "drain strainer",
+          "drain basket",
+          "sink stopper",
+          "sink drain stopper",
+          "sink filter",
+          "水槽滤网",
+          "水槽过滤",
+          "水槽下水"
+        ],
+        "anySourceCategoryTerms": [
+          "kitchen sink accessories",
+          "drains & strainers",
+          "kitchen drains & strainers"
+        ],
+        "negativeTitleTerms": [
+          "faucet",
+          "sprayer",
+          "pump",
+          "commercial kitchen appliance",
+          "electric appliance",
+          "soap dish"
+        ]
+      },
+      "defaults": {
+        "productPropertyListJson": [
+          {
+            "attr_name_id": "2",
+            "attr_name": "Brand Name",
+            "attr_value_id": "201512802",
+            "attr_value": "NONE",
+            "attr_value_unit": null,
+            "attr_value_start": null,
+            "attr_value_end": null
+          },
+          {
+            "attr_name_id": "400000603",
+            "attr_name": "High-concerned chemical",
+            "attr_value_id": "23399591357",
+            "attr_value": "天然未处理(None)"
+          },
+          {
+            "attr_name_id": "219",
+            "attr_name": "Origin",
+            "attr_value_id": "9442295690",
+            "attr_value": "美国(Origin)(US(Origin))",
+            "attr_value_unit": null,
+            "attr_value_start": null,
+            "attr_value_end": null
+          }
+        ]
+      },
+      "visibleCategorySearchTerms": [
+        "水槽",
+        "Sink",
+        "Drain",
+        "Strainer",
+        "厨房水槽水漏、过滤网",
+        "Kitchen Drains & Strainers"
+      ],
+      "evidence": [
+        "runs/category-resolver/20260630-remaining3-poc/B0D65JFRX4.resolver.json",
+        "runs/category-resolver/20260630-remaining3-poc/summary.md",
+        "runs/op1-20260624-011902/20260624-011902-50169732817/dry-run-report.json",
+        "2026-06-30 20-category batch: B0B4QZD77M saved to wait-to-publish with category 厨房水槽水漏、过滤网(Kitchen Drains & Strainers), CNY 63.91, stock 15"
       ]
     }
   ]

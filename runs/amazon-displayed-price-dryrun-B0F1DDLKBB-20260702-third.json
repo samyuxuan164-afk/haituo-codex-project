@@ -1,0 +1,160 @@
+{
+  "ok": true,
+  "dryRun": true,
+  "exceptionDryRun": true,
+  "storePath": "/Users/sam/Documents/电商上架项目/自动上架/dianxiaomi-automation-v1/runs/amazon-price-store.json",
+  "queuePath": "/Users/sam/Documents/电商上架项目/自动上架/dianxiaomi-automation-v1/runs/exception-queue.json",
+  "batch": {
+    "totalInput": 1,
+    "selected": 1,
+    "startIndex": 0,
+    "limit": null
+  },
+  "rows": [
+    {
+      "asin": "B0F1DDLKBB",
+      "ok": true,
+      "amazonDisplayedPriceUsd": 19.99,
+      "expectedCnyPrice": 216.89,
+      "priceWritten": false,
+      "exceptionWritten": 0,
+      "exceptionPreviewed": 0,
+      "reason": "",
+      "selectedSelector": "#corePriceDisplay_desktop_feature_div",
+      "href": "https://www.amazon.com/dp/B0F1DDLKBB?th=1",
+      "title": "Amazon.com: Stylstoreazy 2 Pack Stackable Storage for Kitchen Laundry Pantry Organizers,Trash Bag Holder with Bamboo Top,Wall Mount Garbage Bag Dispenser,Black Large and Small: Home & Kitchen"
+    }
+  ],
+  "summary": {
+    "total": 1,
+    "captured": 1,
+    "failed": 0,
+    "priceWritten": 0,
+    "exceptionWritten": 0,
+    "exceptionPreviewed": 0
+  },
+  "details": [
+    {
+      "asin": "B0F1DDLKBB",
+      "result": {
+        "ok": true,
+        "dryRun": true,
+        "capture": {
+          "ok": true,
+          "asin": "B0F1DDLKBB",
+          "url": "https://www.amazon.com/dp/B0F1DDLKBB",
+          "href": "https://www.amazon.com/dp/B0F1DDLKBB?th=1",
+          "title": "Amazon.com: Stylstoreazy 2 Pack Stackable Storage for Kitchen Laundry Pantry Organizers,Trash Bag Holder with Bamboo Top,Wall Mount Garbage Bag Dispenser,Black Large and Small: Home & Kitchen",
+          "selectedSelector": "#corePriceDisplay_desktop_feature_div",
+          "selectedText": "-5% | 18. | $19.99 | $18.99 with 5 percent savings -5% $18 . 99 List Price: $19.99 List Price: $19.99 $19.99",
+          "captcha": false,
+          "unavailable": false,
+          "price": {
+            "ok": true,
+            "amazonDisplayedPriceUsd": 19.99,
+            "reason": "",
+            "candidates": [
+              {
+                "type": "single",
+                "source": "symbol",
+                "raw": "$19.99",
+                "values": [
+                  19.99
+                ],
+                "selected": 19.99
+              },
+              {
+                "type": "single",
+                "source": "symbol",
+                "raw": "$18.99",
+                "values": [
+                  18.99
+                ],
+                "selected": 18.99
+              },
+              {
+                "type": "single",
+                "source": "symbol",
+                "raw": "$18",
+                "values": [
+                  18
+                ],
+                "selected": 18
+              },
+              {
+                "type": "single",
+                "source": "symbol",
+                "raw": "$19.99",
+                "values": [
+                  19.99
+                ],
+                "selected": 19.99
+              },
+              {
+                "type": "single",
+                "source": "symbol",
+                "raw": "$19.99",
+                "values": [
+                  19.99
+                ],
+                "selected": 19.99
+              },
+              {
+                "type": "single",
+                "source": "symbol",
+                "raw": "$19.99",
+                "values": [
+                  19.99
+                ],
+                "selected": 19.99
+              }
+            ],
+            "rule": "single_displayed_price",
+            "sourceText": "-5% | 18. | $19.99 | $18.99 with 5 percent savings -5% $18 . 99 List Price: $19.99 List Price: $19.99 $19.99"
+          },
+          "page": {
+            "ok": true,
+            "url": "https://www.amazon.com/dp/B0F1DDLKBB",
+            "page": {
+              "success": true,
+              "url": "https://www.amazon.com/dp/B0F1DDLKBB",
+              "tabId": 1541975608
+            }
+          }
+        },
+        "record": {
+          "asin": "B0F1DDLKBB",
+          "amazonDisplayedPriceUsd": 19.99,
+          "currency": "USD",
+          "source": "amazon_product_page",
+          "status": "trusted",
+          "reason": "",
+          "amazonUrl": "https://www.amazon.com/dp/B0F1DDLKBB",
+          "evidenceUrl": "https://www.amazon.com/dp/B0F1DDLKBB?th=1",
+          "title": "Amazon.com: Stylstoreazy 2 Pack Stackable Storage for Kitchen Laundry Pantry Organizers,Trash Bag Holder with Bamboo Top,Wall Mount Garbage Bag Dispenser,Black Large and Small: Home & Kitchen",
+          "priceRange": {
+            "min": null,
+            "max": null
+          },
+          "capture": {
+            "rule": "single_displayed_price",
+            "selectedSelector": "#corePriceDisplay_desktop_feature_div",
+            "capturedAt": "2026-07-02T04:23:45.924Z"
+          },
+          "amazonOriginalPriceUsd": 19.99,
+          "updatedAt": "2026-07-02T04:23:45.925Z",
+          "createdAt": "2026-07-02T04:23:45.925Z"
+        },
+        "written": null,
+        "exceptionWrites": {
+          "dryRun": true,
+          "rows": []
+        }
+      }
+    }
+  ],
+  "safety": [
+    "Readonly Amazon browser navigation/evaluation only.",
+    "No Dianxiaomi action, save, publish, one-click publish, Product Development draft handling, cart, order, chat, or form submit."
+  ]
+}

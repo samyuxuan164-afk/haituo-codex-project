@@ -145,3 +145,14 @@ runs/**/*token*
 
 # backups
 .gitignore.bak.*
+
+# macOS
+.DS_Store
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Node dependencies
+node_modules/
+

@@ -1,0 +1,8 @@
+{
+  "schemaVersion": "aliexpress-evidence-thresholds-v1",
+  "highConfidenceTopShare": 0.8,
+  "directPassTopShare": 0.5,
+  "semanticConsensusTitleRatio": 0.6,
+  "detailEvidencePages": 2,
+  "maxDetailEvidencePages": 5
+}

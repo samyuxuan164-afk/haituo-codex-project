@@ -1,0 +1,34 @@
+{
+  "asin": "B0CNSYPZBQ",
+  "productId": "167487782007026945",
+  "source": "aliexpress-search-result-structured-data",
+  "query": "adhesive cable clips cord organizer",
+  "targetPlatform": "AliExpress",
+  "resultCount": 20,
+  "postCategoryIdCounts": {
+    "201206404": 7,
+    "14191201": 6,
+    "201334803": 3,
+    "200001603": 2,
+    "14191206": 2
+  },
+  "recommended": {
+    "postCategoryId": null,
+    "confidence": 0.52,
+    "status": "category_id_split_low_medium_confidence",
+    "semanticFamily": "adhesive-cable-clips",
+    "allowEnterDxmEditPageForCategoryValidation": false,
+    "allowAutoSave": false
+  },
+  "evidenceTitles": [
+    "Cable fixing clips 3-Pack Cable management cable organiser clips Silicone self-adhesive Suitable for desktop USB charging cables",
+    "Adhesive Wire Organizer Cable Holder Cord Management Harness Clamp Clip For Home PC Power USB Cable Wiring Desktop Cord Manager",
+    "20/50Pcs Adjustable Cable Management Clips Adhesive Sticky Wire Clips Cord Holder For TV PC Cable Under Desk Wall Home Office",
+    "10/50Pcs Self Adhesive Cable Clips Cord Management Wire Holder Organizer Clamp Desk Tidy Cable Manager in Car Home Office Clips"
+  ],
+  "blockedWrongCategories": [
+    "导电线胶膏(Conductive Wire Glue Pastes)",
+    "线缆工具(Cable Tools)"
+  ],
+  "nextAction": "Do not auto-save. Needs stricter similarity ranking or detail/category mapping before Dianxiaomi execution."
+}

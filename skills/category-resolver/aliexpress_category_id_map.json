@@ -1,0 +1,55 @@
+{
+  "skill": "category-resolver",
+  "version": "0.1.0",
+  "source": "AliExpress search-result structured data postCategoryId",
+  "mappings": [
+    {
+      "postCategoryId": "200231151",
+      "status": "dxm_visible_path_validated",
+      "semanticFamily": "kitchen-sink-strainer",
+      "evidence": "B0D65JFRX4 PoC: 11/20 top AliExpress search results for sink drain strainer share this postCategoryId.",
+      "candidateSearchTerms": [
+        "Sink Strainer",
+        "Kitchen Sink Strainer",
+        "Sink Drain Strainer",
+        "Drain Basket",
+        "水槽滤网",
+        "水槽过滤器",
+        "水槽下水器",
+        "厨房水槽过滤"
+      ],
+      "dxmVisibleCategoryPath": "家装（硬装）(Home Improvement)/厨房设施(Kitchen Fixture)/厨房水槽配件(Kitchen Sink Accessories)/厨房水槽水漏、过滤网(Kitchen Drains & Strainers)",
+      "dxmValidation": {
+        "date": "2026-06-30",
+        "method": "Dianxiaomi edit-page category modal read-only search",
+        "matchedSearchTerms": [
+          "水槽",
+          "过滤",
+          "滤网",
+          "Sink",
+          "Drain",
+          "Strainer"
+        ],
+        "saved": false,
+        "published": false
+      },
+      "allowAutoSave": false,
+      "nextGate": "Connect only to category selection first; auto-save still requires edit-page preflight pass."
+    },
+    {
+      "postCategoryId": "211114",
+      "status": "directionally_mapped_by_existing_dxm_validation",
+      "semanticFamily": "desk-pen-holder",
+      "evidence": "B0C9ZHWC9K PoC: 8/20 top AliExpress search results share this postCategoryId; Dianxiaomi edit page already resolves to 笔筒(Pen Holders).",
+      "candidateSearchTerms": [
+        "Pen Holders",
+        "Pencil Holders",
+        "Desk Pen Holder",
+        "笔筒"
+      ],
+      "dxmVisibleCategoryPath": "办公、文化及教育用品(Office & School Supplies)/桌上收纳用品(Desk Accessories & Organizer)/笔筒(Pen Holders)",
+      "allowAutoSave": false,
+      "remainingBlocker": "Material required attribute visibility/readback"
+    }
+  ]
+}

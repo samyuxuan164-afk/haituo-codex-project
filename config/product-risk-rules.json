@@ -1,0 +1,387 @@
+{
+  "schemaVersion": "product-risk-rules-v1",
+  "updatedAt": "2026-07-02T00:00:00.000Z",
+  "defaultFields": [
+    "title",
+    "brand",
+    "bullets",
+    "description",
+    "imageAlt",
+    "imageNotes",
+    "category",
+    "sourceUrl"
+  ],
+  "rules": [
+    {
+      "id": "brand-logo-trademark-text",
+      "category": "brand_logo_or_infringement_risk",
+      "severity": "review",
+      "fields": [
+        "title",
+        "brand",
+        "bullets",
+        "description",
+        "imageAlt",
+        "imageNotes"
+      ],
+      "terms": [
+        "logo",
+        "brand logo",
+        "trademark",
+        "branded",
+        "officially licensed",
+        "licensed product",
+        "copyright",
+        "patent",
+        "watermark",
+        "商标",
+        "品牌",
+        "授权",
+        "正版",
+        "水印"
+      ],
+      "reason": "Product text or visual notes mention logo, trademark, licensing, or brand packaging.",
+      "nextAction": "manual_visual_logo_review"
+    },
+    {
+      "id": "high-risk-ip-brand",
+      "category": "brand_logo_or_infringement_risk",
+      "severity": "blocker",
+      "fields": [
+        "title",
+        "brand",
+        "bullets",
+        "description",
+        "imageAlt",
+        "imageNotes"
+      ],
+      "terms": [
+        "disney",
+        "mickey",
+        "marvel",
+        "star wars",
+        "pokemon",
+        "hello kitty",
+        "sanrio",
+        "lego",
+        "barbie",
+        "harry potter",
+        "nintendo",
+        "nike",
+        "adidas",
+        "apple",
+        "iphone",
+        "ipad",
+        "airpods",
+        "ps5",
+        "xbox"
+      ],
+      "reason": "Known IP/platform/brand term appears in product evidence.",
+      "nextAction": "skip_or_manual_risk_review"
+    },
+    {
+      "id": "food-ingestible",
+      "category": "food_or_ingestible_risk",
+      "severity": "blocker",
+      "fields": [
+        "title",
+        "bullets",
+        "description",
+        "category"
+      ],
+      "terms": [
+        "edible",
+        "snack",
+        "candy",
+        "chocolate",
+        "tea",
+        "coffee",
+        "spice",
+        "seasoning",
+        "vitamin",
+        "supplement",
+        "gummy",
+        "gummies",
+        "protein powder",
+        "pet food",
+        "食品",
+        "可食用",
+        "糖果",
+        "茶",
+        "咖啡",
+        "调味",
+        "维生素",
+        "保健品",
+        "宠物食品"
+      ],
+      "reason": "Food, ingestible, supplement, or pet-food product is excluded.",
+      "nextAction": "skip_product"
+    },
+    {
+      "id": "liquid-cream-gel-cosmetic",
+      "category": "liquid_cosmetic_or_chemical_risk",
+      "severity": "blocker",
+      "fields": [
+        "title",
+        "bullets",
+        "description",
+        "category"
+      ],
+      "terms": [
+        "liquid",
+        "cream",
+        "gel",
+        "soap",
+        "cosmetic",
+        "skincare",
+        "makeup",
+        "nail polish",
+        "fertilizer",
+        "chemical",
+        "fuel",
+        "seed",
+        "pesticide",
+        "液体",
+        "膏",
+        "霜",
+        "凝胶",
+        "肥皂",
+        "香皂",
+        "化妆品",
+        "护肤",
+        "指甲油",
+        "化学品",
+        "肥料",
+        "燃料",
+        "种子"
+      ],
+      "reason": "Liquid, cream, cosmetic, chemical, fertilizer, fuel, or seed product is excluded.",
+      "nextAction": "skip_product"
+    },
+    {
+      "id": "medical-health-claim",
+      "category": "medical_or_health_claim_risk",
+      "severity": "blocker",
+      "fields": [
+        "title",
+        "bullets",
+        "description",
+        "category"
+      ],
+      "terms": [
+        "medical",
+        "medicine",
+        "drug",
+        "therapeutic",
+        "treatment",
+        "pain relief",
+        "diagnostic",
+        "blood pressure",
+        "glucose",
+        "orthopedic",
+        "health supplement",
+        "医疗",
+        "药品",
+        "治疗",
+        "止痛",
+        "诊断",
+        "血压",
+        "血糖",
+        "骨科",
+        "保健功效"
+      ],
+      "reason": "Medical, drug, treatment, diagnostic, or health-claim product is excluded.",
+      "nextAction": "skip_product"
+    },
+    {
+      "id": "children-baby-toy",
+      "category": "children_or_toy_risk",
+      "severity": "blocker",
+      "fields": [
+        "title",
+        "bullets",
+        "description",
+        "category"
+      ],
+      "terms": [
+        "baby",
+        "toddler",
+        "infant",
+        "kids",
+        "children",
+        "child",
+        "toy",
+        "nursery",
+        "maternity",
+        "baby food",
+        "母婴",
+        "婴儿",
+        "儿童",
+        "孩子",
+        "玩具",
+        "幼儿",
+        "孕妇"
+      ],
+      "reason": "Baby, children, maternity, or toy product is excluded.",
+      "nextAction": "skip_product"
+    },
+    {
+      "id": "battery-electric-powered",
+      "category": "battery_or_electric_risk",
+      "severity": "blocker",
+      "fields": [
+        "title",
+        "bullets",
+        "description",
+        "category"
+      ],
+      "terms": [
+        "battery",
+        "batteries",
+        "rechargeable",
+        "lithium",
+        "electric",
+        "electrical",
+        "powered",
+        "usb",
+        "charger",
+        "charging",
+        "led light",
+        "smart plug",
+        "voltage",
+        "电池",
+        "锂电",
+        "充电",
+        "电动",
+        "电器",
+        "带电",
+        "电压",
+        "充电器"
+      ],
+      "reason": "Battery, powered, electric, charging, or strong-certification product is excluded.",
+      "nextAction": "skip_product"
+    },
+    {
+      "id": "weapon-dangerous-tool",
+      "category": "weapon_or_hazardous_material_risk",
+      "severity": "blocker",
+      "fields": [
+        "title",
+        "bullets",
+        "description",
+        "category"
+      ],
+      "terms": [
+        "knife",
+        "knives",
+        "blade",
+        "cutter",
+        "weapon",
+        "tactical",
+        "self defense",
+        "flammable",
+        "explosive",
+        "hazardous",
+        "刀",
+        "刀具",
+        "刀片",
+        "武器",
+        "自卫",
+        "易燃",
+        "爆炸",
+        "危险品"
+      ],
+      "reason": "Knife, weapon, dangerous tool, flammable, explosive, or hazardous product is excluded.",
+      "nextAction": "skip_product"
+    },
+    {
+      "id": "adult-sensitive",
+      "category": "adult_or_sensitive_risk",
+      "severity": "blocker",
+      "fields": [
+        "title",
+        "bullets",
+        "description",
+        "category"
+      ],
+      "terms": [
+        "adult",
+        "sex",
+        "sexy",
+        "lingerie",
+        "erotic",
+        "成人",
+        "情趣",
+        "性感",
+        "内衣"
+      ],
+      "reason": "Adult or sensitive product is excluded.",
+      "nextAction": "skip_product"
+    },
+    {
+      "id": "fragile-glass",
+      "category": "fragile_or_glass_risk",
+      "severity": "review",
+      "fields": [
+        "title",
+        "bullets",
+        "description",
+        "category"
+      ],
+      "terms": [
+        "glass",
+        "fragile",
+        "ceramic",
+        "porcelain",
+        "mirror",
+        "玻璃",
+        "易碎",
+        "陶瓷",
+        "瓷",
+        "镜子"
+      ],
+      "reason": "Fragile/glass product should be reviewed before it enters the listing flow.",
+      "nextAction": "manual_risk_review"
+    },
+    {
+      "id": "apparel-clothing",
+      "category": "apparel_or_wearable_risk",
+      "severity": "blocker",
+      "fields": [
+        "title",
+        "bullets",
+        "description",
+        "category"
+      ],
+      "terms": [
+        "clothing",
+        "apparel",
+        "shirt",
+        "dress",
+        "pants",
+        "underwear",
+        "socks",
+        "shoes",
+        "wearable",
+        "服装",
+        "衣服",
+        "裙",
+        "裤",
+        "内衣",
+        "袜",
+        "鞋"
+      ],
+      "reason": "Clothing/apparel/wearable product is excluded from the current generic flow.",
+      "nextAction": "skip_product"
+    }
+  ],
+  "heuristics": {
+    "brandFieldPresent": {
+      "enabled": true,
+      "category": "brand_logo_or_infringement_risk",
+      "severity": "review",
+      "reason": "Amazon brand/byline text is present and must be cleaned or visually checked before listing.",
+      "nextAction": "manual_brand_cleanup_or_logo_review"
+    }
+  }
+}

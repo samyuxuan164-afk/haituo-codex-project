@@ -1,0 +1,2953 @@
+{
+  "ok": true,
+  "schemaVersion": "dxm-batch-pipeline-report-v1",
+  "generatedAt": "2026-07-02T04:03:39.687Z",
+  "command": "plan",
+  "dryRun": false,
+  "safety": {
+    "businessActions": false,
+    "browserActions": false,
+    "writesManifestReport": true,
+    "writesExceptionQueue": false,
+    "writesPriceStore": false
+  },
+  "inputs": {
+    "inputPath": "/Users/sam/Documents/电商上架项目/自动上架/dianxiaomi-automation-v1/runs/validation-100-first-batch-candidates-20260701.json",
+    "jsonSupplied": false,
+    "asinList": "",
+    "asinFile": "",
+    "exchangeRate": "7",
+    "multiplier": "1.55",
+    "expectedStock": "15",
+    "expectedOrigin": "United States",
+    "expectedFreightTemplate": "111",
+    "expectedCategory": "",
+    "priceStorePath": "/Users/sam/Documents/电商上架项目/自动上架/dianxiaomi-automation-v1/runs/amazon-price-store.json",
+    "evidenceStorePath": "/Users/sam/Documents/电商上架项目/自动上架/dianxiaomi-automation-v1/runs/aliexpress-evidence-store.json",
+    "queuePath": "/Users/sam/Documents/电商上架项目/自动上架/dianxiaomi-automation-v1/runs/exception-queue.json",
+    "riskRulesPath": "/Users/sam/Documents/电商上架项目/自动上架/dianxiaomi-automation-v1/config/product-risk-rules.json"
+  },
+  "candidateManifest": {
+    "schemaVersion": "dxm-candidate-manifest-v1",
+    "generatedAt": "2026-07-02T04:03:39.686Z",
+    "source": {
+      "inputPath": "/Users/sam/Documents/电商上架项目/自动上架/dianxiaomi-automation-v1/runs/validation-100-first-batch-candidates-20260701.json",
+      "asinFile": "",
+      "priceStorePath": "/Users/sam/Documents/电商上架项目/自动上架/dianxiaomi-automation-v1/runs/amazon-price-store.json",
+      "evidenceStorePath": "/Users/sam/Documents/电商上架项目/自动上架/dianxiaomi-automation-v1/runs/aliexpress-evidence-store.json",
+      "queuePath": "/Users/sam/Documents/电商上架项目/自动上架/dianxiaomi-automation-v1/runs/exception-queue.json",
+      "riskRulesPath": "/Users/sam/Documents/电商上架项目/自动上架/dianxiaomi-automation-v1/config/product-risk-rules.json"
+    },
+    "summary": {
+      "total": 10,
+      "autoReady": 0,
+      "blockedOrNeedsWork": 10,
+      "byRoutingStatus": {
+        "price_missing_or_invalid": 8,
+        "category_evidence_not_ready": 2
+      },
+      "byNextAction": {
+        "recover_trusted_amazon_displayed_usd_price": 8,
+        "run_aliexpress_category_verification_or_import_confirmed_evidence": 2
+      },
+      "sourceSummaries": {
+        "price": {
+          "total": 10,
+          "trusted": 0,
+          "missing": 10,
+          "outOfRange": 0,
+          "needsReview": 0,
+          "formulaOk": 0,
+          "blockers": 10
+        },
+        "evidence": {
+          "total": 10,
+          "verified": 0,
+          "missing": 10,
+          "blockers": 10
+        },
+        "risk": {
+          "total": 10,
+          "allow": 10,
+          "needsReview": 0,
+          "blocked": 0,
+          "byStatus": {
+            "allow": 10
+          },
+          "byCategory": {},
+          "exceptionPreviewed": 0,
+          "exceptionWritten": 0
+        },
+        "exceptions": {
+          "totalAsins": 10,
+          "clear": 10,
+          "blocked": 0,
+          "controlRetryable": 0,
+          "needsReview": 0,
+          "openExceptions": 0,
+          "allIncludedExceptions": 0,
+          "byStatus": {
+            "clear": 10
+          },
+          "byReason": {},
+          "byCategory": {},
+          "bySeverity": {},
+          "byNextAction": {}
+        }
+      }
+    },
+    "records": {
+      "B0CZ7F61XN": {
+        "asin": "B0CZ7F61XN",
+        "productFamily": "",
+        "amazon": {
+          "title": "",
+          "url": "https://www.amazon.com/dp/B0CZ7F61XN",
+          "displayedPriceUsd": null,
+          "brand": "",
+          "bullets": "",
+          "description": "",
+          "imageAlt": "",
+          "imageNotes": ""
+        },
+        "target": {
+          "businessLicenseGroup": "A1",
+          "store": "Halo Home Store",
+          "platform": "速卖通海外托管"
+        },
+        "expected": {
+          "exchangeRate": 7,
+          "multiplier": 1.55,
+          "cnyPrice": null,
+          "stock": "15",
+          "origin": "United States",
+          "freightTemplate": "111",
+          "safeAdjacentAllowed": false
+        },
+        "lifecycle": {
+          "collectionStatus": "collected",
+          "claimStatus": "claimed",
+          "editStatus": "",
+          "waitPublishStatus": "",
+          "finalStatus": "not_started"
+        },
+        "notes": "First validation batch ASIN from runs/validation-100-live-execution-20260701-claim-blocked.md; claimed into 速卖通海外托管采集箱, pending local pipeline plan.",
+        "source": {
+          "raw": {
+            "ASIN": "B0CZ7F61XN",
+            "Amazon URL": "https://www.amazon.com/dp/B0CZ7F61XN",
+            "店铺": "Halo Home Store",
+            "targetStore": "Halo Home Store",
+            "businessLicenseGroup": "A1",
+            "platform": "速卖通海外托管",
+            "采集状态": "collected",
+            "认领状态": "claimed",
+            "类目证据状态": "formal_store_missing",
+            "预判分流状态": "claimed_pending_pipeline_plan",
+            "expectedOrigin": "United States",
+            "expectedFreightTemplate": "111",
+            "expectedStock": "15",
+            "finalStatus": "not_started",
+            "备注": "First validation batch ASIN from runs/validation-100-live-execution-20260701-claim-blocked.md; claimed into 速卖通海外托管采集箱, pending local pipeline plan."
+          }
+        },
+        "gates": {
+          "precheckRoutingStatus": "price_missing_or_invalid",
+          "autoReady": false,
+          "nextAction": "recover_trusted_amazon_displayed_usd_price",
+          "blockers": [
+            "amazon_displayed_price_missing",
+            "category_evidence_missing"
+          ],
+          "risk": {
+            "asin": "B0CZ7F61XN",
+            "status": "allow",
+            "riskLevel": "allow",
+            "pass": true,
+            "nextAction": "allow_collect",
+            "blockers": [],
+            "reviews": [],
+            "matchedRules": [],
+            "normalized": {
+              "asin": "B0CZ7F61XN",
+              "title": "",
+              "brand": "",
+              "category": "",
+              "sourceUrl": "https://www.amazon.com/dp/B0CZ7F61XN"
+            }
+          },
+          "price": {
+            "asin": "B0CZ7F61XN",
+            "status": "missing",
+            "trusted": false,
+            "amazonDisplayedPriceUsd": null,
+            "amazonOriginalPriceUsd": null,
+            "currency": "USD",
+            "source": "",
+            "expectedCnyPrice": "",
+            "formulaOk": false,
+            "reason": "amazon_displayed_price_missing",
+            "updatedAt": ""
+          },
+          "evidence": {
+            "asin": "B0CZ7F61XN",
+            "status": "missing",
+            "verified": false,
+            "aliexpressCategoryId": "",
+            "dxmCandidateCategory": "",
+            "reason": "No evidence record in store.",
+            "updatedAt": ""
+          },
+          "exception": {
+            "asin": "B0CZ7F61XN",
+            "status": "clear",
+            "openCount": 0,
+            "totalCount": 0,
+            "primaryReason": "",
+            "primaryCategory": "",
+            "severity": "",
+            "retryable": false,
+            "nextAction": "no_open_exception",
+            "reasons": []
+          }
+        }
+      },
+      "B0DZ14L38Y": {
+        "asin": "B0DZ14L38Y",
+        "productFamily": "",
+        "amazon": {
+          "title": "",
+          "url": "https://www.amazon.com/dp/B0DZ14L38Y",
+          "displayedPriceUsd": null,
+          "brand": "",
+          "bullets": "",
+          "description": "",
+          "imageAlt": "",
+          "imageNotes": ""
+        },
+        "target": {
+          "businessLicenseGroup": "A1",
+          "store": "Halo Home Store",
+          "platform": "速卖通海外托管"
+        },
+        "expected": {
+          "exchangeRate": 7,
+          "multiplier": 1.55,
+          "cnyPrice": null,
+          "stock": "15",
+          "origin": "United States",
+          "freightTemplate": "111",
+          "safeAdjacentAllowed": false
+        },
+        "lifecycle": {
+          "collectionStatus": "collected",
+          "claimStatus": "claimed",
+          "editStatus": "",
+          "waitPublishStatus": "",
+          "finalStatus": "not_started"
+        },
+        "notes": "First validation batch ASIN from runs/validation-100-live-execution-20260701-claim-blocked.md; claimed into 速卖通海外托管采集箱, pending local pipeline plan.",
+        "source": {
+          "raw": {
+            "ASIN": "B0DZ14L38Y",
+            "Amazon URL": "https://www.amazon.com/dp/B0DZ14L38Y",
+            "店铺": "Halo Home Store",
+            "targetStore": "Halo Home Store",
+            "businessLicenseGroup": "A1",
+            "platform": "速卖通海外托管",
+            "采集状态": "collected",
+            "认领状态": "claimed",
+            "类目证据状态": "formal_store_missing",
+            "预判分流状态": "claimed_pending_pipeline_plan",
+            "expectedOrigin": "United States",
+            "expectedFreightTemplate": "111",
+            "expectedStock": "15",
+            "finalStatus": "not_started",
+            "备注": "First validation batch ASIN from runs/validation-100-live-execution-20260701-claim-blocked.md; claimed into 速卖通海外托管采集箱, pending local pipeline plan."
+          }
+        },
+        "gates": {
+          "precheckRoutingStatus": "price_missing_or_invalid",
+          "autoReady": false,
+          "nextAction": "recover_trusted_amazon_displayed_usd_price",
+          "blockers": [
+            "amazon_displayed_price_missing",
+            "category_evidence_missing"
+          ],
+          "risk": {
+            "asin": "B0DZ14L38Y",
+            "status": "allow",
+            "riskLevel": "allow",
+            "pass": true,
+            "nextAction": "allow_collect",
+            "blockers": [],
+            "reviews": [],
+            "matchedRules": [],
+            "normalized": {
+              "asin": "B0DZ14L38Y",
+              "title": "",
+              "brand": "",
+              "category": "",
+              "sourceUrl": "https://www.amazon.com/dp/B0DZ14L38Y"
+            }
+          },
+          "price": {
+            "asin": "B0DZ14L38Y",
+            "status": "missing",
+            "trusted": false,
+            "amazonDisplayedPriceUsd": null,
+            "amazonOriginalPriceUsd": null,
+            "currency": "USD",
+            "source": "",
+            "expectedCnyPrice": "",
+            "formulaOk": false,
+            "reason": "amazon_displayed_price_missing",
+            "updatedAt": ""
+          },
+          "evidence": {
+            "asin": "B0DZ14L38Y",
+            "status": "missing",
+            "verified": false,
+            "aliexpressCategoryId": "",
+            "dxmCandidateCategory": "",
+            "reason": "No evidence record in store.",
+            "updatedAt": ""
+          },
+          "exception": {
+            "asin": "B0DZ14L38Y",
+            "status": "clear",
+            "openCount": 0,
+            "totalCount": 0,
+            "primaryReason": "",
+            "primaryCategory": "",
+            "severity": "",
+            "retryable": false,
+            "nextAction": "no_open_exception",
+            "reasons": []
+          }
+        }
+      },
+      "B0DXFB86J7": {
+        "asin": "B0DXFB86J7",
+        "productFamily": "",
+        "amazon": {
+          "title": "",
+          "url": "https://www.amazon.com/dp/B0DXFB86J7",
+          "displayedPriceUsd": null,
+          "brand": "",
+          "bullets": "",
+          "description": "",
+          "imageAlt": "",
+          "imageNotes": ""
+        },
+        "target": {
+          "businessLicenseGroup": "A1",
+          "store": "Halo Home Store",
+          "platform": "速卖通海外托管"
+        },
+        "expected": {
+          "exchangeRate": 7,
+          "multiplier": 1.55,
+          "cnyPrice": null,
+          "stock": "15",
+          "origin": "United States",
+          "freightTemplate": "111",
+          "safeAdjacentAllowed": false
+        },
+        "lifecycle": {
+          "collectionStatus": "collected",
+          "claimStatus": "claimed",
+          "editStatus": "",
+          "waitPublishStatus": "",
+          "finalStatus": "not_started"
+        },
+        "notes": "First validation batch ASIN from runs/validation-100-live-execution-20260701-claim-blocked.md; claimed into 速卖通海外托管采集箱, pending local pipeline plan.",
+        "source": {
+          "raw": {
+            "ASIN": "B0DXFB86J7",
+            "Amazon URL": "https://www.amazon.com/dp/B0DXFB86J7",
+            "店铺": "Halo Home Store",
+            "targetStore": "Halo Home Store",
+            "businessLicenseGroup": "A1",
+            "platform": "速卖通海外托管",
+            "采集状态": "collected",
+            "认领状态": "claimed",
+            "类目证据状态": "formal_store_missing",
+            "预判分流状态": "claimed_pending_pipeline_plan",
+            "expectedOrigin": "United States",
+            "expectedFreightTemplate": "111",
+            "expectedStock": "15",
+            "finalStatus": "not_started",
+            "备注": "First validation batch ASIN from runs/validation-100-live-execution-20260701-claim-blocked.md; claimed into 速卖通海外托管采集箱, pending local pipeline plan."
+          }
+        },
+        "gates": {
+          "precheckRoutingStatus": "price_missing_or_invalid",
+          "autoReady": false,
+          "nextAction": "recover_trusted_amazon_displayed_usd_price",
+          "blockers": [
+            "amazon_displayed_price_missing",
+            "category_evidence_missing"
+          ],
+          "risk": {
+            "asin": "B0DXFB86J7",
+            "status": "allow",
+            "riskLevel": "allow",
+            "pass": true,
+            "nextAction": "allow_collect",
+            "blockers": [],
+            "reviews": [],
+            "matchedRules": [],
+            "normalized": {
+              "asin": "B0DXFB86J7",
+              "title": "",
+              "brand": "",
+              "category": "",
+              "sourceUrl": "https://www.amazon.com/dp/B0DXFB86J7"
+            }
+          },
+          "price": {
+            "asin": "B0DXFB86J7",
+            "status": "missing",
+            "trusted": false,
+            "amazonDisplayedPriceUsd": null,
+            "amazonOriginalPriceUsd": null,
+            "currency": "USD",
+            "source": "",
+            "expectedCnyPrice": "",
+            "formulaOk": false,
+            "reason": "amazon_displayed_price_missing",
+            "updatedAt": ""
+          },
+          "evidence": {
+            "asin": "B0DXFB86J7",
+            "status": "missing",
+            "verified": false,
+            "aliexpressCategoryId": "",
+            "dxmCandidateCategory": "",
+            "reason": "No evidence record in store.",
+            "updatedAt": ""
+          },
+          "exception": {
+            "asin": "B0DXFB86J7",
+            "status": "clear",
+            "openCount": 0,
+            "totalCount": 0,
+            "primaryReason": "",
+            "primaryCategory": "",
+            "severity": "",
+            "retryable": false,
+            "nextAction": "no_open_exception",
+            "reasons": []
+          }
+        }
+      },
+      "B0DPSJP47V": {
+        "asin": "B0DPSJP47V",
+        "productFamily": "",
+        "amazon": {
+          "title": "",
+          "url": "https://www.amazon.com/dp/B0DPSJP47V",
+          "displayedPriceUsd": null,
+          "brand": "",
+          "bullets": "",
+          "description": "",
+          "imageAlt": "",
+          "imageNotes": ""
+        },
+        "target": {
+          "businessLicenseGroup": "A1",
+          "store": "Halo Home Store",
+          "platform": "速卖通海外托管"
+        },
+        "expected": {
+          "exchangeRate": 7,
+          "multiplier": 1.55,
+          "cnyPrice": null,
+          "stock": "15",
+          "origin": "United States",
+          "freightTemplate": "111",
+          "safeAdjacentAllowed": false
+        },
+        "lifecycle": {
+          "collectionStatus": "collected",
+          "claimStatus": "claimed",
+          "editStatus": "",
+          "waitPublishStatus": "",
+          "finalStatus": "not_started"
+        },
+        "notes": "First validation batch ASIN from runs/validation-100-live-execution-20260701-claim-blocked.md; claimed into 速卖通海外托管采集箱, pending local pipeline plan.",
+        "source": {
+          "raw": {
+            "ASIN": "B0DPSJP47V",
+            "Amazon URL": "https://www.amazon.com/dp/B0DPSJP47V",
+            "店铺": "Halo Home Store",
+            "targetStore": "Halo Home Store",
+            "businessLicenseGroup": "A1",
+            "platform": "速卖通海外托管",
+            "采集状态": "collected",
+            "认领状态": "claimed",
+            "类目证据状态": "formal_store_missing",
+            "预判分流状态": "claimed_pending_pipeline_plan",
+            "expectedOrigin": "United States",
+            "expectedFreightTemplate": "111",
+            "expectedStock": "15",
+            "finalStatus": "not_started",
+            "备注": "First validation batch ASIN from runs/validation-100-live-execution-20260701-claim-blocked.md; claimed into 速卖通海外托管采集箱, pending local pipeline plan."
+          }
+        },
+        "gates": {
+          "precheckRoutingStatus": "price_missing_or_invalid",
+          "autoReady": false,
+          "nextAction": "recover_trusted_amazon_displayed_usd_price",
+          "blockers": [
+            "amazon_displayed_price_missing",
+            "category_evidence_missing"
+          ],
+          "risk": {
+            "asin": "B0DPSJP47V",
+            "status": "allow",
+            "riskLevel": "allow",
+            "pass": true,
+            "nextAction": "allow_collect",
+            "blockers": [],
+            "reviews": [],
+            "matchedRules": [],
+            "normalized": {
+              "asin": "B0DPSJP47V",
+              "title": "",
+              "brand": "",
+              "category": "",
+              "sourceUrl": "https://www.amazon.com/dp/B0DPSJP47V"
+            }
+          },
+          "price": {
+            "asin": "B0DPSJP47V",
+            "status": "missing",
+            "trusted": false,
+            "amazonDisplayedPriceUsd": null,
+            "amazonOriginalPriceUsd": null,
+            "currency": "USD",
+            "source": "",
+            "expectedCnyPrice": "",
+            "formulaOk": false,
+            "reason": "amazon_displayed_price_missing",
+            "updatedAt": ""
+          },
+          "evidence": {
+            "asin": "B0DPSJP47V",
+            "status": "missing",
+            "verified": false,
+            "aliexpressCategoryId": "",
+            "dxmCandidateCategory": "",
+            "reason": "No evidence record in store.",
+            "updatedAt": ""
+          },
+          "exception": {
+            "asin": "B0DPSJP47V",
+            "status": "clear",
+            "openCount": 0,
+            "totalCount": 0,
+            "primaryReason": "",
+            "primaryCategory": "",
+            "severity": "",
+            "retryable": false,
+            "nextAction": "no_open_exception",
+            "reasons": []
+          }
+        }
+      },
+      "B0F1DDLKBB": {
+        "asin": "B0F1DDLKBB",
+        "productFamily": "",
+        "amazon": {
+          "title": "",
+          "url": "https://www.amazon.com/dp/B0F1DDLKBB",
+          "displayedPriceUsd": null,
+          "brand": "",
+          "bullets": "",
+          "description": "",
+          "imageAlt": "",
+          "imageNotes": ""
+        },
+        "target": {
+          "businessLicenseGroup": "A1",
+          "store": "Halo Home Store",
+          "platform": "速卖通海外托管"
+        },
+        "expected": {
+          "exchangeRate": 7,
+          "multiplier": 1.55,
+          "cnyPrice": null,
+          "stock": "15",
+          "origin": "United States",
+          "freightTemplate": "111",
+          "safeAdjacentAllowed": false
+        },
+        "lifecycle": {
+          "collectionStatus": "collected",
+          "claimStatus": "claimed",
+          "editStatus": "",
+          "waitPublishStatus": "",
+          "finalStatus": "not_started"
+        },
+        "notes": "First validation batch ASIN from runs/validation-100-live-execution-20260701-claim-blocked.md; claimed into 速卖通海外托管采集箱, pending local pipeline plan.",
+        "source": {
+          "raw": {
+            "ASIN": "B0F1DDLKBB",
+            "Amazon URL": "https://www.amazon.com/dp/B0F1DDLKBB",
+            "店铺": "Halo Home Store",
+            "targetStore": "Halo Home Store",
+            "businessLicenseGroup": "A1",
+            "platform": "速卖通海外托管",
+            "采集状态": "collected",
+            "认领状态": "claimed",
+            "类目证据状态": "formal_store_missing",
+            "预判分流状态": "claimed_pending_pipeline_plan",
+            "expectedOrigin": "United States",
+            "expectedFreightTemplate": "111",
+            "expectedStock": "15",
+            "finalStatus": "not_started",
+            "备注": "First validation batch ASIN from runs/validation-100-live-execution-20260701-claim-blocked.md; claimed into 速卖通海外托管采集箱, pending local pipeline plan."
+          }
+        },
+        "gates": {
+          "precheckRoutingStatus": "price_missing_or_invalid",
+          "autoReady": false,
+          "nextAction": "recover_trusted_amazon_displayed_usd_price",
+          "blockers": [
+            "amazon_displayed_price_missing",
+            "category_evidence_missing"
+          ],
+          "risk": {
+            "asin": "B0F1DDLKBB",
+            "status": "allow",
+            "riskLevel": "allow",
+            "pass": true,
+            "nextAction": "allow_collect",
+            "blockers": [],
+            "reviews": [],
+            "matchedRules": [],
+            "normalized": {
+              "asin": "B0F1DDLKBB",
+              "title": "",
+              "brand": "",
+              "category": "",
+              "sourceUrl": "https://www.amazon.com/dp/B0F1DDLKBB"
+            }
+          },
+          "price": {
+            "asin": "B0F1DDLKBB",
+            "status": "missing",
+            "trusted": false,
+            "amazonDisplayedPriceUsd": null,
+            "amazonOriginalPriceUsd": null,
+            "currency": "USD",
+            "source": "",
+            "expectedCnyPrice": "",
+            "formulaOk": false,
+            "reason": "amazon_displayed_price_missing",
+            "updatedAt": ""
+          },
+          "evidence": {
+            "asin": "B0F1DDLKBB",
+            "status": "missing",
+            "verified": false,
+            "aliexpressCategoryId": "",
+            "dxmCandidateCategory": "",
+            "reason": "No evidence record in store.",
+            "updatedAt": ""
+          },
+          "exception": {
+            "asin": "B0F1DDLKBB",
+            "status": "clear",
+            "openCount": 0,
+            "totalCount": 0,
+            "primaryReason": "",
+            "primaryCategory": "",
+            "severity": "",
+            "retryable": false,
+            "nextAction": "no_open_exception",
+            "reasons": []
+          }
+        }
+      },
+      "B0CTBQCKL9": {
+        "asin": "B0CTBQCKL9",
+        "productFamily": "",
+        "amazon": {
+          "title": "",
+          "url": "https://www.amazon.com/dp/B0CTBQCKL9",
+          "displayedPriceUsd": null,
+          "brand": "",
+          "bullets": "",
+          "description": "",
+          "imageAlt": "",
+          "imageNotes": ""
+        },
+        "target": {
+          "businessLicenseGroup": "A1",
+          "store": "Halo Home Store",
+          "platform": "速卖通海外托管"
+        },
+        "expected": {
+          "exchangeRate": 7,
+          "multiplier": 1.55,
+          "cnyPrice": null,
+          "stock": "15",
+          "origin": "United States",
+          "freightTemplate": "111",
+          "safeAdjacentAllowed": false
+        },
+        "lifecycle": {
+          "collectionStatus": "collected",
+          "claimStatus": "claimed",
+          "editStatus": "",
+          "waitPublishStatus": "",
+          "finalStatus": "not_started"
+        },
+        "notes": "First validation batch ASIN from runs/validation-100-live-execution-20260701-claim-blocked.md; claimed into 速卖通海外托管采集箱, pending local pipeline plan.",
+        "source": {
+          "raw": {
+            "ASIN": "B0CTBQCKL9",
+            "Amazon URL": "https://www.amazon.com/dp/B0CTBQCKL9",
+            "店铺": "Halo Home Store",
+            "targetStore": "Halo Home Store",
+            "businessLicenseGroup": "A1",
+            "platform": "速卖通海外托管",
+            "采集状态": "collected",
+            "认领状态": "claimed",
+            "类目证据状态": "formal_store_missing",
+            "预判分流状态": "claimed_pending_pipeline_plan",
+            "expectedOrigin": "United States",
+            "expectedFreightTemplate": "111",
+            "expectedStock": "15",
+            "finalStatus": "not_started",
+            "备注": "First validation batch ASIN from runs/validation-100-live-execution-20260701-claim-blocked.md; claimed into 速卖通海外托管采集箱, pending local pipeline plan."
+          }
+        },
+        "gates": {
+          "precheckRoutingStatus": "price_missing_or_invalid",
+          "autoReady": false,
+          "nextAction": "recover_trusted_amazon_displayed_usd_price",
+          "blockers": [
+            "amazon_displayed_price_missing",
+            "category_evidence_missing"
+          ],
+          "risk": {
+            "asin": "B0CTBQCKL9",
+            "status": "allow",
+            "riskLevel": "allow",
+            "pass": true,
+            "nextAction": "allow_collect",
+            "blockers": [],
+            "reviews": [],
+            "matchedRules": [],
+            "normalized": {
+              "asin": "B0CTBQCKL9",
+              "title": "",
+              "brand": "",
+              "category": "",
+              "sourceUrl": "https://www.amazon.com/dp/B0CTBQCKL9"
+            }
+          },
+          "price": {
+            "asin": "B0CTBQCKL9",
+            "status": "missing",
+            "trusted": false,
+            "amazonDisplayedPriceUsd": null,
+            "amazonOriginalPriceUsd": null,
+            "currency": "USD",
+            "source": "",
+            "expectedCnyPrice": "",
+            "formulaOk": false,
+            "reason": "amazon_displayed_price_missing",
+            "updatedAt": ""
+          },
+          "evidence": {
+            "asin": "B0CTBQCKL9",
+            "status": "missing",
+            "verified": false,
+            "aliexpressCategoryId": "",
+            "dxmCandidateCategory": "",
+            "reason": "No evidence record in store.",
+            "updatedAt": ""
+          },
+          "exception": {
+            "asin": "B0CTBQCKL9",
+            "status": "clear",
+            "openCount": 0,
+            "totalCount": 0,
+            "primaryReason": "",
+            "primaryCategory": "",
+            "severity": "",
+            "retryable": false,
+            "nextAction": "no_open_exception",
+            "reasons": []
+          }
+        }
+      },
+      "B0FH7774VK": {
+        "asin": "B0FH7774VK",
+        "productFamily": "",
+        "amazon": {
+          "title": "",
+          "url": "https://www.amazon.com/dp/B0FH7774VK",
+          "displayedPriceUsd": null,
+          "brand": "",
+          "bullets": "",
+          "description": "",
+          "imageAlt": "",
+          "imageNotes": ""
+        },
+        "target": {
+          "businessLicenseGroup": "A1",
+          "store": "Halo Home Store",
+          "platform": "速卖通海外托管"
+        },
+        "expected": {
+          "exchangeRate": 7,
+          "multiplier": 1.55,
+          "cnyPrice": null,
+          "stock": "15",
+          "origin": "United States",
+          "freightTemplate": "111",
+          "safeAdjacentAllowed": false
+        },
+        "lifecycle": {
+          "collectionStatus": "collected",
+          "claimStatus": "claimed",
+          "editStatus": "",
+          "waitPublishStatus": "",
+          "finalStatus": "not_started"
+        },
+        "notes": "First validation batch ASIN from runs/validation-100-live-execution-20260701-claim-blocked.md; claimed into 速卖通海外托管采集箱, pending local pipeline plan.",
+        "source": {
+          "raw": {
+            "ASIN": "B0FH7774VK",
+            "Amazon URL": "https://www.amazon.com/dp/B0FH7774VK",
+            "店铺": "Halo Home Store",
+            "targetStore": "Halo Home Store",
+            "businessLicenseGroup": "A1",
+            "platform": "速卖通海外托管",
+            "采集状态": "collected",
+            "认领状态": "claimed",
+            "类目证据状态": "formal_store_missing",
+            "预判分流状态": "claimed_pending_pipeline_plan",
+            "expectedOrigin": "United States",
+            "expectedFreightTemplate": "111",
+            "expectedStock": "15",
+            "finalStatus": "not_started",
+            "备注": "First validation batch ASIN from runs/validation-100-live-execution-20260701-claim-blocked.md; claimed into 速卖通海外托管采集箱, pending local pipeline plan."
+          }
+        },
+        "gates": {
+          "precheckRoutingStatus": "price_missing_or_invalid",
+          "autoReady": false,
+          "nextAction": "recover_trusted_amazon_displayed_usd_price",
+          "blockers": [
+            "amazon_displayed_price_missing",
+            "category_evidence_missing"
+          ],
+          "risk": {
+            "asin": "B0FH7774VK",
+            "status": "allow",
+            "riskLevel": "allow",
+            "pass": true,
+            "nextAction": "allow_collect",
+            "blockers": [],
+            "reviews": [],
+            "matchedRules": [],
+            "normalized": {
+              "asin": "B0FH7774VK",
+              "title": "",
+              "brand": "",
+              "category": "",
+              "sourceUrl": "https://www.amazon.com/dp/B0FH7774VK"
+            }
+          },
+          "price": {
+            "asin": "B0FH7774VK",
+            "status": "missing",
+            "trusted": false,
+            "amazonDisplayedPriceUsd": null,
+            "amazonOriginalPriceUsd": null,
+            "currency": "USD",
+            "source": "",
+            "expectedCnyPrice": "",
+            "formulaOk": false,
+            "reason": "amazon_displayed_price_missing",
+            "updatedAt": ""
+          },
+          "evidence": {
+            "asin": "B0FH7774VK",
+            "status": "missing",
+            "verified": false,
+            "aliexpressCategoryId": "",
+            "dxmCandidateCategory": "",
+            "reason": "No evidence record in store.",
+            "updatedAt": ""
+          },
+          "exception": {
+            "asin": "B0FH7774VK",
+            "status": "clear",
+            "openCount": 0,
+            "totalCount": 0,
+            "primaryReason": "",
+            "primaryCategory": "",
+            "severity": "",
+            "retryable": false,
+            "nextAction": "no_open_exception",
+            "reasons": []
+          }
+        }
+      },
+      "B01E2EYG4U": {
+        "asin": "B01E2EYG4U",
+        "productFamily": "",
+        "amazon": {
+          "title": "",
+          "url": "https://www.amazon.com/dp/B01E2EYG4U",
+          "displayedPriceUsd": 19.96,
+          "brand": "",
+          "bullets": "",
+          "description": "",
+          "imageAlt": "",
+          "imageNotes": ""
+        },
+        "target": {
+          "businessLicenseGroup": "A1",
+          "store": "Halo Home Store",
+          "platform": "速卖通海外托管"
+        },
+        "expected": {
+          "exchangeRate": 7,
+          "multiplier": 1.55,
+          "cnyPrice": 216.57,
+          "stock": "15",
+          "origin": "United States",
+          "freightTemplate": "111",
+          "safeAdjacentAllowed": false
+        },
+        "lifecycle": {
+          "collectionStatus": "collected",
+          "claimStatus": "claimed",
+          "editStatus": "blocked_before_save",
+          "waitPublishStatus": "",
+          "finalStatus": "not_saved"
+        },
+        "notes": "Edit id 167487782009931667; Amazon displayed price readback 19.96; blocked before save by category evidence missing and visible price mismatch.",
+        "source": {
+          "raw": {
+            "ASIN": "B01E2EYG4U",
+            "Amazon 页面展示价格 USD": "19.96",
+            "Amazon URL": "https://www.amazon.com/dp/B01E2EYG4U",
+            "店铺": "Halo Home Store",
+            "targetStore": "Halo Home Store",
+            "businessLicenseGroup": "A1",
+            "platform": "速卖通海外托管",
+            "采集状态": "collected",
+            "认领状态": "claimed",
+            "编辑状态": "blocked_before_save",
+            "类目证据状态": "formal_store_missing",
+            "预判分流状态": "claimed_pending_pipeline_plan",
+            "expectedCnyPrice": "216.57",
+            "expectedOrigin": "United States",
+            "expectedFreightTemplate": "111",
+            "expectedStock": "15",
+            "finalStatus": "not_saved",
+            "备注": "Edit id 167487782009931667; Amazon displayed price readback 19.96; blocked before save by category evidence missing and visible price mismatch."
+          }
+        },
+        "gates": {
+          "precheckRoutingStatus": "category_evidence_not_ready",
+          "autoReady": false,
+          "nextAction": "run_aliexpress_category_verification_or_import_confirmed_evidence",
+          "blockers": [
+            "category_evidence_missing"
+          ],
+          "risk": {
+            "asin": "B01E2EYG4U",
+            "status": "allow",
+            "riskLevel": "allow",
+            "pass": true,
+            "nextAction": "allow_collect",
+            "blockers": [],
+            "reviews": [],
+            "matchedRules": [],
+            "normalized": {
+              "asin": "B01E2EYG4U",
+              "title": "",
+              "brand": "",
+              "category": "",
+              "sourceUrl": "https://www.amazon.com/dp/B01E2EYG4U"
+            }
+          },
+          "price": {
+            "asin": "B01E2EYG4U",
+            "status": "missing",
+            "trusted": false,
+            "amazonDisplayedPriceUsd": null,
+            "amazonOriginalPriceUsd": null,
+            "currency": "USD",
+            "source": "",
+            "expectedCnyPrice": "",
+            "formulaOk": false,
+            "reason": "amazon_displayed_price_missing",
+            "updatedAt": ""
+          },
+          "evidence": {
+            "asin": "B01E2EYG4U",
+            "status": "missing",
+            "verified": false,
+            "aliexpressCategoryId": "",
+            "dxmCandidateCategory": "",
+            "reason": "No evidence record in store.",
+            "updatedAt": ""
+          },
+          "exception": {
+            "asin": "B01E2EYG4U",
+            "status": "clear",
+            "openCount": 0,
+            "totalCount": 0,
+            "primaryReason": "",
+            "primaryCategory": "",
+            "severity": "",
+            "retryable": false,
+            "nextAction": "no_open_exception",
+            "reasons": []
+          }
+        }
+      },
+      "B0GFV4N3K8": {
+        "asin": "B0GFV4N3K8",
+        "productFamily": "",
+        "amazon": {
+          "title": "",
+          "url": "https://www.amazon.com/dp/B0GFV4N3K8",
+          "displayedPriceUsd": null,
+          "brand": "",
+          "bullets": "",
+          "description": "",
+          "imageAlt": "",
+          "imageNotes": ""
+        },
+        "target": {
+          "businessLicenseGroup": "A1",
+          "store": "Halo Home Store",
+          "platform": "速卖通海外托管"
+        },
+        "expected": {
+          "exchangeRate": 7,
+          "multiplier": 1.55,
+          "cnyPrice": null,
+          "stock": "15",
+          "origin": "United States",
+          "freightTemplate": "111",
+          "safeAdjacentAllowed": false
+        },
+        "lifecycle": {
+          "collectionStatus": "missing_current_unclaimed_row",
+          "claimStatus": "not_claimed",
+          "editStatus": "",
+          "waitPublishStatus": "",
+          "finalStatus": "skipped"
+        },
+        "notes": "Missing from current unclaimed rows during first validation batch; do not re-collect or re-claim without explicit authorization.",
+        "source": {
+          "raw": {
+            "ASIN": "B0GFV4N3K8",
+            "Amazon URL": "https://www.amazon.com/dp/B0GFV4N3K8",
+            "店铺": "Halo Home Store",
+            "targetStore": "Halo Home Store",
+            "businessLicenseGroup": "A1",
+            "platform": "速卖通海外托管",
+            "采集状态": "missing_current_unclaimed_row",
+            "认领状态": "not_claimed",
+            "类目证据状态": "formal_store_missing",
+            "预判分流状态": "collection_missing_current_unclaimed_row",
+            "expectedOrigin": "United States",
+            "expectedFreightTemplate": "111",
+            "expectedStock": "15",
+            "finalStatus": "skipped",
+            "备注": "Missing from current unclaimed rows during first validation batch; do not re-collect or re-claim without explicit authorization."
+          }
+        },
+        "gates": {
+          "precheckRoutingStatus": "price_missing_or_invalid",
+          "autoReady": false,
+          "nextAction": "recover_trusted_amazon_displayed_usd_price",
+          "blockers": [
+            "amazon_displayed_price_missing",
+            "category_evidence_missing"
+          ],
+          "risk": {
+            "asin": "B0GFV4N3K8",
+            "status": "allow",
+            "riskLevel": "allow",
+            "pass": true,
+            "nextAction": "allow_collect",
+            "blockers": [],
+            "reviews": [],
+            "matchedRules": [],
+            "normalized": {
+              "asin": "B0GFV4N3K8",
+              "title": "",
+              "brand": "",
+              "category": "",
+              "sourceUrl": "https://www.amazon.com/dp/B0GFV4N3K8"
+            }
+          },
+          "price": {
+            "asin": "B0GFV4N3K8",
+            "status": "missing",
+            "trusted": false,
+            "amazonDisplayedPriceUsd": null,
+            "amazonOriginalPriceUsd": null,
+            "currency": "USD",
+            "source": "",
+            "expectedCnyPrice": "",
+            "formulaOk": false,
+            "reason": "amazon_displayed_price_missing",
+            "updatedAt": ""
+          },
+          "evidence": {
+            "asin": "B0GFV4N3K8",
+            "status": "missing",
+            "verified": false,
+            "aliexpressCategoryId": "",
+            "dxmCandidateCategory": "",
+            "reason": "No evidence record in store.",
+            "updatedAt": ""
+          },
+          "exception": {
+            "asin": "B0GFV4N3K8",
+            "status": "clear",
+            "openCount": 0,
+            "totalCount": 0,
+            "primaryReason": "",
+            "primaryCategory": "",
+            "severity": "",
+            "retryable": false,
+            "nextAction": "no_open_exception",
+            "reasons": []
+          }
+        }
+      },
+      "B0C1JY1C7F": {
+        "asin": "B0C1JY1C7F",
+        "productFamily": "",
+        "amazon": {
+          "title": "",
+          "url": "https://www.amazon.com/dp/B0C1JY1C7F",
+          "displayedPriceUsd": 8.99,
+          "brand": "",
+          "bullets": "",
+          "description": "",
+          "imageAlt": "",
+          "imageNotes": ""
+        },
+        "target": {
+          "businessLicenseGroup": "A1",
+          "store": "Halo Home Store",
+          "platform": "速卖通海外托管"
+        },
+        "expected": {
+          "exchangeRate": 7,
+          "multiplier": 1.55,
+          "cnyPrice": 97.54,
+          "stock": "15",
+          "origin": "United States",
+          "freightTemplate": "111",
+          "safeAdjacentAllowed": false
+        },
+        "lifecycle": {
+          "collectionStatus": "collected",
+          "claimStatus": "claimed",
+          "editStatus": "blocked_before_save",
+          "waitPublishStatus": "",
+          "finalStatus": "not_saved"
+        },
+        "notes": "Edit id 167487782009931687; Amazon displayed price readback 8.99; blocked before save by category evidence missing and visible price mismatch.",
+        "source": {
+          "raw": {
+            "ASIN": "B0C1JY1C7F",
+            "Amazon 页面展示价格 USD": "8.99",
+            "Amazon URL": "https://www.amazon.com/dp/B0C1JY1C7F",
+            "店铺": "Halo Home Store",
+            "targetStore": "Halo Home Store",
+            "businessLicenseGroup": "A1",
+            "platform": "速卖通海外托管",
+            "采集状态": "collected",
+            "认领状态": "claimed",
+            "编辑状态": "blocked_before_save",
+            "类目证据状态": "formal_store_missing",
+            "预判分流状态": "claimed_pending_pipeline_plan",
+            "expectedCnyPrice": "97.54",
+            "expectedOrigin": "United States",
+            "expectedFreightTemplate": "111",
+            "expectedStock": "15",
+            "finalStatus": "not_saved",
+            "备注": "Edit id 167487782009931687; Amazon displayed price readback 8.99; blocked before save by category evidence missing and visible price mismatch."
+          }
+        },
+        "gates": {
+          "precheckRoutingStatus": "category_evidence_not_ready",
+          "autoReady": false,
+          "nextAction": "run_aliexpress_category_verification_or_import_confirmed_evidence",
+          "blockers": [
+            "category_evidence_missing"
+          ],
+          "risk": {
+            "asin": "B0C1JY1C7F",
+            "status": "allow",
+            "riskLevel": "allow",
+            "pass": true,
+            "nextAction": "allow_collect",
+            "blockers": [],
+            "reviews": [],
+            "matchedRules": [],
+            "normalized": {
+              "asin": "B0C1JY1C7F",
+              "title": "",
+              "brand": "",
+              "category": "",
+              "sourceUrl": "https://www.amazon.com/dp/B0C1JY1C7F"
+            }
+          },
+          "price": {
+            "asin": "B0C1JY1C7F",
+            "status": "missing",
+            "trusted": false,
+            "amazonDisplayedPriceUsd": null,
+            "amazonOriginalPriceUsd": null,
+            "currency": "USD",
+            "source": "",
+            "expectedCnyPrice": "",
+            "formulaOk": false,
+            "reason": "amazon_displayed_price_missing",
+            "updatedAt": ""
+          },
+          "evidence": {
+            "asin": "B0C1JY1C7F",
+            "status": "missing",
+            "verified": false,
+            "aliexpressCategoryId": "",
+            "dxmCandidateCategory": "",
+            "reason": "No evidence record in store.",
+            "updatedAt": ""
+          },
+          "exception": {
+            "asin": "B0C1JY1C7F",
+            "status": "clear",
+            "openCount": 0,
+            "totalCount": 0,
+            "primaryReason": "",
+            "primaryCategory": "",
+            "severity": "",
+            "retryable": false,
+            "nextAction": "no_open_exception",
+            "reasons": []
+          }
+        }
+      }
+    }
+  },
+  "localGate": {
+    "ok": true,
+    "rows": [
+      {
+        "asin": "B0CZ7F61XN",
+        "localReady": false,
+        "readyForEditPreflight": false,
+        "evidence": {
+          "asin": "B0CZ7F61XN",
+          "status": "missing",
+          "verified": false,
+          "aliexpressCategoryId": "",
+          "dxmCandidateCategory": "",
+          "reason": "No evidence record in store.",
+          "updatedAt": ""
+        },
+        "price": {
+          "asin": "B0CZ7F61XN",
+          "status": "missing",
+          "trusted": false,
+          "amazonDisplayedPriceUsd": null,
+          "amazonOriginalPriceUsd": null,
+          "currency": "USD",
+          "source": "",
+          "expectedCnyPrice": "",
+          "formulaOk": false,
+          "reason": "amazon_displayed_price_missing",
+          "updatedAt": ""
+        },
+        "risk": {
+          "asin": "B0CZ7F61XN",
+          "status": "allow",
+          "riskLevel": "allow",
+          "pass": true,
+          "nextAction": "allow_collect",
+          "blockers": [],
+          "reviews": [],
+          "matchedRules": [],
+          "normalized": {
+            "asin": "B0CZ7F61XN",
+            "title": "",
+            "brand": "",
+            "category": "",
+            "sourceUrl": "https://www.amazon.com/dp/B0CZ7F61XN"
+          }
+        },
+        "blockers": [
+          "category_evidence_missing",
+          "amazon_displayed_price_missing"
+        ],
+        "nextAction": "run_aliexpress_category_verification_or_import_confirmed_evidence"
+      },
+      {
+        "asin": "B0DZ14L38Y",
+        "localReady": false,
+        "readyForEditPreflight": false,
+        "evidence": {
+          "asin": "B0DZ14L38Y",
+          "status": "missing",
+          "verified": false,
+          "aliexpressCategoryId": "",
+          "dxmCandidateCategory": "",
+          "reason": "No evidence record in store.",
+          "updatedAt": ""
+        },
+        "price": {
+          "asin": "B0DZ14L38Y",
+          "status": "missing",
+          "trusted": false,
+          "amazonDisplayedPriceUsd": null,
+          "amazonOriginalPriceUsd": null,
+          "currency": "USD",
+          "source": "",
+          "expectedCnyPrice": "",
+          "formulaOk": false,
+          "reason": "amazon_displayed_price_missing",
+          "updatedAt": ""
+        },
+        "risk": {
+          "asin": "B0DZ14L38Y",
+          "status": "allow",
+          "riskLevel": "allow",
+          "pass": true,
+          "nextAction": "allow_collect",
+          "blockers": [],
+          "reviews": [],
+          "matchedRules": [],
+          "normalized": {
+            "asin": "B0DZ14L38Y",
+            "title": "",
+            "brand": "",
+            "category": "",
+            "sourceUrl": "https://www.amazon.com/dp/B0DZ14L38Y"
+          }
+        },
+        "blockers": [
+          "category_evidence_missing",
+          "amazon_displayed_price_missing"
+        ],
+        "nextAction": "run_aliexpress_category_verification_or_import_confirmed_evidence"
+      },
+      {
+        "asin": "B0DXFB86J7",
+        "localReady": false,
+        "readyForEditPreflight": false,
+        "evidence": {
+          "asin": "B0DXFB86J7",
+          "status": "missing",
+          "verified": false,
+          "aliexpressCategoryId": "",
+          "dxmCandidateCategory": "",
+          "reason": "No evidence record in store.",
+          "updatedAt": ""
+        },
+        "price": {
+          "asin": "B0DXFB86J7",
+          "status": "missing",
+          "trusted": false,
+          "amazonDisplayedPriceUsd": null,
+          "amazonOriginalPriceUsd": null,
+          "currency": "USD",
+          "source": "",
+          "expectedCnyPrice": "",
+          "formulaOk": false,
+          "reason": "amazon_displayed_price_missing",
+          "updatedAt": ""
+        },
+        "risk": {
+          "asin": "B0DXFB86J7",
+          "status": "allow",
+          "riskLevel": "allow",
+          "pass": true,
+          "nextAction": "allow_collect",
+          "blockers": [],
+          "reviews": [],
+          "matchedRules": [],
+          "normalized": {
+            "asin": "B0DXFB86J7",
+            "title": "",
+            "brand": "",
+            "category": "",
+            "sourceUrl": "https://www.amazon.com/dp/B0DXFB86J7"
+          }
+        },
+        "blockers": [
+          "category_evidence_missing",
+          "amazon_displayed_price_missing"
+        ],
+        "nextAction": "run_aliexpress_category_verification_or_import_confirmed_evidence"
+      },
+      {
+        "asin": "B0DPSJP47V",
+        "localReady": false,
+        "readyForEditPreflight": false,
+        "evidence": {
+          "asin": "B0DPSJP47V",
+          "status": "missing",
+          "verified": false,
+          "aliexpressCategoryId": "",
+          "dxmCandidateCategory": "",
+          "reason": "No evidence record in store.",
+          "updatedAt": ""
+        },
+        "price": {
+          "asin": "B0DPSJP47V",
+          "status": "missing",
+          "trusted": false,
+          "amazonDisplayedPriceUsd": null,
+          "amazonOriginalPriceUsd": null,
+          "currency": "USD",
+          "source": "",
+          "expectedCnyPrice": "",
+          "formulaOk": false,
+          "reason": "amazon_displayed_price_missing",
+          "updatedAt": ""
+        },
+        "risk": {
+          "asin": "B0DPSJP47V",
+          "status": "allow",
+          "riskLevel": "allow",
+          "pass": true,
+          "nextAction": "allow_collect",
+          "blockers": [],
+          "reviews": [],
+          "matchedRules": [],
+          "normalized": {
+            "asin": "B0DPSJP47V",
+            "title": "",
+            "brand": "",
+            "category": "",
+            "sourceUrl": "https://www.amazon.com/dp/B0DPSJP47V"
+          }
+        },
+        "blockers": [
+          "category_evidence_missing",
+          "amazon_displayed_price_missing"
+        ],
+        "nextAction": "run_aliexpress_category_verification_or_import_confirmed_evidence"
+      },
+      {
+        "asin": "B0F1DDLKBB",
+        "localReady": false,
+        "readyForEditPreflight": false,
+        "evidence": {
+          "asin": "B0F1DDLKBB",
+          "status": "missing",
+          "verified": false,
+          "aliexpressCategoryId": "",
+          "dxmCandidateCategory": "",
+          "reason": "No evidence record in store.",
+          "updatedAt": ""
+        },
+        "price": {
+          "asin": "B0F1DDLKBB",
+          "status": "missing",
+          "trusted": false,
+          "amazonDisplayedPriceUsd": null,
+          "amazonOriginalPriceUsd": null,
+          "currency": "USD",
+          "source": "",
+          "expectedCnyPrice": "",
+          "formulaOk": false,
+          "reason": "amazon_displayed_price_missing",
+          "updatedAt": ""
+        },
+        "risk": {
+          "asin": "B0F1DDLKBB",
+          "status": "allow",
+          "riskLevel": "allow",
+          "pass": true,
+          "nextAction": "allow_collect",
+          "blockers": [],
+          "reviews": [],
+          "matchedRules": [],
+          "normalized": {
+            "asin": "B0F1DDLKBB",
+            "title": "",
+            "brand": "",
+            "category": "",
+            "sourceUrl": "https://www.amazon.com/dp/B0F1DDLKBB"
+          }
+        },
+        "blockers": [
+          "category_evidence_missing",
+          "amazon_displayed_price_missing"
+        ],
+        "nextAction": "run_aliexpress_category_verification_or_import_confirmed_evidence"
+      },
+      {
+        "asin": "B0CTBQCKL9",
+        "localReady": false,
+        "readyForEditPreflight": false,
+        "evidence": {
+          "asin": "B0CTBQCKL9",
+          "status": "missing",
+          "verified": false,
+          "aliexpressCategoryId": "",
+          "dxmCandidateCategory": "",
+          "reason": "No evidence record in store.",
+          "updatedAt": ""
+        },
+        "price": {
+          "asin": "B0CTBQCKL9",
+          "status": "missing",
+          "trusted": false,
+          "amazonDisplayedPriceUsd": null,
+          "amazonOriginalPriceUsd": null,
+          "currency": "USD",
+          "source": "",
+          "expectedCnyPrice": "",
+          "formulaOk": false,
+          "reason": "amazon_displayed_price_missing",
+          "updatedAt": ""
+        },
+        "risk": {
+          "asin": "B0CTBQCKL9",
+          "status": "allow",
+          "riskLevel": "allow",
+          "pass": true,
+          "nextAction": "allow_collect",
+          "blockers": [],
+          "reviews": [],
+          "matchedRules": [],
+          "normalized": {
+            "asin": "B0CTBQCKL9",
+            "title": "",
+            "brand": "",
+            "category": "",
+            "sourceUrl": "https://www.amazon.com/dp/B0CTBQCKL9"
+          }
+        },
+        "blockers": [
+          "category_evidence_missing",
+          "amazon_displayed_price_missing"
+        ],
+        "nextAction": "run_aliexpress_category_verification_or_import_confirmed_evidence"
+      },
+      {
+        "asin": "B0FH7774VK",
+        "localReady": false,
+        "readyForEditPreflight": false,
+        "evidence": {
+          "asin": "B0FH7774VK",
+          "status": "missing",
+          "verified": false,
+          "aliexpressCategoryId": "",
+          "dxmCandidateCategory": "",
+          "reason": "No evidence record in store.",
+          "updatedAt": ""
+        },
+        "price": {
+          "asin": "B0FH7774VK",
+          "status": "missing",
+          "trusted": false,
+          "amazonDisplayedPriceUsd": null,
+          "amazonOriginalPriceUsd": null,
+          "currency": "USD",
+          "source": "",
+          "expectedCnyPrice": "",
+          "formulaOk": false,
+          "reason": "amazon_displayed_price_missing",
+          "updatedAt": ""
+        },
+        "risk": {
+          "asin": "B0FH7774VK",
+          "status": "allow",
+          "riskLevel": "allow",
+          "pass": true,
+          "nextAction": "allow_collect",
+          "blockers": [],
+          "reviews": [],
+          "matchedRules": [],
+          "normalized": {
+            "asin": "B0FH7774VK",
+            "title": "",
+            "brand": "",
+            "category": "",
+            "sourceUrl": "https://www.amazon.com/dp/B0FH7774VK"
+          }
+        },
+        "blockers": [
+          "category_evidence_missing",
+          "amazon_displayed_price_missing"
+        ],
+        "nextAction": "run_aliexpress_category_verification_or_import_confirmed_evidence"
+      },
+      {
+        "asin": "B01E2EYG4U",
+        "localReady": false,
+        "readyForEditPreflight": false,
+        "evidence": {
+          "asin": "B01E2EYG4U",
+          "status": "missing",
+          "verified": false,
+          "aliexpressCategoryId": "",
+          "dxmCandidateCategory": "",
+          "reason": "No evidence record in store.",
+          "updatedAt": ""
+        },
+        "price": {
+          "asin": "B01E2EYG4U",
+          "status": "missing",
+          "trusted": false,
+          "amazonDisplayedPriceUsd": null,
+          "amazonOriginalPriceUsd": null,
+          "currency": "USD",
+          "source": "",
+          "expectedCnyPrice": "",
+          "formulaOk": false,
+          "reason": "amazon_displayed_price_missing",
+          "updatedAt": ""
+        },
+        "risk": {
+          "asin": "B01E2EYG4U",
+          "status": "allow",
+          "riskLevel": "allow",
+          "pass": true,
+          "nextAction": "allow_collect",
+          "blockers": [],
+          "reviews": [],
+          "matchedRules": [],
+          "normalized": {
+            "asin": "B01E2EYG4U",
+            "title": "",
+            "brand": "",
+            "category": "",
+            "sourceUrl": "https://www.amazon.com/dp/B01E2EYG4U"
+          }
+        },
+        "blockers": [
+          "category_evidence_missing",
+          "amazon_displayed_price_missing"
+        ],
+        "nextAction": "run_aliexpress_category_verification_or_import_confirmed_evidence"
+      },
+      {
+        "asin": "B0GFV4N3K8",
+        "localReady": false,
+        "readyForEditPreflight": false,
+        "evidence": {
+          "asin": "B0GFV4N3K8",
+          "status": "missing",
+          "verified": false,
+          "aliexpressCategoryId": "",
+          "dxmCandidateCategory": "",
+          "reason": "No evidence record in store.",
+          "updatedAt": ""
+        },
+        "price": {
+          "asin": "B0GFV4N3K8",
+          "status": "missing",
+          "trusted": false,
+          "amazonDisplayedPriceUsd": null,
+          "amazonOriginalPriceUsd": null,
+          "currency": "USD",
+          "source": "",
+          "expectedCnyPrice": "",
+          "formulaOk": false,
+          "reason": "amazon_displayed_price_missing",
+          "updatedAt": ""
+        },
+        "risk": {
+          "asin": "B0GFV4N3K8",
+          "status": "allow",
+          "riskLevel": "allow",
+          "pass": true,
+          "nextAction": "allow_collect",
+          "blockers": [],
+          "reviews": [],
+          "matchedRules": [],
+          "normalized": {
+            "asin": "B0GFV4N3K8",
+            "title": "",
+            "brand": "",
+            "category": "",
+            "sourceUrl": "https://www.amazon.com/dp/B0GFV4N3K8"
+          }
+        },
+        "blockers": [
+          "category_evidence_missing",
+          "amazon_displayed_price_missing"
+        ],
+        "nextAction": "run_aliexpress_category_verification_or_import_confirmed_evidence"
+      },
+      {
+        "asin": "B0C1JY1C7F",
+        "localReady": false,
+        "readyForEditPreflight": false,
+        "evidence": {
+          "asin": "B0C1JY1C7F",
+          "status": "missing",
+          "verified": false,
+          "aliexpressCategoryId": "",
+          "dxmCandidateCategory": "",
+          "reason": "No evidence record in store.",
+          "updatedAt": ""
+        },
+        "price": {
+          "asin": "B0C1JY1C7F",
+          "status": "missing",
+          "trusted": false,
+          "amazonDisplayedPriceUsd": null,
+          "amazonOriginalPriceUsd": null,
+          "currency": "USD",
+          "source": "",
+          "expectedCnyPrice": "",
+          "formulaOk": false,
+          "reason": "amazon_displayed_price_missing",
+          "updatedAt": ""
+        },
+        "risk": {
+          "asin": "B0C1JY1C7F",
+          "status": "allow",
+          "riskLevel": "allow",
+          "pass": true,
+          "nextAction": "allow_collect",
+          "blockers": [],
+          "reviews": [],
+          "matchedRules": [],
+          "normalized": {
+            "asin": "B0C1JY1C7F",
+            "title": "",
+            "brand": "",
+            "category": "",
+            "sourceUrl": "https://www.amazon.com/dp/B0C1JY1C7F"
+          }
+        },
+        "blockers": [
+          "category_evidence_missing",
+          "amazon_displayed_price_missing"
+        ],
+        "nextAction": "run_aliexpress_category_verification_or_import_confirmed_evidence"
+      }
+    ],
+    "summary": {
+      "total": 10,
+      "ready": 0,
+      "blocked": 10,
+      "byBlocker": {
+        "category_evidence_missing": 10,
+        "amazon_displayed_price_missing": 10
+      }
+    },
+    "evidenceSummary": {
+      "total": 10,
+      "verified": 0,
+      "missing": 10,
+      "blockers": 10
+    },
+    "priceSummary": {
+      "total": 10,
+      "trusted": 0,
+      "missing": 10,
+      "outOfRange": 0,
+      "needsReview": 0,
+      "formulaOk": 0,
+      "blockers": 10
+    },
+    "riskSummary": {
+      "total": 10,
+      "allow": 10,
+      "needsReview": 0,
+      "blocked": 0,
+      "byStatus": {
+        "allow": 10
+      },
+      "byCategory": {},
+      "exceptionPreviewed": 0,
+      "exceptionWritten": 0,
+      "enabled": true,
+      "inBatch": 10,
+      "missingInRiskInput": 0
+    },
+    "riskScreening": {
+      "enabled": true,
+      "rulesPath": "/Users/sam/Documents/电商上架项目/自动上架/dianxiaomi-automation-v1/config/product-risk-rules.json",
+      "rows": [
+        {
+          "asin": "B0CZ7F61XN",
+          "status": "allow",
+          "riskLevel": "allow",
+          "pass": true,
+          "nextAction": "allow_collect",
+          "blockers": [],
+          "reviews": [],
+          "matchedRules": [],
+          "normalized": {
+            "asin": "B0CZ7F61XN",
+            "title": "",
+            "brand": "",
+            "category": "",
+            "sourceUrl": "https://www.amazon.com/dp/B0CZ7F61XN"
+          }
+        },
+        {
+          "asin": "B0DZ14L38Y",
+          "status": "allow",
+          "riskLevel": "allow",
+          "pass": true,
+          "nextAction": "allow_collect",
+          "blockers": [],
+          "reviews": [],
+          "matchedRules": [],
+          "normalized": {
+            "asin": "B0DZ14L38Y",
+            "title": "",
+            "brand": "",
+            "category": "",
+            "sourceUrl": "https://www.amazon.com/dp/B0DZ14L38Y"
+          }
+        },
+        {
+          "asin": "B0DXFB86J7",
+          "status": "allow",
+          "riskLevel": "allow",
+          "pass": true,
+          "nextAction": "allow_collect",
+          "blockers": [],
+          "reviews": [],
+          "matchedRules": [],
+          "normalized": {
+            "asin": "B0DXFB86J7",
+            "title": "",
+            "brand": "",
+            "category": "",
+            "sourceUrl": "https://www.amazon.com/dp/B0DXFB86J7"
+          }
+        },
+        {
+          "asin": "B0DPSJP47V",
+          "status": "allow",
+          "riskLevel": "allow",
+          "pass": true,
+          "nextAction": "allow_collect",
+          "blockers": [],
+          "reviews": [],
+          "matchedRules": [],
+          "normalized": {
+            "asin": "B0DPSJP47V",
+            "title": "",
+            "brand": "",
+            "category": "",
+            "sourceUrl": "https://www.amazon.com/dp/B0DPSJP47V"
+          }
+        },
+        {
+          "asin": "B0F1DDLKBB",
+          "status": "allow",
+          "riskLevel": "allow",
+          "pass": true,
+          "nextAction": "allow_collect",
+          "blockers": [],
+          "reviews": [],
+          "matchedRules": [],
+          "normalized": {
+            "asin": "B0F1DDLKBB",
+            "title": "",
+            "brand": "",
+            "category": "",
+            "sourceUrl": "https://www.amazon.com/dp/B0F1DDLKBB"
+          }
+        },
+        {
+          "asin": "B0CTBQCKL9",
+          "status": "allow",
+          "riskLevel": "allow",
+          "pass": true,
+          "nextAction": "allow_collect",
+          "blockers": [],
+          "reviews": [],
+          "matchedRules": [],
+          "normalized": {
+            "asin": "B0CTBQCKL9",
+            "title": "",
+            "brand": "",
+            "category": "",
+            "sourceUrl": "https://www.amazon.com/dp/B0CTBQCKL9"
+          }
+        },
+        {
+          "asin": "B0FH7774VK",
+          "status": "allow",
+          "riskLevel": "allow",
+          "pass": true,
+          "nextAction": "allow_collect",
+          "blockers": [],
+          "reviews": [],
+          "matchedRules": [],
+          "normalized": {
+            "asin": "B0FH7774VK",
+            "title": "",
+            "brand": "",
+            "category": "",
+            "sourceUrl": "https://www.amazon.com/dp/B0FH7774VK"
+          }
+        },
+        {
+          "asin": "B01E2EYG4U",
+          "status": "allow",
+          "riskLevel": "allow",
+          "pass": true,
+          "nextAction": "allow_collect",
+          "blockers": [],
+          "reviews": [],
+          "matchedRules": [],
+          "normalized": {
+            "asin": "B01E2EYG4U",
+            "title": "",
+            "brand": "",
+            "category": "",
+            "sourceUrl": "https://www.amazon.com/dp/B01E2EYG4U"
+          }
+        },
+        {
+          "asin": "B0GFV4N3K8",
+          "status": "allow",
+          "riskLevel": "allow",
+          "pass": true,
+          "nextAction": "allow_collect",
+          "blockers": [],
+          "reviews": [],
+          "matchedRules": [],
+          "normalized": {
+            "asin": "B0GFV4N3K8",
+            "title": "",
+            "brand": "",
+            "category": "",
+            "sourceUrl": "https://www.amazon.com/dp/B0GFV4N3K8"
+          }
+        },
+        {
+          "asin": "B0C1JY1C7F",
+          "status": "allow",
+          "riskLevel": "allow",
+          "pass": true,
+          "nextAction": "allow_collect",
+          "blockers": [],
+          "reviews": [],
+          "matchedRules": [],
+          "normalized": {
+            "asin": "B0C1JY1C7F",
+            "title": "",
+            "brand": "",
+            "category": "",
+            "sourceUrl": "https://www.amazon.com/dp/B0C1JY1C7F"
+          }
+        }
+      ]
+    },
+    "amazonPriceCapturePlan": {
+      "needed": true,
+      "missingAsins": [
+        "B0CZ7F61XN",
+        "B0DZ14L38Y",
+        "B0DXFB86J7",
+        "B0DPSJP47V",
+        "B0F1DDLKBB",
+        "B0CTBQCKL9",
+        "B0FH7774VK",
+        "B01E2EYG4U",
+        "B0GFV4N3K8",
+        "B0C1JY1C7F"
+      ],
+      "count": 10,
+      "dryRunCommand": "node tools/amazon-displayed-price-batch.js capture --asins B0CZ7F61XN,B0DZ14L38Y,B0DXFB86J7,B0DPSJP47V,B0F1DDLKBB,B0CTBQCKL9,B0FH7774VK,B01E2EYG4U,B0GFV4N3K8,B0C1JY1C7F --store '/Users/sam/Documents/电商上架项目/自动上架/dianxiaomi-automation-v1/runs/amazon-price-store.json' --page-wait-ms 10000 --delay-ms 500 --exchange-rate 7 --multiplier 1.55",
+      "writeCommand": "node tools/amazon-displayed-price-batch.js capture --asins B0CZ7F61XN,B0DZ14L38Y,B0DXFB86J7,B0DPSJP47V,B0F1DDLKBB,B0CTBQCKL9,B0FH7774VK,B01E2EYG4U,B0GFV4N3K8,B0C1JY1C7F --store '/Users/sam/Documents/电商上架项目/自动上架/dianxiaomi-automation-v1/runs/amazon-price-store.json' --page-wait-ms 10000 --delay-ms 500 --exchange-rate 7 --multiplier 1.55 --write-prices",
+      "note": "Run dryRunCommand first. Use writeCommand only after the readonly capture result is trusted."
+    }
+  },
+  "checkReport": null,
+  "finalGate": {
+    "ok": true,
+    "rows": [
+      {
+        "asin": "B0CZ7F61XN",
+        "localReady": false,
+        "readyForEditPreflight": false,
+        "evidence": {
+          "asin": "B0CZ7F61XN",
+          "status": "missing",
+          "verified": false,
+          "aliexpressCategoryId": "",
+          "dxmCandidateCategory": "",
+          "reason": "No evidence record in store.",
+          "updatedAt": ""
+        },
+        "price": {
+          "asin": "B0CZ7F61XN",
+          "status": "missing",
+          "trusted": false,
+          "amazonDisplayedPriceUsd": null,
+          "amazonOriginalPriceUsd": null,
+          "currency": "USD",
+          "source": "",
+          "expectedCnyPrice": "",
+          "formulaOk": false,
+          "reason": "amazon_displayed_price_missing",
+          "updatedAt": ""
+        },
+        "risk": {
+          "asin": "B0CZ7F61XN",
+          "status": "allow",
+          "riskLevel": "allow",
+          "pass": true,
+          "nextAction": "allow_collect",
+          "blockers": [],
+          "reviews": [],
+          "matchedRules": [],
+          "normalized": {
+            "asin": "B0CZ7F61XN",
+            "title": "",
+            "brand": "",
+            "category": "",
+            "sourceUrl": "https://www.amazon.com/dp/B0CZ7F61XN"
+          }
+        },
+        "blockers": [
+          "category_evidence_missing",
+          "amazon_displayed_price_missing"
+        ],
+        "nextAction": "run_aliexpress_category_verification_or_import_confirmed_evidence"
+      },
+      {
+        "asin": "B0DZ14L38Y",
+        "localReady": false,
+        "readyForEditPreflight": false,
+        "evidence": {
+          "asin": "B0DZ14L38Y",
+          "status": "missing",
+          "verified": false,
+          "aliexpressCategoryId": "",
+          "dxmCandidateCategory": "",
+          "reason": "No evidence record in store.",
+          "updatedAt": ""
+        },
+        "price": {
+          "asin": "B0DZ14L38Y",
+          "status": "missing",
+          "trusted": false,
+          "amazonDisplayedPriceUsd": null,
+          "amazonOriginalPriceUsd": null,
+          "currency": "USD",
+          "source": "",
+          "expectedCnyPrice": "",
+          "formulaOk": false,
+          "reason": "amazon_displayed_price_missing",
+          "updatedAt": ""
+        },
+        "risk": {
+          "asin": "B0DZ14L38Y",
+          "status": "allow",
+          "riskLevel": "allow",
+          "pass": true,
+          "nextAction": "allow_collect",
+          "blockers": [],
+          "reviews": [],
+          "matchedRules": [],
+          "normalized": {
+            "asin": "B0DZ14L38Y",
+            "title": "",
+            "brand": "",
+            "category": "",
+            "sourceUrl": "https://www.amazon.com/dp/B0DZ14L38Y"
+          }
+        },
+        "blockers": [
+          "category_evidence_missing",
+          "amazon_displayed_price_missing"
+        ],
+        "nextAction": "run_aliexpress_category_verification_or_import_confirmed_evidence"
+      },
+      {
+        "asin": "B0DXFB86J7",
+        "localReady": false,
+        "readyForEditPreflight": false,
+        "evidence": {
+          "asin": "B0DXFB86J7",
+          "status": "missing",
+          "verified": false,
+          "aliexpressCategoryId": "",
+          "dxmCandidateCategory": "",
+          "reason": "No evidence record in store.",
+          "updatedAt": ""
+        },
+        "price": {
+          "asin": "B0DXFB86J7",
+          "status": "missing",
+          "trusted": false,
+          "amazonDisplayedPriceUsd": null,
+          "amazonOriginalPriceUsd": null,
+          "currency": "USD",
+          "source": "",
+          "expectedCnyPrice": "",
+          "formulaOk": false,
+          "reason": "amazon_displayed_price_missing",
+          "updatedAt": ""
+        },
+        "risk": {
+          "asin": "B0DXFB86J7",
+          "status": "allow",
+          "riskLevel": "allow",
+          "pass": true,
+          "nextAction": "allow_collect",
+          "blockers": [],
+          "reviews": [],
+          "matchedRules": [],
+          "normalized": {
+            "asin": "B0DXFB86J7",
+            "title": "",
+            "brand": "",
+            "category": "",
+            "sourceUrl": "https://www.amazon.com/dp/B0DXFB86J7"
+          }
+        },
+        "blockers": [
+          "category_evidence_missing",
+          "amazon_displayed_price_missing"
+        ],
+        "nextAction": "run_aliexpress_category_verification_or_import_confirmed_evidence"
+      },
+      {
+        "asin": "B0DPSJP47V",
+        "localReady": false,
+        "readyForEditPreflight": false,
+        "evidence": {
+          "asin": "B0DPSJP47V",
+          "status": "missing",
+          "verified": false,
+          "aliexpressCategoryId": "",
+          "dxmCandidateCategory": "",
+          "reason": "No evidence record in store.",
+          "updatedAt": ""
+        },
+        "price": {
+          "asin": "B0DPSJP47V",
+          "status": "missing",
+          "trusted": false,
+          "amazonDisplayedPriceUsd": null,
+          "amazonOriginalPriceUsd": null,
+          "currency": "USD",
+          "source": "",
+          "expectedCnyPrice": "",
+          "formulaOk": false,
+          "reason": "amazon_displayed_price_missing",
+          "updatedAt": ""
+        },
+        "risk": {
+          "asin": "B0DPSJP47V",
+          "status": "allow",
+          "riskLevel": "allow",
+          "pass": true,
+          "nextAction": "allow_collect",
+          "blockers": [],
+          "reviews": [],
+          "matchedRules": [],
+          "normalized": {
+            "asin": "B0DPSJP47V",
+            "title": "",
+            "brand": "",
+            "category": "",
+            "sourceUrl": "https://www.amazon.com/dp/B0DPSJP47V"
+          }
+        },
+        "blockers": [
+          "category_evidence_missing",
+          "amazon_displayed_price_missing"
+        ],
+        "nextAction": "run_aliexpress_category_verification_or_import_confirmed_evidence"
+      },
+      {
+        "asin": "B0F1DDLKBB",
+        "localReady": false,
+        "readyForEditPreflight": false,
+        "evidence": {
+          "asin": "B0F1DDLKBB",
+          "status": "missing",
+          "verified": false,
+          "aliexpressCategoryId": "",
+          "dxmCandidateCategory": "",
+          "reason": "No evidence record in store.",
+          "updatedAt": ""
+        },
+        "price": {
+          "asin": "B0F1DDLKBB",
+          "status": "missing",
+          "trusted": false,
+          "amazonDisplayedPriceUsd": null,
+          "amazonOriginalPriceUsd": null,
+          "currency": "USD",
+          "source": "",
+          "expectedCnyPrice": "",
+          "formulaOk": false,
+          "reason": "amazon_displayed_price_missing",
+          "updatedAt": ""
+        },
+        "risk": {
+          "asin": "B0F1DDLKBB",
+          "status": "allow",
+          "riskLevel": "allow",
+          "pass": true,
+          "nextAction": "allow_collect",
+          "blockers": [],
+          "reviews": [],
+          "matchedRules": [],
+          "normalized": {
+            "asin": "B0F1DDLKBB",
+            "title": "",
+            "brand": "",
+            "category": "",
+            "sourceUrl": "https://www.amazon.com/dp/B0F1DDLKBB"
+          }
+        },
+        "blockers": [
+          "category_evidence_missing",
+          "amazon_displayed_price_missing"
+        ],
+        "nextAction": "run_aliexpress_category_verification_or_import_confirmed_evidence"
+      },
+      {
+        "asin": "B0CTBQCKL9",
+        "localReady": false,
+        "readyForEditPreflight": false,
+        "evidence": {
+          "asin": "B0CTBQCKL9",
+          "status": "missing",
+          "verified": false,
+          "aliexpressCategoryId": "",
+          "dxmCandidateCategory": "",
+          "reason": "No evidence record in store.",
+          "updatedAt": ""
+        },
+        "price": {
+          "asin": "B0CTBQCKL9",
+          "status": "missing",
+          "trusted": false,
+          "amazonDisplayedPriceUsd": null,
+          "amazonOriginalPriceUsd": null,
+          "currency": "USD",
+          "source": "",
+          "expectedCnyPrice": "",
+          "formulaOk": false,
+          "reason": "amazon_displayed_price_missing",
+          "updatedAt": ""
+        },
+        "risk": {
+          "asin": "B0CTBQCKL9",
+          "status": "allow",
+          "riskLevel": "allow",
+          "pass": true,
+          "nextAction": "allow_collect",
+          "blockers": [],
+          "reviews": [],
+          "matchedRules": [],
+          "normalized": {
+            "asin": "B0CTBQCKL9",
+            "title": "",
+            "brand": "",
+            "category": "",
+            "sourceUrl": "https://www.amazon.com/dp/B0CTBQCKL9"
+          }
+        },
+        "blockers": [
+          "category_evidence_missing",
+          "amazon_displayed_price_missing"
+        ],
+        "nextAction": "run_aliexpress_category_verification_or_import_confirmed_evidence"
+      },
+      {
+        "asin": "B0FH7774VK",
+        "localReady": false,
+        "readyForEditPreflight": false,
+        "evidence": {
+          "asin": "B0FH7774VK",
+          "status": "missing",
+          "verified": false,
+          "aliexpressCategoryId": "",
+          "dxmCandidateCategory": "",
+          "reason": "No evidence record in store.",
+          "updatedAt": ""
+        },
+        "price": {
+          "asin": "B0FH7774VK",
+          "status": "missing",
+          "trusted": false,
+          "amazonDisplayedPriceUsd": null,
+          "amazonOriginalPriceUsd": null,
+          "currency": "USD",
+          "source": "",
+          "expectedCnyPrice": "",
+          "formulaOk": false,
+          "reason": "amazon_displayed_price_missing",
+          "updatedAt": ""
+        },
+        "risk": {
+          "asin": "B0FH7774VK",
+          "status": "allow",
+          "riskLevel": "allow",
+          "pass": true,
+          "nextAction": "allow_collect",
+          "blockers": [],
+          "reviews": [],
+          "matchedRules": [],
+          "normalized": {
+            "asin": "B0FH7774VK",
+            "title": "",
+            "brand": "",
+            "category": "",
+            "sourceUrl": "https://www.amazon.com/dp/B0FH7774VK"
+          }
+        },
+        "blockers": [
+          "category_evidence_missing",
+          "amazon_displayed_price_missing"
+        ],
+        "nextAction": "run_aliexpress_category_verification_or_import_confirmed_evidence"
+      },
+      {
+        "asin": "B01E2EYG4U",
+        "localReady": false,
+        "readyForEditPreflight": false,
+        "evidence": {
+          "asin": "B01E2EYG4U",
+          "status": "missing",
+          "verified": false,
+          "aliexpressCategoryId": "",
+          "dxmCandidateCategory": "",
+          "reason": "No evidence record in store.",
+          "updatedAt": ""
+        },
+        "price": {
+          "asin": "B01E2EYG4U",
+          "status": "missing",
+          "trusted": false,
+          "amazonDisplayedPriceUsd": null,
+          "amazonOriginalPriceUsd": null,
+          "currency": "USD",
+          "source": "",
+          "expectedCnyPrice": "",
+          "formulaOk": false,
+          "reason": "amazon_displayed_price_missing",
+          "updatedAt": ""
+        },
+        "risk": {
+          "asin": "B01E2EYG4U",
+          "status": "allow",
+          "riskLevel": "allow",
+          "pass": true,
+          "nextAction": "allow_collect",
+          "blockers": [],
+          "reviews": [],
+          "matchedRules": [],
+          "normalized": {
+            "asin": "B01E2EYG4U",
+            "title": "",
+            "brand": "",
+            "category": "",
+            "sourceUrl": "https://www.amazon.com/dp/B01E2EYG4U"
+          }
+        },
+        "blockers": [
+          "category_evidence_missing",
+          "amazon_displayed_price_missing"
+        ],
+        "nextAction": "run_aliexpress_category_verification_or_import_confirmed_evidence"
+      },
+      {
+        "asin": "B0GFV4N3K8",
+        "localReady": false,
+        "readyForEditPreflight": false,
+        "evidence": {
+          "asin": "B0GFV4N3K8",
+          "status": "missing",
+          "verified": false,
+          "aliexpressCategoryId": "",
+          "dxmCandidateCategory": "",
+          "reason": "No evidence record in store.",
+          "updatedAt": ""
+        },
+        "price": {
+          "asin": "B0GFV4N3K8",
+          "status": "missing",
+          "trusted": false,
+          "amazonDisplayedPriceUsd": null,
+          "amazonOriginalPriceUsd": null,
+          "currency": "USD",
+          "source": "",
+          "expectedCnyPrice": "",
+          "formulaOk": false,
+          "reason": "amazon_displayed_price_missing",
+          "updatedAt": ""
+        },
+        "risk": {
+          "asin": "B0GFV4N3K8",
+          "status": "allow",
+          "riskLevel": "allow",
+          "pass": true,
+          "nextAction": "allow_collect",
+          "blockers": [],
+          "reviews": [],
+          "matchedRules": [],
+          "normalized": {
+            "asin": "B0GFV4N3K8",
+            "title": "",
+            "brand": "",
+            "category": "",
+            "sourceUrl": "https://www.amazon.com/dp/B0GFV4N3K8"
+          }
+        },
+        "blockers": [
+          "category_evidence_missing",
+          "amazon_displayed_price_missing"
+        ],
+        "nextAction": "run_aliexpress_category_verification_or_import_confirmed_evidence"
+      },
+      {
+        "asin": "B0C1JY1C7F",
+        "localReady": false,
+        "readyForEditPreflight": false,
+        "evidence": {
+          "asin": "B0C1JY1C7F",
+          "status": "missing",
+          "verified": false,
+          "aliexpressCategoryId": "",
+          "dxmCandidateCategory": "",
+          "reason": "No evidence record in store.",
+          "updatedAt": ""
+        },
+        "price": {
+          "asin": "B0C1JY1C7F",
+          "status": "missing",
+          "trusted": false,
+          "amazonDisplayedPriceUsd": null,
+          "amazonOriginalPriceUsd": null,
+          "currency": "USD",
+          "source": "",
+          "expectedCnyPrice": "",
+          "formulaOk": false,
+          "reason": "amazon_displayed_price_missing",
+          "updatedAt": ""
+        },
+        "risk": {
+          "asin": "B0C1JY1C7F",
+          "status": "allow",
+          "riskLevel": "allow",
+          "pass": true,
+          "nextAction": "allow_collect",
+          "blockers": [],
+          "reviews": [],
+          "matchedRules": [],
+          "normalized": {
+            "asin": "B0C1JY1C7F",
+            "title": "",
+            "brand": "",
+            "category": "",
+            "sourceUrl": "https://www.amazon.com/dp/B0C1JY1C7F"
+          }
+        },
+        "blockers": [
+          "category_evidence_missing",
+          "amazon_displayed_price_missing"
+        ],
+        "nextAction": "run_aliexpress_category_verification_or_import_confirmed_evidence"
+      }
+    ],
+    "summary": {
+      "total": 10,
+      "ready": 0,
+      "blocked": 10,
+      "byBlocker": {
+        "category_evidence_missing": 10,
+        "amazon_displayed_price_missing": 10
+      }
+    },
+    "evidenceSummary": {
+      "total": 10,
+      "verified": 0,
+      "missing": 10,
+      "blockers": 10
+    },
+    "priceSummary": {
+      "total": 10,
+      "trusted": 0,
+      "missing": 10,
+      "outOfRange": 0,
+      "needsReview": 0,
+      "formulaOk": 0,
+      "blockers": 10
+    },
+    "riskSummary": {
+      "total": 10,
+      "allow": 10,
+      "needsReview": 0,
+      "blocked": 0,
+      "byStatus": {
+        "allow": 10
+      },
+      "byCategory": {},
+      "exceptionPreviewed": 0,
+      "exceptionWritten": 0,
+      "enabled": true,
+      "inBatch": 10,
+      "missingInRiskInput": 0
+    },
+    "riskScreening": {
+      "enabled": true,
+      "rulesPath": "/Users/sam/Documents/电商上架项目/自动上架/dianxiaomi-automation-v1/config/product-risk-rules.json",
+      "rows": [
+        {
+          "asin": "B0CZ7F61XN",
+          "status": "allow",
+          "riskLevel": "allow",
+          "pass": true,
+          "nextAction": "allow_collect",
+          "blockers": [],
+          "reviews": [],
+          "matchedRules": [],
+          "normalized": {
+            "asin": "B0CZ7F61XN",
+            "title": "",
+            "brand": "",
+            "category": "",
+            "sourceUrl": "https://www.amazon.com/dp/B0CZ7F61XN"
+          }
+        },
+        {
+          "asin": "B0DZ14L38Y",
+          "status": "allow",
+          "riskLevel": "allow",
+          "pass": true,
+          "nextAction": "allow_collect",
+          "blockers": [],
+          "reviews": [],
+          "matchedRules": [],
+          "normalized": {
+            "asin": "B0DZ14L38Y",
+            "title": "",
+            "brand": "",
+            "category": "",
+            "sourceUrl": "https://www.amazon.com/dp/B0DZ14L38Y"
+          }
+        },
+        {
+          "asin": "B0DXFB86J7",
+          "status": "allow",
+          "riskLevel": "allow",
+          "pass": true,
+          "nextAction": "allow_collect",
+          "blockers": [],
+          "reviews": [],
+          "matchedRules": [],
+          "normalized": {
+            "asin": "B0DXFB86J7",
+            "title": "",
+            "brand": "",
+            "category": "",
+            "sourceUrl": "https://www.amazon.com/dp/B0DXFB86J7"
+          }
+        },
+        {
+          "asin": "B0DPSJP47V",
+          "status": "allow",
+          "riskLevel": "allow",
+          "pass": true,
+          "nextAction": "allow_collect",
+          "blockers": [],
+          "reviews": [],
+          "matchedRules": [],
+          "normalized": {
+            "asin": "B0DPSJP47V",
+            "title": "",
+            "brand": "",
+            "category": "",
+            "sourceUrl": "https://www.amazon.com/dp/B0DPSJP47V"
+          }
+        },
+        {
+          "asin": "B0F1DDLKBB",
+          "status": "allow",
+          "riskLevel": "allow",
+          "pass": true,
+          "nextAction": "allow_collect",
+          "blockers": [],
+          "reviews": [],
+          "matchedRules": [],
+          "normalized": {
+            "asin": "B0F1DDLKBB",
+            "title": "",
+            "brand": "",
+            "category": "",
+            "sourceUrl": "https://www.amazon.com/dp/B0F1DDLKBB"
+          }
+        },
+        {
+          "asin": "B0CTBQCKL9",
+          "status": "allow",
+          "riskLevel": "allow",
+          "pass": true,
+          "nextAction": "allow_collect",
+          "blockers": [],
+          "reviews": [],
+          "matchedRules": [],
+          "normalized": {
+            "asin": "B0CTBQCKL9",
+            "title": "",
+            "brand": "",
+            "category": "",
+            "sourceUrl": "https://www.amazon.com/dp/B0CTBQCKL9"
+          }
+        },
+        {
+          "asin": "B0FH7774VK",
+          "status": "allow",
+          "riskLevel": "allow",
+          "pass": true,
+          "nextAction": "allow_collect",
+          "blockers": [],
+          "reviews": [],
+          "matchedRules": [],
+          "normalized": {
+            "asin": "B0FH7774VK",
+            "title": "",
+            "brand": "",
+            "category": "",
+            "sourceUrl": "https://www.amazon.com/dp/B0FH7774VK"
+          }
+        },
+        {
+          "asin": "B01E2EYG4U",
+          "status": "allow",
+          "riskLevel": "allow",
+          "pass": true,
+          "nextAction": "allow_collect",
+          "blockers": [],
+          "reviews": [],
+          "matchedRules": [],
+          "normalized": {
+            "asin": "B01E2EYG4U",
+            "title": "",
+            "brand": "",
+            "category": "",
+            "sourceUrl": "https://www.amazon.com/dp/B01E2EYG4U"
+          }
+        },
+        {
+          "asin": "B0GFV4N3K8",
+          "status": "allow",
+          "riskLevel": "allow",
+          "pass": true,
+          "nextAction": "allow_collect",
+          "blockers": [],
+          "reviews": [],
+          "matchedRules": [],
+          "normalized": {
+            "asin": "B0GFV4N3K8",
+            "title": "",
+            "brand": "",
+            "category": "",
+            "sourceUrl": "https://www.amazon.com/dp/B0GFV4N3K8"
+          }
+        },
+        {
+          "asin": "B0C1JY1C7F",
+          "status": "allow",
+          "riskLevel": "allow",
+          "pass": true,
+          "nextAction": "allow_collect",
+          "blockers": [],
+          "reviews": [],
+          "matchedRules": [],
+          "normalized": {
+            "asin": "B0C1JY1C7F",
+            "title": "",
+            "brand": "",
+            "category": "",
+            "sourceUrl": "https://www.amazon.com/dp/B0C1JY1C7F"
+          }
+        }
+      ]
+    },
+    "amazonPriceCapturePlan": {
+      "needed": true,
+      "missingAsins": [
+        "B0CZ7F61XN",
+        "B0DZ14L38Y",
+        "B0DXFB86J7",
+        "B0DPSJP47V",
+        "B0F1DDLKBB",
+        "B0CTBQCKL9",
+        "B0FH7774VK",
+        "B01E2EYG4U",
+        "B0GFV4N3K8",
+        "B0C1JY1C7F"
+      ],
+      "count": 10,
+      "dryRunCommand": "node tools/amazon-displayed-price-batch.js capture --asins B0CZ7F61XN,B0DZ14L38Y,B0DXFB86J7,B0DPSJP47V,B0F1DDLKBB,B0CTBQCKL9,B0FH7774VK,B01E2EYG4U,B0GFV4N3K8,B0C1JY1C7F --store '/Users/sam/Documents/电商上架项目/自动上架/dianxiaomi-automation-v1/runs/amazon-price-store.json' --page-wait-ms 10000 --delay-ms 500 --exchange-rate 7 --multiplier 1.55",
+      "writeCommand": "node tools/amazon-displayed-price-batch.js capture --asins B0CZ7F61XN,B0DZ14L38Y,B0DXFB86J7,B0DPSJP47V,B0F1DDLKBB,B0CTBQCKL9,B0FH7774VK,B01E2EYG4U,B0GFV4N3K8,B0C1JY1C7F --store '/Users/sam/Documents/电商上架项目/自动上架/dianxiaomi-automation-v1/runs/amazon-price-store.json' --page-wait-ms 10000 --delay-ms 500 --exchange-rate 7 --multiplier 1.55 --write-prices",
+      "note": "Run dryRunCommand first. Use writeCommand only after the readonly capture result is trusted."
+    }
+  },
+  "exceptionReport": {
+    "ok": true,
+    "schemaVersion": "dxm-batch-exception-report-v1",
+    "generatedAt": "2026-07-02T04:03:39.687Z",
+    "queuePath": "/Users/sam/Documents/电商上架项目/自动上架/dianxiaomi-automation-v1/runs/exception-queue.json",
+    "includeResolved": false,
+    "summary": {
+      "totalAsins": 10,
+      "clear": 10,
+      "blocked": 0,
+      "controlRetryable": 0,
+      "needsReview": 0,
+      "openExceptions": 0,
+      "allIncludedExceptions": 0,
+      "byStatus": {
+        "clear": 10
+      },
+      "byReason": {},
+      "byCategory": {},
+      "bySeverity": {},
+      "byNextAction": {}
+    },
+    "nextActionGroups": {},
+    "rows": [
+      {
+        "asin": "B0CZ7F61XN",
+        "status": "clear",
+        "openCount": 0,
+        "totalCount": 0,
+        "primaryReason": "",
+        "primaryCategory": "",
+        "severity": "",
+        "retryable": false,
+        "nextAction": "no_open_exception",
+        "reasons": []
+      },
+      {
+        "asin": "B0DZ14L38Y",
+        "status": "clear",
+        "openCount": 0,
+        "totalCount": 0,
+        "primaryReason": "",
+        "primaryCategory": "",
+        "severity": "",
+        "retryable": false,
+        "nextAction": "no_open_exception",
+        "reasons": []
+      },
+      {
+        "asin": "B0DXFB86J7",
+        "status": "clear",
+        "openCount": 0,
+        "totalCount": 0,
+        "primaryReason": "",
+        "primaryCategory": "",
+        "severity": "",
+        "retryable": false,
+        "nextAction": "no_open_exception",
+        "reasons": []
+      },
+      {
+        "asin": "B0DPSJP47V",
+        "status": "clear",
+        "openCount": 0,
+        "totalCount": 0,
+        "primaryReason": "",
+        "primaryCategory": "",
+        "severity": "",
+        "retryable": false,
+        "nextAction": "no_open_exception",
+        "reasons": []
+      },
+      {
+        "asin": "B0F1DDLKBB",
+        "status": "clear",
+        "openCount": 0,
+        "totalCount": 0,
+        "primaryReason": "",
+        "primaryCategory": "",
+        "severity": "",
+        "retryable": false,
+        "nextAction": "no_open_exception",
+        "reasons": []
+      },
+      {
+        "asin": "B0CTBQCKL9",
+        "status": "clear",
+        "openCount": 0,
+        "totalCount": 0,
+        "primaryReason": "",
+        "primaryCategory": "",
+        "severity": "",
+        "retryable": false,
+        "nextAction": "no_open_exception",
+        "reasons": []
+      },
+      {
+        "asin": "B0FH7774VK",
+        "status": "clear",
+        "openCount": 0,
+        "totalCount": 0,
+        "primaryReason": "",
+        "primaryCategory": "",
+        "severity": "",
+        "retryable": false,
+        "nextAction": "no_open_exception",
+        "reasons": []
+      },
+      {
+        "asin": "B01E2EYG4U",
+        "status": "clear",
+        "openCount": 0,
+        "totalCount": 0,
+        "primaryReason": "",
+        "primaryCategory": "",
+        "severity": "",
+        "retryable": false,
+        "nextAction": "no_open_exception",
+        "reasons": []
+      },
+      {
+        "asin": "B0GFV4N3K8",
+        "status": "clear",
+        "openCount": 0,
+        "totalCount": 0,
+        "primaryReason": "",
+        "primaryCategory": "",
+        "severity": "",
+        "retryable": false,
+        "nextAction": "no_open_exception",
+        "reasons": []
+      },
+      {
+        "asin": "B0C1JY1C7F",
+        "status": "clear",
+        "openCount": 0,
+        "totalCount": 0,
+        "primaryReason": "",
+        "primaryCategory": "",
+        "severity": "",
+        "retryable": false,
+        "nextAction": "no_open_exception",
+        "reasons": []
+      }
+    ]
+  },
+  "summary": {
+    "total": 10,
+    "manifestAutoReady": 0,
+    "gateReady": 0,
+    "blocked": 10,
+    "controlRetryable": 0,
+    "manifestNextActionCounts": {
+      "recover_trusted_amazon_displayed_usd_price": 8,
+      "run_aliexpress_category_verification_or_import_confirmed_evidence": 2
+    },
+    "gateBlockerCounts": {
+      "category_evidence_missing": 10,
+      "amazon_displayed_price_missing": 10
+    },
+    "exceptionNextActionCounts": {}
+  },
+  "nextActionGroups": {
+    "recover_trusted_amazon_displayed_usd_price": [
+      "B0CZ7F61XN",
+      "B0DZ14L38Y",
+      "B0DXFB86J7",
+      "B0DPSJP47V",
+      "B0F1DDLKBB",
+      "B0CTBQCKL9",
+      "B0FH7774VK",
+      "B0GFV4N3K8"
+    ],
+    "run_aliexpress_category_verification_or_import_confirmed_evidence": [
+      "B01E2EYG4U",
+      "B0C1JY1C7F",
+      "B0CZ7F61XN",
+      "B0DZ14L38Y",
+      "B0DXFB86J7",
+      "B0DPSJP47V",
+      "B0F1DDLKBB",
+      "B0CTBQCKL9",
+      "B0FH7774VK",
+      "B0GFV4N3K8"
+    ]
+  },
+  "recommendedOrder": [
+    {
+      "step": "manual_risk_review_or_skip",
+      "asins": []
+    },
+    {
+      "step": "recover_prices",
+      "asins": [
+        "B0CZ7F61XN",
+        "B0DZ14L38Y",
+        "B0DXFB86J7",
+        "B0DPSJP47V",
+        "B0F1DDLKBB",
+        "B0CTBQCKL9",
+        "B0FH7774VK",
+        "B01E2EYG4U",
+        "B0GFV4N3K8",
+        "B0C1JY1C7F"
+      ]
+    },
+    {
+      "step": "verify_aliexpress_categories",
+      "asins": [
+        "B0CZ7F61XN",
+        "B0DZ14L38Y",
+        "B0DXFB86J7",
+        "B0DPSJP47V",
+        "B0F1DDLKBB",
+        "B0CTBQCKL9",
+        "B0FH7774VK",
+        "B01E2EYG4U",
+        "B0GFV4N3K8",
+        "B0C1JY1C7F"
+      ]
+    },
+    {
+      "step": "retry_control_readback",
+      "asins": []
+    },
+    {
+      "step": "readonly_edit_preflight",
+      "asins": []
+    },
+    {
+      "step": "wait_publish_readback",
+      "asins": []
+    },
+    {
+      "step": "batch_exception_report",
+      "asins": []
+    }
+  ]
+}

@@ -10,12 +10,52 @@
     "manualLearningIsNotPerProductFilling": true
   },
   "sourcePriority": [
-    "learned_rules.exact_asin_or_source_category",
-    "learned_rules.keyword_and_attribute_match",
-    "dianxiaomi_category_search_api",
+    "aliexpress_image_search_or_similar_product_category_evidence",
+    "aliexpress_search_result_structured_category_consensus",
+    "learned_rules_from_aliexpress_or_dxm_visible_category_evidence",
+    "dianxiaomi_visible_category_search_confirmation",
     "edit_json_existing_category",
-    "manual_confirm_queue_for_new_category"
+    "manual_confirm_queue_for_new_category",
+    "legacy_keyword_rules_for_diagnostics_only"
   ],
+  "replacementPolicy": {
+    "deepSeekIsFinalCategoryJudge": false,
+    "legacyKeywordRulesCanAutoSave": false,
+    "missingAliExpressEvidenceBlocksCategorySelection": true,
+    "learnedRulesMustComeFromAliExpressOrDxmVisibleEvidence": true,
+    "safeAdjacentDxmCategoryAllowedWhenExactLeafMissing": true,
+    "safeAdjacentRequiresClearProductFamilyEvidence": true
+  },
+  "adjacentCategoryPolicy": {
+    "aliexpressEvidenceRole": "Constrains product family and prevents obvious mismatch; it does not require the Dianxiaomi visible leaf text to be identical.",
+    "preferExactVisibleLeaf": true,
+    "allowSafeAdjacentVisibleLeaf": true,
+    "safeAdjacentPrinciple": "same use, same physical form, and no obvious mismatch; exact AliExpress leaf text is not required when Dianxiaomi lacks the exact category",
+    "domClickFailureRecovery": "use real coordinate double-click on the exact visible search-result row, then verify main-form category writeback",
+    "recordWhenUsed": "safe_adjacent_dxm_category_selected",
+    "recordFailureWhenNoSafeAdjacent": "dxm_visible_category_not_found"
+  },
+  "sessionPolicy": {
+    "defaultAliExpressAccountCount": 1,
+    "backupAccountAllowedForManualRecovery": true,
+    "autoAccountRotationAllowed": false,
+    "storeCredentialsInProject": false,
+    "useExistingChromeLoginSession": true,
+    "verificationPageHandling": "record aliexpress_verification_required and wait for user login/captcha completion"
+  },
+  "reusePolicy": {
+    "knownCategorySkipsAliExpressSearch": true,
+    "reuseSource": "skills/category-resolver/learned_rules.json active rules",
+    "rerunAliExpressEvidenceWhen": [
+      "new product family not in learned rules",
+      "multiple learned rules conflict",
+      "title/image/use does not match learned rule scope",
+      "Dianxiaomi visible category path cannot be found",
+      "save or publish preflight reports category/attribute mismatch",
+      "platform category appears changed"
+    ],
+    "samplingReviewAllowed": true
+  },
   "confidencePolicy": {
     "autoApplyMinConfidence": 0.85,
     "manualConfirmBelowConfidence": 0.85,
