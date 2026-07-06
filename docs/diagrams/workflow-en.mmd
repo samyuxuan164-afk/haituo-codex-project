@@ -1,0 +1,19 @@
+flowchart LR
+  Operator["Operator / Codex"] --> Boundary["Task boundary and project rules"]
+  Boundary --> Amazon["Amazon product pages"]
+  Boundary --> DXM["Dianxiaomi pages"]
+  Amazon --> Crawlbox["DXM Amazon Crawlbox V1"]
+  Crawlbox --> Evidence["Candidate, risk, price, category evidence"]
+  Evidence --> Tools["Local Node/Python tools"]
+  Tools --> Config["Schemas, thresholds, maps, risk rules"]
+  Tools --> Store["Reports, queues, run artifacts"]
+  DXM --> Main["DXM Automation V1 - NEW"]
+  Config --> Main
+  Evidence --> Main
+  Main --> Preflight["Readonly preflight and dry-run"]
+  Preflight --> Gate{"Explicit live gate?"}
+  Gate -->|"No"| Stop["Stop with report and blockers"]
+  Gate -->|"Yes"| Save["Guarded save to wait-publish"]
+  Save --> Readback["Authoritative wait-publish readback"]
+  Readback --> Store
+  Boundary -.->|"blocks publish / one-click publish"| Gate

@@ -1,0 +1,19 @@
+flowchart LR
+  Operator["操作者 / Codex"] --> Boundary["任务边界与项目规则"]
+  Boundary --> Amazon["Amazon 商品页面"]
+  Boundary --> DXM["店小秘页面"]
+  Amazon --> Crawlbox["DXM Amazon Crawlbox V1"]
+  Crawlbox --> Evidence["候选、风险、价格、类目证据"]
+  Evidence --> Tools["本地 Node/Python 工具"]
+  Tools --> Config["Schema、阈值、映射、风险规则"]
+  Tools --> Store["报告、队列、运行证据"]
+  DXM --> Main["DXM Automation V1 - NEW"]
+  Config --> Main
+  Evidence --> Main
+  Main --> Preflight["只读预检与 dry-run"]
+  Preflight --> Gate{"显式 live gate?"}
+  Gate -->|"否"| Stop["停止并输出报告/阻断项"]
+  Gate -->|"是"| Save["受控保存到待发布"]
+  Save --> Readback["待发布列表权威读回"]
+  Readback --> Store
+  Boundary -.->|"阻断发布 / 一键发布"| Gate
