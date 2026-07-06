@@ -76,6 +76,7 @@ function parseArgs(argv) {
     file: '',
     minPrice: '',
     maxPrice: '',
+    rangePolicy: process.env.TASK_PRICE_RANGE_POLICY || '',
     write: false,
     writeExceptions: false,
   };
@@ -118,6 +119,9 @@ function parseArgs(argv) {
     } else if (arg === '--max-price' && next) {
       args.maxPrice = next;
       i += 1;
+    } else if (arg === '--range-policy' && next) {
+      args.rangePolicy = next;
+      i += 1;
     } else if (arg === '--write') {
       args.write = true;
     } else if (arg === '--write-exceptions') {
@@ -140,8 +144,8 @@ function usage() {
     },
     priceRule: [
       'Use the price displayed on the Amazon product page at capture time.',
-      'If the displayed price is a range, use the highest value.',
-      'Examples: "$8.99 - $12.99" -> 12.99, "From $7.99" -> 7.99.',
+      'If the displayed price is a range, the current task must provide --range-policy or TASK_PRICE_RANGE_POLICY.',
+      'Supported range policies: highest_displayed_value, lowest_displayed_value.',
     ],
     safety: [
       'Readonly browser navigation/evaluation only.',
@@ -153,8 +157,17 @@ function usage() {
   };
 }
 
-function parseDisplayedPrice(text) {
+function selectRangeValue(values, rangePolicy) {
+  const usableValues = values.filter((value) => value > 0 && value < 100000);
+  if (!usableValues.length) return null;
+  if (rangePolicy === 'highest_displayed_value') return round2(Math.max(...usableValues));
+  if (rangePolicy === 'lowest_displayed_value') return round2(Math.min(...usableValues));
+  return null;
+}
+
+function parseDisplayedPrice(text, options = {}) {
   const sourceText = compactText(text);
+  const rangePolicy = compactText(options.rangePolicy || '');
   const candidates = [];
   const nonPriceContext = (index, raw) => {
     const start = Math.max(0, index - 14);
@@ -178,7 +191,7 @@ function parseDisplayedPrice(text) {
         source: 'symbol',
         raw: match[0],
         values: [round2(low), round2(high)],
-        selected: round2(Math.max(low, high)),
+        selected: selectRangeValue([round2(low), round2(high)], rangePolicy),
       });
     }
   }
@@ -193,7 +206,7 @@ function parseDisplayedPrice(text) {
         source: 'localized',
         raw: match[0],
         values: [round2(low), round2(high)],
-        selected: round2(Math.max(low, high)),
+        selected: selectRangeValue([round2(low), round2(high)], rangePolicy),
       });
     }
   }
@@ -238,16 +251,41 @@ function parseDisplayedPrice(text) {
       });
     }
   }
-  const usable = candidates.filter((item) => item.selected > 0 && item.selected < 100000);
+  const usable = candidates.filter((item) => {
+    if (item.type === 'range') return item.values.some((value) => value > 0 && value < 100000);
+    return item.selected > 0 && item.selected < 100000;
+  });
   const rangeCandidates = usable.filter((item) => item.type === 'range');
+  const supportedRangePolicies = ['highest_displayed_value', 'lowest_displayed_value'];
+  if (rangeCandidates.length && !rangePolicy) {
+    return {
+      ok: false,
+      amazonDisplayedPriceUsd: null,
+      reason: 'price_range_policy_missing',
+      candidates: usable,
+      rule: 'range_policy_missing',
+      sourceText: sourceText.slice(0, 1200),
+    };
+  }
+  if (rangeCandidates.length && !supportedRangePolicies.includes(rangePolicy)) {
+    return {
+      ok: false,
+      amazonDisplayedPriceUsd: null,
+      reason: 'price_range_policy_invalid',
+      candidates: usable,
+      rule: `range_policy_invalid:${rangePolicy}`,
+      sourceText: sourceText.slice(0, 1200),
+    };
+  }
   const source = rangeCandidates.length ? rangeCandidates : usable;
-  const selected = source.length ? round2(Math.max(...source.map((item) => item.selected))) : null;
+  const selectedValues = source.map((item) => item.selected).filter((value) => value > 0 && value < 100000);
+  const selected = selectedValues.length ? round2(Math.max(...selectedValues)) : null;
   return {
     ok: selected != null,
     amazonDisplayedPriceUsd: selected,
     reason: selected == null ? 'amazon_displayed_price_missing' : '',
     candidates: usable,
-    rule: rangeCandidates.length ? 'range_highest_value' : 'single_displayed_price',
+    rule: rangeCandidates.length ? `range_${rangePolicy}` : 'single_displayed_price',
     sourceText: sourceText.slice(0, 1200),
   };
 }
@@ -413,7 +451,7 @@ async function captureFromPage(args) {
   } catch (parseError) {
     return { ok: false, stage: 'parse_amazon_capture', error: String(parseError), raw: response.data || null };
   }
-  const price = parseDisplayedPrice(browser.selectedText || browser.bodyText || '');
+  const price = parseDisplayedPrice(browser.selectedText || browser.bodyText || '', { rangePolicy: args.rangePolicy });
   const reason = !price.ok
     ? browser.captcha
       ? 'amazon_page_captcha_or_robot_check'
@@ -468,7 +506,7 @@ async function main() {
     return;
   }
   if (args.command === 'parse-text') {
-    output({ ok: true, price: parseDisplayedPrice(readParseText(args)) });
+    output({ ok: true, price: parseDisplayedPrice(readParseText(args), { rangePolicy: args.rangePolicy }) });
     return;
   }
   if (args.command === 'capture') {

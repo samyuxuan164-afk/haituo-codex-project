@@ -3,7 +3,7 @@
 Language: **English** | [简体中文](architecture.zh-CN.md)
 
 <p align="center">
-  <img src="assets/architecture-overview-en.svg" alt="Haituo Codex Project architecture overview" width="960">
+  <img src="assets/architecture-overview-en.png" alt="Haituo Codex Proven Execution Flow" width="960">
 </p>
 
 ## 1. System Overview
@@ -12,6 +12,8 @@ Haituo Codex Project is a gated browser automation workspace for preparing Dianx
 
 Project ownership is explicit: this is Sam's company collaboration project. The company upstream repository is `samyuxuan164-afk/haituo-codex-project`, and `ALdaisuki/haituo-codex-project` is the collaborator fork used for preparation and review. Changes should land on the collaborator fork first, pass fork-side diff and privacy audit, and only then be proposed to the company upstream by PR.
 
+Maintenance language is also explicit: pull request titles, pull request bodies, review discussion, and maintenance notes default to Chinese. English may remain for code identifiers, exact logs, external platform terms, and bilingual documents, but Chinese is the default human-facing maintenance language.
+
 The system goal is controlled preparation, not unrestricted business execution. It may scan candidates, build evidence, perform readonly preflight, generate dry-run payload reports, and record blockers. Live collection, claim, edit, or save actions require explicit task authorization. Final publish and one-click publish are outside the current target.
 
 ## 2. Architecture Diagram
@@ -19,7 +21,7 @@ The system goal is controlled preparation, not unrestricted business execution. 
 Source files:
 
 - Mermaid workflow: [diagrams/workflow-en.mmd](diagrams/workflow-en.mmd)
-- SVG overview: [assets/architecture-overview-en.svg](assets/architecture-overview-en.svg)
+- PNG overview: [assets/architecture-overview-en.png](assets/architecture-overview-en.png)
 - ASCII overview: [architecture-ascii.md](architecture-ascii.md)
 
 ```mermaid

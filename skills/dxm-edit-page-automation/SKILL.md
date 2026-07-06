@@ -40,7 +40,14 @@ Amazon 商品 -> 店小秘采集箱 -> 认领 -> 编辑页自动填写 -> 保存
 ```json
 {
   "asin": "Amazon ASIN",
-  "amazonOriginalPriceUsd": 0,
+  "amazonDisplayedPriceUsd": 0,
+  "priceFormula": {
+    "exchangeRate": 0,
+    "multiplier": 0,
+    "tiers": [],
+    "rounding": "round-2",
+    "rangePolicy": ""
+  },
   "visibleRequiredMarks": [],
   "targetStore": "Halo Home Store"
 }
@@ -59,7 +66,7 @@ Amazon 商品 -> 店小秘采集箱 -> 认领 -> 编辑页自动填写 -> 保存
 9. 变种信息 `销售方式/打包出售` 无红星，默认不勾选、不分析。
 10. `商家仓库存` 默认填写 `15`。
 11. `SKU编码` 填写当前 ASIN。
-12. `货值(CNY)` 按 `Amazon 原价 USD x 7 x 1.55` 计算并保留 2 位小数。
+12. `货值(CNY)` 按当前任务确认的 Amazon 页面展示价格、汇率、倍率/阶梯倍率、舍入规则和区间价策略计算；缺少当前任务价格参数时不得保存。
 13. 运费模板固定真实选择并读回 `111`。
 
 ### Output
@@ -235,7 +242,7 @@ Amazon 商品 -> 店小秘采集箱 -> 认领 -> 编辑页自动填写 -> 保存
    - Brand / High-concerned chemical / Origin 等红星必填属性已真实读回；
    - 运费模板真实读回为 `111`；
    - Ships From 真实读回为 `United States/美国`；
-   - 价格等于 `Amazon original price × 7 × 1.55`；
+   - 价格等于当前任务价格参数计算出的期望值；
    - SKU 为当前 ASIN；
    - 库存为 `15`；
    - 自定义属性已清空或不存在 70 字符错误；

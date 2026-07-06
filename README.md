@@ -10,7 +10,7 @@ og:type: website
 og:url: https://github.com/samyuxuan164-afk/haituo-codex-project
 og:title: Haituo Codex Project - Gated Dianxiaomi Automation
 og:description: Browser userscripts, local evidence tools, safety gates, and audit-ready documentation for controlled Dianxiaomi listing preparation.
-og:image: docs/assets/architecture-overview-en.svg
+og:image: docs/assets/architecture-overview-en.png
 -->
 
 <div align="center">
@@ -31,7 +31,7 @@ Controlled Dianxiaomi listing automation with Tampermonkey userscripts, local ev
 </div>
 
 <p align="center">
-  <img src="docs/assets/architecture-overview-en.svg" alt="Haituo Codex Project architecture overview" width="960">
+  <img src="docs/assets/architecture-overview-en.png" alt="Haituo Codex Proven Execution Flow" width="960">
 </p>
 
 ## Table Of Contents
@@ -159,6 +159,7 @@ There is no package manifest or unified test runner yet. Use the safe local base
 
 ```powershell
 node tools\aliexpress-evidence-policy.test.js
+node tools\dxm-automation-core.test.js
 git ls-files "*.js" "*.mjs" | ForEach-Object { node --check $_ }
 @'
 import ast, subprocess
@@ -199,9 +200,13 @@ local worktree
 
 Do not include local private paths, credentials, cookies, browser profiles, tokens, payload dumps, or personal Codex runtime metadata in PR diffs.
 
+## Maintenance Language
+
+Chinese is the default language for pull request titles, pull request bodies, review discussion, and maintenance notes in this project. Keep code identifiers, exact logs, external platform terms, and English documentation where they are already required, but the default human-facing maintenance explanation should be Chinese. If an upstream reviewer needs English, add an English summary after the Chinese text rather than replacing it.
+
 ## Known Gaps
 
-- The main userscript is large and should be split into testable pure modules over time.
+- The main userscript is still large; the first pure modules now live under `src/dxm-automation-core/`, and deeper extraction remains future work.
 - There is no unified `npm test` or equivalent safe local command yet.
 - Browser/live validation remains procedure-driven because it can mutate business state.
 - Historical logs are useful but should not override `TASK.md`, source headers, or current audit docs.
