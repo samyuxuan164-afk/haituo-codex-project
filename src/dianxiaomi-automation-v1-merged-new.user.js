@@ -9523,6 +9523,44 @@
     };
   }
 
+  function normalizeBusinessGateBlocker(blocker) {
+    const raw = normalizeSpaces(blocker);
+    const text = raw.toLowerCase();
+    if (!text) return '';
+    if (/category_evidence_missing|aliexpress category evidence/.test(text)) return 'category_evidence_missing';
+    if (/aliexpress_category_confirmed_but_dxm_mapping_missing|aliexpress_dxm_category_map_missing/.test(text)) return 'aliexpress_dxm_category_map_missing';
+    if (/product category is not selected|category is not selected|\u4ea7\u54c1\u5206\u7c7b.*(\u672a|\u7a7a)/i.test(raw)) return 'product_category_not_selected';
+    if (/postage template is not 111|freight template is not 111|\u8fd0\u8d39.*111/i.test(raw)) return 'postage_template_not_111';
+    if (/ships? from is not united states|\u53d1\u8d27\u5730.*(united states|\u7f8e\u56fd)/i.test(raw)) return 'ships_from_not_united_states';
+    if (/amazon_displayed_price_missing|amazon_original_price_missing|price.*missing/.test(text)) return 'amazon_displayed_price_missing';
+    if (/price_formula_missing_exchange_rate_or_multiplier/.test(text)) return 'price_formula_missing_exchange_rate_or_multiplier';
+    if (/required attributes incomplete|product attribute|\u8bf7\u9009\u62e9\u4ea7\u54c1\u5c5e\u6027/.test(text)) return 'required_attributes_incomplete';
+    return text.replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '') || 'unknown_preflight_blocker';
+  }
+
+  function normalizeBusinessGateBlockers(blockers) {
+    const seen = new Set();
+    const output = [];
+    (Array.isArray(blockers) ? blockers : []).forEach((blocker) => {
+      const normalized = normalizeBusinessGateBlocker(blocker);
+      if (!normalized || seen.has(normalized)) return;
+      seen.add(normalized);
+      output.push(normalized);
+    });
+    return output;
+  }
+
+  function businessGateNextAction(blockers) {
+    if (blockers.includes('category_evidence_missing')) return 'run_aliexpress_category_verification_before_save';
+    if (blockers.includes('aliexpress_dxm_category_map_missing')) return 'map_verified_aliexpress_category_to_dxm_before_save';
+    if (blockers.includes('amazon_displayed_price_missing')) return 'recover_trusted_amazon_displayed_usd_price';
+    if (blockers.includes('price_formula_missing_exchange_rate_or_multiplier')) return 'provide_task_exchange_rate_and_multiplier';
+    if (blockers.includes('postage_template_not_111')) return 'select_real_postage_template_111_before_save';
+    if (blockers.includes('ships_from_not_united_states')) return 'select_real_ships_from_united_states_before_save';
+    if (blockers.includes('product_category_not_selected')) return 'select_verified_dxm_category_before_save';
+    return 'manual_edit_preflight_review';
+  }
+
   function buildReadonlyEditPreflightReadback() {
     const product = getProductFromEdit(state.editData) || {};
     const titleInput = findProductTitleInput();
@@ -9544,6 +9582,10 @@
     if (!isEditPage()) blockers.push('not_edit_page');
     if (error) blockers.push(`readonly_preflight_error: ${error}`);
     if (preflight && Array.isArray(preflight.risks)) blockers.push(...preflight.risks);
+    if (dangerousActions.publishControlVisible) blockers.push('publish_control_visible');
+    const normalizedBlockers = normalizeBusinessGateBlockers(blockers);
+    const preflightPass = Boolean(preflight && preflight.pass);
+    const safeToSaveToWaitPublish = Boolean(preflightPass && !dangerousActions.publishControlVisible && normalizedBlockers.length === 0);
     const result = {
       app: APP_NAME,
       version: VERSION,
@@ -9567,11 +9609,18 @@
       },
       preflight: preflight ? makeReadonlyJsonSafe(preflight) : null,
       dangerousActions,
-      preflightPass: Boolean(preflight && preflight.pass),
+      preflightPass,
       publishRisk: dangerousActions.publishControlVisible,
-      safeToSaveToWaitPublish: Boolean(preflight && preflight.pass && !dangerousActions.publishControlVisible),
-      pass: Boolean(preflight && preflight.pass),
+      safeToSaveToWaitPublish,
+      pass: preflightPass,
       blockers,
+      businessGate: {
+        allowed: safeToSaveToWaitPublish,
+        blockers: normalizedBlockers,
+        nextAction: normalizedBlockers.length
+          ? businessGateNextAction(normalizedBlockers)
+          : 'save_to_wait_publish_only_after_final_visible_confirmation',
+      },
       error,
     };
     return makeReadonlyJsonSafe(result);

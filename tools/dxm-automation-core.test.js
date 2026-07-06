@@ -155,4 +155,105 @@ assert.deepStrictEqual(editPreflightDiagnosis.normalizedBlockers, [
 ]);
 assert.strictEqual(editPreflightDiagnosis.nextAction, 'run_aliexpress_category_verification_before_save');
 
+const { businessGates } = require('../src/dxm-automation-core');
+
+const crawlboxGate = businessGates.evaluateCrawlboxClaimGate({
+  targetAsins,
+  rows: crawlboxRows,
+  priceRange: { min: 5, max: 20 },
+});
+assert.strictEqual(crawlboxGate.allowed, false);
+assert.deepStrictEqual(crawlboxGate.blockers, ['crawlbox_duplicate_rows', 'price_out_of_range_or_zero']);
+assert.deepStrictEqual(crawlboxGate.normalized.safeClaimAsins, targetAsins.slice(0, 7));
+assert.strictEqual(crawlboxGate.nextAction, 'skip_or_confirm_price_range_exception');
+
+const categoryMissingGate = businessGates.evaluateCategoryEvidenceGate({
+  status: 'missing',
+  dxmCandidateCategory: '',
+});
+assert.strictEqual(categoryMissingGate.allowed, false);
+assert.deepStrictEqual(categoryMissingGate.blockers, ['category_evidence_missing']);
+
+const categoryVerifiedGate = businessGates.evaluateCategoryEvidenceGate({
+  status: 'conditional_verified',
+  confidenceTier: 'low_confidence',
+  dxmCandidateCategory: 'Home & Garden > Storage Boxes & Bins',
+});
+assert.strictEqual(categoryVerifiedGate.allowed, true);
+assert.deepStrictEqual(categoryVerifiedGate.blockers, []);
+
+const missingPriceGate = businessGates.evaluatePriceGate({
+  asin: 'B0F2H4PF7R',
+  status: 'missing',
+  trusted: false,
+  sourcePriceUsd: '',
+  exchangeRate: 7,
+  multiplier: 1.55,
+});
+assert.strictEqual(missingPriceGate.allowed, false);
+assert.deepStrictEqual(missingPriceGate.blockers, ['amazon_displayed_price_missing']);
+
+const formulaPriceGate = businessGates.evaluatePriceGate({
+  asin: 'B0F2H4PF7R',
+  status: 'trusted',
+  trusted: true,
+  sourcePriceUsd: 12.99,
+  exchangeRate: '',
+  multiplier: 1.55,
+});
+assert.strictEqual(formulaPriceGate.allowed, false);
+assert.deepStrictEqual(formulaPriceGate.blockers, ['price_formula_missing_exchange_rate_or_multiplier']);
+
+const readyPriceGate = businessGates.evaluatePriceGate({
+  asin: 'B0F2H4PF7R',
+  status: 'trusted',
+  trusted: true,
+  sourcePriceUsd: 12.99,
+  exchangeRate: 7,
+  multiplier: 1.55,
+  priceRange: { min: 5, max: 20 },
+});
+assert.strictEqual(readyPriceGate.allowed, true);
+assert.strictEqual(readyPriceGate.normalized.expectedCnyPrice, '140.94');
+
+assert.strictEqual(businessGates.evaluateTemplateGate({ selectedText: '--- 请选择运费模板 ---' }).allowed, false);
+assert.deepStrictEqual(
+  businessGates.evaluateTemplateGate({ selectedText: '--- 请选择运费模板 ---' }).blockers,
+  ['postage_template_not_111']
+);
+assert.strictEqual(businessGates.evaluateTemplateGate({ selectedText: '111' }).allowed, true);
+
+assert.strictEqual(businessGates.evaluateShipsFromGate({ selectedText: '中国大陆(Mainland China)' }).allowed, false);
+assert.deepStrictEqual(
+  businessGates.evaluateShipsFromGate({ selectedText: '中国大陆(Mainland China)' }).blockers,
+  ['ships_from_not_united_states']
+);
+assert.strictEqual(businessGates.evaluateShipsFromGate({ selectedText: '美国(United States)' }).allowed, true);
+
+const editSaveGate = businessGates.evaluateEditSaveGate({
+  categoryEvidence: categoryVerifiedGate,
+  price: readyPriceGate,
+  freight: businessGates.evaluateTemplateGate({ selectedText: '111' }),
+  shipsFrom: businessGates.evaluateShipsFromGate({ selectedText: 'United States' }),
+  preflightBlockers: [],
+});
+assert.strictEqual(editSaveGate.allowed, true);
+assert.strictEqual(editSaveGate.nextAction, 'save_to_wait_publish_only_after_final_visible_confirmation');
+
+const blockedEditSaveGate = businessGates.evaluateEditSaveGate({
+  categoryEvidence: categoryMissingGate,
+  price: readyPriceGate,
+  freight: businessGates.evaluateTemplateGate({ selectedText: '--- 请选择运费模板 ---' }),
+  shipsFrom: businessGates.evaluateShipsFromGate({ selectedText: '' }),
+  preflightBlockers: ['product category is not selected'],
+});
+assert.strictEqual(blockedEditSaveGate.allowed, false);
+assert.deepStrictEqual(blockedEditSaveGate.blockers, [
+  'category_evidence_missing',
+  'postage_template_not_111',
+  'ships_from_not_united_states',
+  'product_category_not_selected',
+]);
+assert.strictEqual(blockedEditSaveGate.nextAction, 'run_aliexpress_category_verification_before_save');
+
 process.stdout.write('dxm-automation-core.test.js passed\n');
