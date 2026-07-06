@@ -3,7 +3,7 @@
 语言：[English](architecture.md) | **简体中文**
 
 <p align="center">
-  <img src="assets/architecture-overview-zh.svg" alt="Haituo Codex Project 中文架构总览" width="960">
+  <img src="assets/architecture-overview-zh.png" alt="Haituo Codex 已跑通执行流程" width="960">
 </p>
 
 ## 1. 系统概览
@@ -19,7 +19,7 @@ Haituo Codex Project 是一个带安全闸门的浏览器自动化工作区，�
 源文件：
 
 - Mermaid 工作流：[diagrams/workflow-zh.mmd](diagrams/workflow-zh.mmd)
-- SVG 总览：[assets/architecture-overview-zh.svg](assets/architecture-overview-zh.svg)
+- PNG 总览：[assets/architecture-overview-zh.png](assets/architecture-overview-zh.png)
 - ASCII 总览：[architecture-ascii.zh-CN.md](architecture-ascii.zh-CN.md)
 
 ```mermaid

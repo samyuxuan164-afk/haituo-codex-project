@@ -3,7 +3,7 @@
 Language: **English** | [简体中文](architecture.zh-CN.md)
 
 <p align="center">
-  <img src="assets/architecture-overview-en.svg" alt="Haituo Codex Project architecture overview" width="960">
+  <img src="assets/architecture-overview-en.png" alt="Haituo Codex Proven Execution Flow" width="960">
 </p>
 
 ## 1. System Overview
@@ -19,7 +19,7 @@ The system goal is controlled preparation, not unrestricted business execution. 
 Source files:
 
 - Mermaid workflow: [diagrams/workflow-en.mmd](diagrams/workflow-en.mmd)
-- SVG overview: [assets/architecture-overview-en.svg](assets/architecture-overview-en.svg)
+- PNG overview: [assets/architecture-overview-en.png](assets/architecture-overview-en.png)
 - ASCII overview: [architecture-ascii.md](architecture-ascii.md)
 
 ```mermaid

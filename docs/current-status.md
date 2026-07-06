@@ -1,4 +1,36 @@
-# Current Status - 2026-07-04
+# Current Status - 2026-07-06
+
+## Latest Source-Level Development - 2026-07-06
+
+```text
+Current phase: Development / source-level userscript pure-module extraction
+
+Prepared source-level pure modules under src/dxm-automation-core for text rules, pricing/dimension rules, and PC detail image-first rules. Added tools/dxm-automation-core.test.js as the second explicit Node assertion test. No live Dianxiaomi page action, collection, claim, edit, save, publish, or one-click publish was executed.
+
+Modules added:
+- src/dxm-automation-core/text-rules.js
+- src/dxm-automation-core/pricing-rules.js
+- src/dxm-automation-core/pc-detail-rules.js
+- src/dxm-automation-core/index.js
+
+Documentation assets updated:
+- docs/assets/architecture-overview-en.png
+- docs/assets/architecture-overview-zh.png
+- The previous SVG overview assets were replaced by the approved bilingual proven execution flow diagrams.
+
+Test surface now includes two explicit Node assertion tests:
+- tools/aliexpress-evidence-policy.test.js
+- tools/dxm-automation-core.test.js
+
+Runtime boundary:
+- The installed Tampermonkey runtime artifact remains the existing single userscript.
+- DOM automation, Ant dropdown interactions, WebBridge, preflight readback, native save, publishing, and panel UI remain in the userscript adapter.
+- This task does not authorize live Dianxiaomi business actions.
+
+Documentation drift rule:
+- Development work must update relevant docs before completion when code behavior, test surface, safety boundary, or project status changes.
+- The principle-level rule is recorded in AGENT.md under Long-term Hard Rules.
+```
 
 ## Latest Update - 2026-07-04
 

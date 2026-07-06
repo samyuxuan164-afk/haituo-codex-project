@@ -23,7 +23,7 @@ canonical: https://github.com/samyuxuan164-afk/haituo-codex-project
 </div>
 
 <p align="center">
-  <img src="docs/assets/architecture-overview-zh.svg" alt="Haituo Codex Project 中文架构总览" width="960">
+  <img src="docs/assets/architecture-overview-zh.png" alt="Haituo Codex 已跑通执行流程" width="960">
 </p>
 
 ## 目录
@@ -153,6 +153,7 @@ flowchart LR
 
 ```powershell
 node tools\aliexpress-evidence-policy.test.js
+node tools\dxm-automation-core.test.js
 git ls-files "*.js" "*.mjs" | ForEach-Object { node --check $_ }
 @'
 import ast, subprocess
@@ -195,7 +196,7 @@ PR diff 不应包含本地私人路径、凭据、cookies、浏览器 profile、
 
 ## 已知缺口
 
-- 主 userscript 体积较大，后续应拆分为可测试纯模块。
+- 主 userscript 体积仍较大；第一批纯模块已放在 `src/dxm-automation-core/`，后续仍需要继续拆分。
 - 尚无统一 `npm test` 或等价安全本地命令。
 - 浏览器/live 验证可能改变业务状态，因此必须保持独立 gated procedure。
 - 历史日志有价值，但不能覆盖 `TASK.md`、源码头部和当前审计文档。

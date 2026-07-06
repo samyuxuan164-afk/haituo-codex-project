@@ -36,6 +36,6 @@ for path in subprocess.check_output(['git', 'ls-files', '*.py'], text=True).spli
     ast.parse(open(path, encoding='utf-8').read(), filename=path)
 print('python ast ok')
 '@ | python -
-node -e "const fs=require('fs'); for (const f of ['docs/assets/architecture-overview-en.svg','docs/assets/architecture-overview-zh.svg']) { if (!fs.readFileSync(f,'utf8').includes('<svg')) process.exit(1) }"
+node -e "const fs=require('fs'); for (const f of ['docs/assets/architecture-overview-en.png','docs/assets/architecture-overview-zh.png']) { if (fs.statSync(f).size === 0) process.exit(1) }"
 git diff --check
 ```

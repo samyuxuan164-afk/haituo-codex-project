@@ -11,7 +11,7 @@ Do not treat live Dianxiaomi behavior as an ordinary automated test. Collection,
 | Layer | Purpose | Safe locally | Current command examples |
 |---|---|---:|---|
 | Static syntax | Catch parse errors in userscripts/tools | Yes | `node --check <file>` |
-| Pure policy tests | Test deterministic Node modules | Yes | `node tools\aliexpress-evidence-policy.test.js` |
+| Pure policy tests | Test deterministic Node modules | Yes | `node tools\aliexpress-evidence-policy.test.js`; `node tools\dxm-automation-core.test.js` |
 | JSON/schema validation | Validate config, thresholds, product-understanding outputs | Yes | `python tools\validate-product-understanding.py <fixture>` when fixtures are available |
 | Offline payload analysis | Diff or inspect saved payload bundles | Yes | `python tools\diff-save-payload.py ...` when fixtures are available |
 | Read-only browser preflight | Read page state without mutating Dianxiaomi | Gated | `tools/dxm-live-edit-helper.js readonly` with current task approval |
@@ -24,6 +24,7 @@ Run these before publishing documentation or touching source:
 
 ```powershell
 node tools\aliexpress-evidence-policy.test.js
+node tools\dxm-automation-core.test.js
 node --check src\dianxiaomi-automation-v1-merged-new.user.js
 node --check src\dianxiaomi-amazon-crawlbox-v1.user.js
 git diff --check
@@ -45,6 +46,7 @@ Before finishing a docs pass, verify active entry docs do not reintroduce known 
 
 ```powershell
 rg -n "1\.1\.14|1\.1\.43|0\.1\.15" README.md docs\install.md docs\architecture.md docs\test-plan.md docs\test-results.md
+rg -n 'only\s+one\s+explicit|Only\s+one\s+explicit|one\s+explicit' README.md README.zh-CN.md docs\test-plan.md docs\test-results.md docs\current-status.md
 ```
 
 Expected result for current docs: no matches.
@@ -67,8 +69,8 @@ Interpretation:
 
 Known gaps as of 2026-07-06:
 
-1. Only one explicit test file was discovered: `tools/aliexpress-evidence-policy.test.js`.
+1. Two explicit Node assertion tests exist: `tools/aliexpress-evidence-policy.test.js` and `tools/dxm-automation-core.test.js`.
 2. No manifest exposes `npm test`, `pnpm test`, `pytest`, or similar.
-3. The largest userscript has limited direct test coverage.
+3. The largest userscript still has limited direct test coverage beyond the first extracted pure modules.
 4. Browser/live validation relies on run reports and explicit gated procedures.
 5. Screenshot cleanup is documented, but evidence retention should be audited after each task.
