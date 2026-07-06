@@ -68,11 +68,11 @@
 
 ## 4. 价格来源规则
 
-1. 货值 / 供货价只能来自当前任务 Amazon 页面展示价格 USD × 当前任务汇率 × 当前任务倍率。
-2. 当前 100 品类任务使用的公式是 `Amazon 页面展示价格 USD x 7 x 1.55`，结果保留 2 位小数；后续任务如配置不同，以任务配置为准。
+1. 货值 / 供货价只能来自当前任务 Amazon 页面展示价格 USD、当前任务汇率、当前任务倍率/阶梯倍率、舍入规则和区间价策略。
+2. 当前 100 品类任务价格参数暂为 `Amazon 页面展示价格 USD x 7 x 1.55`，结果保留 2 位小数；后续任务如配置不同，以任务配置为准。
 3. 禁止使用店小秘页面旧价格、缓存价格、采集批次缓存价、`product.price`、`sourcePrice`、`minPrice`、`maxPrice`、UI 数字扫描或手动 CNY 覆盖作为保存价格来源。
-4. Amazon 页面展示单一价格时直接取该价格；Amazon 页面展示价格区间时取最高值，例如 `$8.99 - $12.99` 取 `$12.99`。
-5. 缺少可信 Amazon 页面展示价格时，必须阻断 preflight / save，记录价格来源缺失。
+4. Amazon 页面展示单一价格时直接取该价格；Amazon 页面展示价格区间时必须按当前任务 `rangePolicy` 处理。当前 100 品类任务的策略是 `highest_displayed_value`，例如 `$8.99 - $12.99` 取 `$12.99`；后续任务可配置不同区间策略。
+5. 缺少可信 Amazon 页面展示价格时，必须阻断 preflight / save，记录价格来源缺失；区间价缺少或配置了不支持的 `rangePolicy` 时，分别记录 `price_range_policy_missing` / `price_range_policy_invalid`。
 6. 保存前必须校验 visible 变种货值和 payload SKU 价格等于期望值；不一致禁止保存。
 7. 异常价格必须在发布前单独检查，不能只因商品进入待发布就默认价格正确。
 8. 可信 Amazon 页面展示价格 USD 的机器入口为 `runs/amazon-price-store.json`。
@@ -84,7 +84,7 @@
 14. 采价失败写入异常队列必须显式使用 `--write-exceptions`；不得因为采价失败而改用店小秘旧价或缓存价。
 15. 价格状态可通过 `tools/exception-queue.js from-price-status` 进入统一异常队列。
 16. 批量 Amazon 页面展示价格采集入口为 `tools/amazon-displayed-price-batch.js`；默认 dry-run、顺序执行、复用一个 Amazon 标签页，只有显式 `--write-prices` 才写价格库，只有显式 `--write-exceptions` 才写异常队列。
-17. Amazon 页面被浏览器翻译或本地化时，`17.99美元`、`17美元 . 99` 等可作为 USD 展示价候选；必须先过滤中文免运门槛、销量、促销额度等非商品价格，再按当前规则从真实展示价中取最高值。
+17. Amazon 页面被浏览器翻译或本地化时，`17.99美元`、`17美元 . 99` 等可作为 USD 展示价候选；必须先过滤中文免运门槛、销量、促销额度等非商品价格，再按当前任务 `rangePolicy` 从真实展示价中选择价格。
 18. 价格文本中的销量/购买量、`订单满 xx 美元` 免费送货门槛、信用卡/促销立减额度等不属于商品展示价，必须过滤。
 
 ## 5. WebBridge / tab-control 中断归类

@@ -2,10 +2,37 @@
 
 function toNumber(value) {
   if (value == null || value === '') return null;
-  const matches = String(value).replace(/,/g, '').match(/\d+(?:\.\d+)?/g);
-  if (!matches) return null;
-  const numbers = matches.map(Number).filter(Number.isFinite);
+  const numbers = extractNumbers(value);
   return numbers.length ? Math.max(...numbers) : null;
+}
+
+function extractNumbers(value) {
+  const matches = String(value).replace(/,/g, '').match(/\d+(?:\.\d+)?/g);
+  if (!matches) return [];
+  return matches.map(Number).filter(Number.isFinite);
+}
+
+function selectPriceUsd(value, rangePolicy) {
+  const numbers = extractNumbers(value);
+  if (!numbers.length) return null;
+  if (numbers.length === 1) return numbers[0];
+  if (rangePolicy === 'highest_displayed_value') return Math.max(...numbers);
+  if (rangePolicy === 'lowest_displayed_value') return Math.min(...numbers);
+  return null;
+}
+
+function resolveMultiplier(priceUsd, multiplierConfig) {
+  if (multiplierConfig && typeof multiplierConfig === 'object') {
+    const tiers = Array.isArray(multiplierConfig.tiers) ? multiplierConfig.tiers : [];
+    const matchedTier = tiers.find((tier) => {
+      const minUsd = tier.minUsd == null ? -Infinity : toNumber(tier.minUsd);
+      const maxUsd = tier.maxUsd == null ? Infinity : toNumber(tier.maxUsd);
+      if (minUsd == null || maxUsd == null) return false;
+      return priceUsd >= minUsd && priceUsd <= maxUsd;
+    });
+    return toNumber(matchedTier ? matchedTier.multiplier : multiplierConfig.multiplier);
+  }
+  return toNumber(multiplierConfig);
 }
 
 function round2(value) {
@@ -50,10 +77,10 @@ function parseWeightKg(text) {
   return String(round2(value));
 }
 
-function calculateSupplyPriceCny(sourcePriceUsd, exchangeRate, multiplier) {
-  const price = toNumber(sourcePriceUsd);
+function calculateSupplyPriceCny(sourcePriceUsd, exchangeRate, multiplier, options = {}) {
+  const price = selectPriceUsd(sourcePriceUsd, options.rangePolicy);
   const rate = toNumber(exchangeRate);
-  const factor = toNumber(multiplier);
+  const factor = resolveMultiplier(price, multiplier);
   if (price == null || rate == null || factor == null) return '';
   return String(round2(price * rate * factor));
 }
@@ -66,6 +93,7 @@ function priceEqualsExpected(value, expected) {
 
 module.exports = {
   toNumber,
+  selectPriceUsd,
   round2,
   positiveNumber,
   parseDimensionInches,

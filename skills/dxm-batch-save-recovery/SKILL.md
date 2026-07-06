@@ -4,7 +4,8 @@
 - Batch product list:
   - `asin`
   - `editUrl` or Dianxiaomi edit `id`
-  - `amazonOriginalUsd`
+  - `amazonDisplayedPriceUsd`
+  - `priceFormula` with exchange rate, multiplier or tiers, rounding, and range policy
   - `productFamily`
 - Current project rules:
   - no final publish
@@ -17,10 +18,11 @@
    - use `/web/smtlocalProduct/edit?id=<id>`;
    - prefer a new tab when the current tab has stale modal state or WebBridge focus ambiguity.
 2. Set trusted task values before applying edit rules:
-   - `dxm-single-submit-default-source-price = amazonOriginalUsd`;
+   - `dxm-single-submit-default-source-price = amazonDisplayedPriceUsd`;
    - `dxm-automation-amazon-source-asin = asin`;
-   - `dxm-automation-task-exchange-rate = 7`;
-   - `dxm-automation-task-price-multiplier = 1.55`;
+   - `dxm-automation-task-exchange-rate = priceFormula.exchangeRate`;
+   - `dxm-automation-task-price-multiplier = priceFormula.multiplier` or the resolved task tier multiplier;
+   - `dxm-automation-task-price-range-policy = priceFormula.rangePolicy`;
    - `dxm-single-submit-default-stock = 15`.
 3. Run edit-page rules with timeout:
    - call `window.__DXM_AUTOMATION_V1_APPLY_EDIT_RULES__({ manual: true, preSave: true })`;
@@ -52,7 +54,7 @@
 10. Save only when all save gates pass:
    - category selected;
    - required attributes have no visible red error;
-   - expected price is visible: `amazonOriginalUsd x 7 x 1.55`;
+   - expected price is visible and matches the current task price formula;
    - `Ships From` is United States;
    - freight template is `111`;
    - stock is `15`;

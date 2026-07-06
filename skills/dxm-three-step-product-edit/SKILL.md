@@ -5,7 +5,12 @@ Authoritative exception rules: `docs/exception-rules.md`. This skill must not ex
 ## Input
 - `asin`
 - `editId` or `editUrl`
-- `amazonOriginalUsd`
+- `amazonDisplayedPriceUsd`
+- `priceFormula`:
+  - `exchangeRate`
+  - `multiplier` or `tiers`
+  - `rounding`
+  - `rangePolicy`
 - `productFamily`
 - `targetStore`: `Halo Home Store`
 - `verifiedCategoryRule`:
@@ -27,10 +32,10 @@ Authoritative exception rules: `docs/exception-rules.md`. This skill must not ex
    - for category modal result rows, use a real double click on the exact result item and then verify category writeback;
    - for freight template `111`, open the dropdown, clear the search text first, read the full list, then choose exact `111`;
    - for custom attributes, delete invalid rows until no row-level error remains; do not only clear input values;
-   - set price from `amazonOriginalUsd x 7 x 1.55`, stock `15`, and SKU `asin`.
+   - set price from the current task's `amazonDisplayedPriceUsd` and `priceFormula`, stock `15`, and SKU `asin`.
 3. Verify:
    - after each fix, read back the exact field that was changed;
-   - before save, require category selected, required attributes complete, freight `111`, Ships From `United States`, expected CNY price, stock `15`, SKU ASIN, PC description >= 500 chars, and no visible validation error;
+   - before save, require category selected, required attributes complete, freight `111`, Ships From `United States`, current-task expected CNY price, stock `15`, SKU ASIN, PC description >= 500 chars, and no visible validation error;
    - click only `保存并移入待发布`;
    - confirm success either by `产品已移入待发布` modal or `/web/smtlocalProduct/offline` readback.
 4. Stop:

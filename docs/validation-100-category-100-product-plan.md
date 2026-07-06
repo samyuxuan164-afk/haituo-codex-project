@@ -15,7 +15,7 @@
 | 目标 | 编辑到待发布，不发布，不一键发布 |
 | 产品来源 | Amazon 搜索 |
 | 新采集 / 认领 | 允许新采集，允许认领 |
-| 价格范围与公式 | Amazon 页面展示价格 USD 5-20；货值 = 页面展示价格 x 7 x 1.55；区间价取最高值 |
+| 当前任务价格参数 | Amazon 页面展示价格 USD 5-20；本次 100 品类任务暂按页面展示价格 x 7 x 1.55，区间价策略为 `highest_displayed_value`；非长期公式 |
 | 样本要求 | 100 条，每个类目 1 条 |
 | 类目证据 | 需要 AliExpress 类目证据；允许安全相邻类目 |
 | 预判分流 | 只对 `auto_ready` 产品执行 |
@@ -89,7 +89,7 @@ Amazon 候选过滤
    - 跳过无清晰主图产品；
    - 跳过变体过复杂产品；
    - 跳过不适合当前海外托管流程的高风险商品。
-5. 价格要求：每个产品必须保留可信 Amazon 页面展示价格 USD，且页面展示价格范围必须为 USD 5-20；如果 Amazon 展示价格区间，取最高值判断范围并计算货值。
+5. 价格要求：每个产品必须保留可信 Amazon 页面展示价格 USD，且页面展示价格范围必须为 USD 5-20；如果 Amazon 展示价格区间，必须按当前任务 `rangePolicy` 判断范围并计算货值，本次任务策略为 `highest_displayed_value`。
 
 ## 分阶段执行计划
 
@@ -193,7 +193,7 @@ expectedFreightTemplate=111
 3. 没有精确 DXM 类目时，允许安全相邻类目，记录 `safe_adjacent_dxm_category_selected`。
 4. 必填下拉字段必须真实选择选项并读回 label。
 5. native save 暴露额外字段时，按 `docs/exception-rules.md` 修复。
-6. 货值按当前任务 Amazon 页面展示价格 USD × 汇率 × 倍率计算；区间价取最高值。
+6. 货值按当前任务 Amazon 页面展示价格 USD、汇率、倍率/阶梯倍率、舍入规则和区间价策略计算；缺少当前任务价格参数时不得保存。
 7. `Origin` 固定 United States 等价真实选项，不自动回退 Mainland China。
 8. 保存只允许点击 `保存并移入待发布`。
 9. 保存后用 `/web/smtlocalProduct/offline` 权威读回 ASIN / SKU / 类目 / 价格 / 库存。
@@ -309,5 +309,5 @@ finalReadbackSource
 2. `targetStore`。
 3. 100 品类候选来源。
 4. 是否按每批 10 个执行。
-5. 当前任务价格公式是否仍为 `Amazon 页面展示价格 USD x 7 x 1.55`，且区间价取最高值。
+5. 当前任务价格参数是否仍为 `Amazon 页面展示价格 USD x 7 x 1.55`，且区间价策略是否仍为 `highest_displayed_value`；这些只代表本次任务配置，不是长期公式。
 6. 是否允许保存到待发布，不允许发布。

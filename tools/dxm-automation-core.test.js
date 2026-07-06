@@ -34,9 +34,27 @@ assert(description.length >= 500);
 assert.strictEqual(/ACME|Amazon|best seller/i.test(description), false);
 
 const { pricingRules } = require('../src/dxm-automation-core');
+const { parseDisplayedPrice } = require('./amazon-displayed-price-capture');
 
-assert.strictEqual(pricingRules.calculateSupplyPriceCny(13.97, 7, 1.55), '151.57');
-assert.strictEqual(pricingRules.calculateSupplyPriceCny('$8.99 - $12.99', 7, 1.55), '140.94');
+assert.strictEqual(pricingRules.calculateSupplyPriceCny(13.97, 6.8, 1.4), '132.99');
+assert.strictEqual(pricingRules.calculateSupplyPriceCny('$8.99 - $12.99', 1, 1), '');
+assert.strictEqual(
+  pricingRules.calculateSupplyPriceCny('$8.99 - $12.99', 1, 1, { rangePolicy: 'highest_displayed_value' }),
+  '12.99'
+);
+assert.strictEqual(
+  pricingRules.calculateSupplyPriceCny(50, 7, { multiplier: 1.55, tiers: [{ minUsd: 20, multiplier: 1.35 }] }),
+  '472.5'
+);
+assert.strictEqual(parseDisplayedPrice('$8.99 - $12.99').reason, 'price_range_policy_missing');
+assert.strictEqual(
+  parseDisplayedPrice('$8.99 - $12.99', { rangePolicy: 'median_displayed_value' }).reason,
+  'price_range_policy_invalid'
+);
+assert.strictEqual(
+  parseDisplayedPrice('$8.99 - $12.99', { rangePolicy: 'highest_displayed_value' }).amazonDisplayedPriceUsd,
+  12.99
+);
 assert.strictEqual(pricingRules.priceEqualsExpected('151.570', '151.57'), true);
 assert.deepStrictEqual(
   pricingRules.parseDimensionInches('Product Dimensions 4.5 x 3 x 2 inches'),

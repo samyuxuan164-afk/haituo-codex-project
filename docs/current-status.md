@@ -23,7 +23,9 @@ Test surface now includes two explicit Node assertion tests:
 - tools/dxm-automation-core.test.js
 
 Audit follow-up:
-- The extracted pricing helper now has a regression case for Amazon displayed price ranges such as `$8.99 - $12.99`; the highest displayed value is used before applying the USD x 7 x 1.55 goods-value formula.
+- The extracted pricing helper now has regression coverage for task-parameterized price calculation. It can parse Amazon displayed price ranges such as `$8.99 - $12.99`, but range handling, high-price tiers, and the final goods-value formula must come from the current task configuration, not a global constant.
+- `tools/amazon-displayed-price-capture.js` and `tools/amazon-displayed-price-batch.js` now require explicit current-task range policy for displayed price ranges through `--range-policy` or `TASK_PRICE_RANGE_POLICY`.
+- `skills/price-processing/SKILL.md` now follows the same principle: every task must provide its own exchange rate, multiplier or tiered multiplier strategy, rounding rule, and displayed-price range policy.
 
 Runtime boundary:
 - The installed Tampermonkey runtime artifact remains the existing single userscript.
@@ -1239,13 +1241,13 @@ Current blocker:
 Price-source terminology update:
 - Current business rule uses Amazon page displayed price, not Amazon original/list price.
 - Open the Amazon product page and use the price displayed at that time.
-- If Amazon displays a price range, use the highest value, for example `$8.99 - $12.99` -> `$12.99`.
+- If Amazon displays a price range, apply the current task's configured range policy; the current 100-category task uses `highest_displayed_value`, for example `$8.99 - $12.99` -> `$12.99`.
 - Price-store field compatibility is now implemented: `amazonDisplayedPriceUsd` is preferred, legacy `amazonOriginalPriceUsd` remains accepted, and summaries output both fields.
 - CSV import accepts displayed-price headers and legacy original-price headers.
 
 Amazon displayed-price capture step 3:
 - Added readonly capture tool: `tools/amazon-displayed-price-capture.js`.
-- `parse-text` supports single displayed price, `From $x.xx`, and ranges; ranges use the highest value.
+- `parse-text` supports single displayed price, `From $x.xx`, and ranges; ranges require the current task range policy.
 - `capture` opens an Amazon product page through WebBridge and reads the displayed price area.
 - Writes to the price store only with explicit `--write`.
 - Live readonly verification on `B0D65JFRX4` succeeded. The Amazon price area included `$9.99` and list price `$11.99`; per the current displayed-price rule the captured value was `11.99`.
@@ -1546,7 +1548,7 @@ Confirmed Validation parameters:
 - Goal: edit/save to wait-to-publish only; no publish and no one-click publish.
 - Source: Amazon search; new collection and claim are allowed after live start confirmation.
 - Sample: 100 products, one per category, Amazon displayed price USD 5-20.
-- Price: goods value = Amazon displayed price USD x 7 x 1.55; displayed price ranges use the highest value.
+- Price: the current 100-category task uses Amazon displayed price USD x 7 x 1.55 with range policy `highest_displayed_value`; this is task configuration, not a global formula.
 - Category: AliExpress evidence required; safe adjacent DXM category allowed.
 - Risk exclusions: brand/logo, food, medical, children, electric/battery, infringement high risk, missing displayed price, unclear main image, and over-complex variations.
 - Execution gate: pre-judgment routing first; only `auto_ready` products proceed.
@@ -1556,7 +1558,7 @@ Rule library deposited:
 - Required Ant/select dropdowns: search inputs are filters only; real option click + selected-label readback is required. Function / Use / Feature read recommended options first, clear `暂无数据` search filters, avoid Enter/Tab on dynamic dropdowns, retry numeric/internal-ID readback with click-only commit, and allow `Other/其他` as a legal fallback unless it is clearly wrong.
 - Category: AliExpress/similar-product/verified DXM evidence is required; exact DXM leaf text is not mandatory when a safe adjacent category has the same use/form and no obvious mismatch. DOM click failure on a visible category result can be recovered with real coordinate double-click plus main-form readback.
 - Native save: script preflight does not equal native pass. Native `请选择产品属性` requires exact field repair. Checkbox/radio groups must use real checked-state readback. Use / Feature / Plastic Type / Theme / Product application scenarios are documented as native-exposed blockers.
-- Price: goods value can only come from current-task Amazon displayed price USD x task exchange rate x multiplier; displayed price ranges use the highest value. Old DXM prices, cached prices, minPrice/maxPrice, non-Amazon UI scans, and manual CNY overrides are forbidden. Visible/SKU price mismatch blocks save and abnormal prices need pre-publish review.
+- Price: goods value can only come from current-task Amazon displayed price USD, task exchange rate, multiplier or tiered multiplier, rounding rule, and range policy. Old DXM prices, cached prices, minPrice/maxPrice, non-Amazon UI scans, and manual CNY overrides are forbidden. Visible/SKU price mismatch blocks save and abnormal prices need pre-publish review.
 - WebBridge/tab-control: evaluate hangs, navigation/closed targets, stale tab matches, screenshot/DOM timeouts, and stale dropdown overlays are environment control exceptions, not business failures. Save navigation to offline is a success path; use direct edit URLs and offline/draft authoritative readback.
 
 Files updated:

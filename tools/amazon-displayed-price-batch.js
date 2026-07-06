@@ -65,6 +65,7 @@ function parseArgs(argv) {
     delayMs: 500,
     minPrice: '',
     maxPrice: '',
+    rangePolicy: process.env.TASK_PRICE_RANGE_POLICY || '',
     exchangeRate: process.env.TASK_EXCHANGE_RATE || '',
     multiplier: process.env.TASK_PRICE_MULTIPLIER || '',
     writePrices: false,
@@ -113,6 +114,9 @@ function parseArgs(argv) {
     } else if (arg === '--max-price' && next) {
       args.maxPrice = next;
       i += 1;
+    } else if (arg === '--range-policy' && next) {
+      args.rangePolicy = next;
+      i += 1;
     } else if (arg === '--exchange-rate' && next) {
       args.exchangeRate = next;
       i += 1;
@@ -148,7 +152,7 @@ function usage() {
     ],
     priceRule: [
       'Use the price displayed on the Amazon product page at capture time.',
-      'If the displayed price is a range or multiple displayed prices are read, use the highest value.',
+      'If the displayed price is a range, the current task must provide --range-policy or TASK_PRICE_RANGE_POLICY.',
     ],
     safety: [
       'Readonly Amazon browser navigation/evaluation only.',

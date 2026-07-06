@@ -21,7 +21,7 @@ Validation / 100-category 100-product stress-test execution preflight.
 | Claim | 允许 |
 | Price range | Amazon 页面展示价格 USD 5-20 |
 | Quantity | 100 条，每类目 1 条 |
-| Goods value formula | `Amazon 页面展示价格 USD x 7 x 1.55`；区间价取最高值 |
+| Current task price parameters | 当前 100 品类任务暂按 `Amazon 页面展示价格 USD x 7 x 1.55`，区间价策略为 `highest_displayed_value`；这只是本任务参数，不是长期公式，高价或后续任务可改用新倍率、阶梯倍率或新的区间价策略 |
 | Category rule | 需要 AliExpress 类目证据；允许安全相邻类目 |
 | Execution gate | 先做预判分流，只对 `auto_ready` 产品执行 |
 | Readback | 保存后必须在待发布列表权威读回确认 |
