@@ -237,3 +237,23 @@ Environment Recovery
 5. 只有 `Functional Validation` 全部通过后，才允许进入 `Smoke Test`。
 6. 只有 `Smoke Test` 通过后，才允许进入 `3x10 Validation`。
 7. 只有 `3x10 Validation` 通过后，才允许进入 `Production`。
+
+## Git Audit and Synchronization Rules
+
+All Codex work in this repository must follow the Git workflow defined in:
+
+`docs/git-workflow/COMMIT_RULES.md`
+
+Required behavior:
+
+1. Every meaningful code change, rule update, execution document update, validation report, or optimization must leave a Git commit.
+2. Commits must be small and auditable.
+3. Do not mix unrelated changes in one commit.
+4. Before changing files, run `git status`.
+5. After changing files, run `git status` and review the changed files.
+6. Add only related files with explicit `git add <path>`.
+7. Commit using the format `type(scope): short summary`.
+8. Push to GitHub after each completed safe commit.
+9. Never commit real passwords, API keys, cookies, sessions, tokens, or private account data.
+10. If a task changes code behavior, update the relevant docs, skills, task log, or development log in a separate small commit when possible.
+
