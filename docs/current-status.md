@@ -1,5 +1,47 @@
 # Current Status - 2026-07-06
 
+## Latest Live Validation - 2026-07-06
+
+```text
+Current phase: Validation / single-product real flow staged test
+
+Product:
+- ASIN: B0D4V7M7D4
+- Amazon URL: https://www.amazon.com/dp/B0D4V7M7D4
+- Target platform/store: 速卖通海外托管 > Halo Home Store
+- Business license group: A1
+
+Live readonly work:
+- Opened/read `速卖通海外托管 > 采集箱` only.
+- Confirmed the claimed collection-box row resolves to source URL `https://www.amazon.com/dp/B0D4V7M7D4`.
+- Resolved editId `167487782014810447`.
+- Opened direct edit URL `https://www.dianxiaomi.com/web/smtlocalProduct/edit?id=167487782014810447`.
+- Clean edit-page identity guard passed: ASIN `B0D4V7M7D4`, source URL, editId, and DXM Automation V1 version `2.1.75` matched.
+- Ran readonly preflight only.
+
+Readonly preflight result:
+- pass=false
+- safeToSaveToWaitPublish=false
+- Main blockers: title length 146, category not selected, postage template not 111, Ships From section not found, visible goods value mismatch, logisticValue/stock/SKU incomplete, PC description missing current product images, marketing images missing, custom attributes invalid.
+- Category evidence was present and high confidence: AliExpress `postCategoryId:100001805`, DXM candidate `花盆托盘(Pot Trays)`.
+- Price-source blocker must be fixed before any save test: previous report recorded USD 9.99 / expected CNY 108.39, but readonly preflight used fallback USD 5.89 / expected CNY 63.91 and price store reported `amazon_displayed_price_missing`.
+
+Safety boundary kept:
+- No new collection.
+- No new claim.
+- No field editing.
+- No save or wait-publish move.
+- No publish or one-click publish.
+- No Product Development / draft handling.
+
+Report:
+- runs/first-real-collection-b0d4v7m7d4/readonly-preflight-report.md
+
+Next safe gate:
+- Do not enter save-to-wait-publish testing yet.
+- First fix/verify the authoritative Amazon displayed price source, then run controlled edit-page fill with save:false, rerun readonly preflight, and wait for explicit user confirmation before any save click.
+```
+
 ## Latest Source-Level Development - 2026-07-06
 
 ```text
