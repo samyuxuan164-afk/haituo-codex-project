@@ -65,7 +65,7 @@ function parseArgs(argv) {
     delayMs: 500,
     minPrice: '',
     maxPrice: '',
-    rangePolicy: process.env.TASK_PRICE_RANGE_POLICY || '',
+    rangePolicy: process.env.TASK_PRICE_RANGE_POLICY || 'highest_displayed_value',
     exchangeRate: process.env.TASK_EXCHANGE_RATE || '',
     multiplier: process.env.TASK_PRICE_MULTIPLIER || '',
     writePrices: false,
@@ -152,7 +152,8 @@ function usage() {
     ],
     priceRule: [
       'Use the price displayed on the Amazon product page at capture time.',
-      'If the displayed price is a range, the current task must provide --range-policy or TASK_PRICE_RANGE_POLICY.',
+      'Displayed price candidates include buy-box price, displayed ranges, variant prices, and strike/list prices.',
+      'Default displayed-price candidate policy is highest_displayed_value; use --range-policy or TASK_PRICE_RANGE_POLICY only to override it.',
     ],
     safety: [
       'Readonly Amazon browser navigation/evaluation only.',

@@ -5,7 +5,7 @@
   - `asin`
   - `editUrl` or Dianxiaomi edit `id`
   - `amazonDisplayedPriceUsd`
-  - `priceFormula` with exchange rate, multiplier or tiers, rounding, and range policy
+  - `priceFormula` with exchange rate, multiplier or tiers, rounding, and optional displayed-price candidate policy override
   - `productFamily`
 - Current project rules:
   - no final publish
@@ -22,7 +22,7 @@
    - `dxm-automation-amazon-source-asin = asin`;
    - `dxm-automation-task-exchange-rate = priceFormula.exchangeRate`;
    - `dxm-automation-task-price-multiplier = priceFormula.multiplier` or the resolved task tier multiplier;
-   - `dxm-automation-task-price-range-policy = priceFormula.rangePolicy`;
+   - `dxm-automation-task-price-range-policy = priceFormula.rangePolicy || "highest_displayed_value"`; this selects the Amazon displayed-price candidate only and does not replace the current task goods-value formula.
    - `dxm-single-submit-default-stock = 15`.
 3. Run edit-page rules with timeout:
    - call `window.__DXM_AUTOMATION_V1_APPLY_EDIT_RULES__({ manual: true, preSave: true })`;
