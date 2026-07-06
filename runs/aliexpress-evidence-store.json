@@ -1,6 +1,6 @@
 {
   "schemaVersion": "aliexpress-evidence-store-v1",
-  "updatedAt": "2026-07-05T04:34:04.897Z",
+  "updatedAt": "2026-07-06T11:13:28.805Z",
   "records": {
     "B01E2EYG4U": {
       "asin": "B01E2EYG4U",
@@ -893,6 +893,70 @@
       "reason": "New validation ASIN title matches existing Cable Organizers learned rule; no rule file changed.",
       "updatedAt": "2026-07-05T04:34:04.897Z",
       "createdAt": "2026-07-05T04:34:04.897Z"
+    },
+    "B0D4V7M7D4": {
+      "asin": "B0D4V7M7D4",
+      "amazonTitle": "30 Pack Plant Saucer 6 Inches Plant Trays for Pots Plastic Round Drip Trays Flower Pot Saucers Black Planter Water Tray Plant Drainage Tray, Black",
+      "amazonImage": "",
+      "amazonUrl": "https://www.amazon.com/dp/B0D4V7M7D4",
+      "productFamily": "plant saucer tray",
+      "status": "aliexpress_verified",
+      "aliexpressKeyword": "plant saucer tray",
+      "aliexpressEvidenceUrl": "https://www.aliexpress.com/w/wholesale-plant-saucer-tray.html",
+      "aliexpressMatchedCategory": "postCategoryId:100001805",
+      "aliexpressCategoryId": "100001805",
+      "aliexpressUniqueCategoryConfirmed": true,
+      "dxmCandidateCategory": "家居用品(Home & Garden)/园艺用品(Garden Supplies)/花盆/种植配件(Gardening Pots, Planters & Accessories)/花盆托盘(Pot Trays)",
+      "dxmCandidateCategoryId": "",
+      "safeAdjacentUsed": false,
+      "platformCategoryConfirmed": true,
+      "platformCategoryIntent": "postCategoryId:100001805",
+      "platformCategoryTerms": [
+        "postCategoryId:100001805"
+      ],
+      "dxmSearchTerms": [],
+      "evidenceConfidence": 1,
+      "confidenceTier": "high_confidence",
+      "verificationMode": "high_confidence",
+      "conditionalChecks": {
+        "hasDxmCandidateCategory": true,
+        "usageAndFormConsistent": false,
+        "noObviousConflict": false,
+        "nonRiskCategory": true,
+        "matchedTitleCount": 0,
+        "checkedTitleCount": 0,
+        "matchedTokens": [
+          "plant",
+          "saucer",
+          "tray",
+          "plant",
+          "saucer",
+          "tray",
+          "plant",
+          "saucer",
+          "inches",
+          "plant",
+          "trays",
+          "pots",
+          "round",
+          "drip",
+          "trays",
+          "flower"
+        ],
+        "semanticConsensus": {
+          "ok": false,
+          "family": "",
+          "matchedTitleCount": 0,
+          "checkedTitleCount": 0,
+          "ratio": 0,
+          "matchedTitles": []
+        }
+      },
+      "evidenceSummary": "AliExpress readable results: 60; top postCategoryId 100001805 (100%); platform category confirmed: postCategoryId:100001805",
+      "reason": "top AliExpress category 100001805 has 100% consensus and DXM candidate category is provided",
+      "source": "aliexpress_search",
+      "createdAt": "2026-07-06T11:13:28.804Z",
+      "updatedAt": "2026-07-06T11:13:28.805Z"
     }
   }
 }
