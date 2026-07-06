@@ -3,14 +3,15 @@
 ## Latest Source-Level Development - 2026-07-06
 
 ```text
-Current phase: Development / source-level userscript pure-module extraction
+Current phase: Development / source-level userscript pure-module extraction and root-cause diagnostics
 
-Prepared source-level pure modules under src/dxm-automation-core for text rules, pricing/dimension rules, and PC detail image-first rules. Added tools/dxm-automation-core.test.js as the second explicit Node assertion test. No live Dianxiaomi page action, collection, claim, edit, save, publish, or one-click publish was executed.
+Prepared source-level pure modules under src/dxm-automation-core for text rules, pricing/dimension rules, PC detail image-first rules, and workflow root-cause diagnostics. Added tools/dxm-automation-core.test.js as the second explicit Node assertion test. No live Dianxiaomi page action, collection, claim, edit, save, publish, or one-click publish was executed.
 
 Modules added:
 - src/dxm-automation-core/text-rules.js
 - src/dxm-automation-core/pricing-rules.js
 - src/dxm-automation-core/pc-detail-rules.js
+- src/dxm-automation-core/workflow-diagnostics.js
 - src/dxm-automation-core/index.js
 
 Documentation assets updated:
@@ -28,6 +29,8 @@ Audit follow-up:
 - `tools/amazon-displayed-price-capture.js`, `tools/amazon-displayed-price-batch.js`, and the extracted pricing helper now default to `highest_displayed_value`, for example `$8.99 - $12.99` -> `$12.99` and `Price $19.94 List Price: $20.99` -> `$20.99`.
 - `--range-policy` / `TASK_PRICE_RANGE_POLICY` remain override inputs, but the goods-value formula itself is still task configuration: every task must provide its own exchange rate, multiplier or tiered multiplier strategy, and rounding rule.
 - `skills/price-processing/SKILL.md` now follows the same principle: select the Amazon USD displayed-price candidate first, then apply the current task formula; do not reuse `x 7 x 1.55` as a global rule.
+- The root-cause diagnostics helper now has an offline regression for the known 10-target / 16-row collection-box contamination case: duplicate rows are classified as `crawlbox_duplicate_rows`, the three zero-price ASINs are classified as `price_out_of_range_or_zero`, and only the seven unique price-valid ASINs are considered safe claim candidates.
+- The same helper normalizes readonly edit preflight blockers into machine root causes such as `category_evidence_missing`, `product_category_not_selected`, `postage_template_not_111`, and `ships_from_not_united_states`, confirming that the first edit page was blocked by the save preflight gate rather than by a missing save button.
 
 Runtime boundary:
 - The installed Tampermonkey runtime artifact remains the existing single userscript.
