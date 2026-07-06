@@ -12,6 +12,8 @@ Haituo Codex Project is a gated browser automation workspace for preparing Dianx
 
 Project ownership is explicit: this is Sam's company collaboration project. The company upstream repository is `samyuxuan164-afk/haituo-codex-project`, and `ALdaisuki/haituo-codex-project` is the collaborator fork used for preparation and review. Changes should land on the collaborator fork first, pass fork-side diff and privacy audit, and only then be proposed to the company upstream by PR.
 
+Maintenance language is also explicit: pull request titles, pull request bodies, review discussion, and maintenance notes default to Chinese. English may remain for code identifiers, exact logs, external platform terms, and bilingual documents, but Chinese is the default human-facing maintenance language.
+
 The system goal is controlled preparation, not unrestricted business execution. It may scan candidates, build evidence, perform readonly preflight, generate dry-run payload reports, and record blockers. Live collection, claim, edit, or save actions require explicit task authorization. Final publish and one-click publish are outside the current target.
 
 ## 2. Architecture Diagram

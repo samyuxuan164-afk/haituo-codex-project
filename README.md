@@ -200,6 +200,10 @@ local worktree
 
 Do not include local private paths, credentials, cookies, browser profiles, tokens, payload dumps, or personal Codex runtime metadata in PR diffs.
 
+## Maintenance Language
+
+Chinese is the default language for pull request titles, pull request bodies, review discussion, and maintenance notes in this project. Keep code identifiers, exact logs, external platform terms, and English documentation where they are already required, but the default human-facing maintenance explanation should be Chinese. If an upstream reviewer needs English, add an English summary after the Chinese text rather than replacing it.
+
 ## Known Gaps
 
 - The main userscript is still large; the first pure modules now live under `src/dxm-automation-core/`, and deeper extraction remains future work.

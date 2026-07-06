@@ -194,6 +194,10 @@ local worktree
 
 PR diff 不应包含本地私人路径、凭据、cookies、浏览器 profile、tokens、payload dump 或个人 Codex runtime 元数据。
 
+## 维护语言
+
+本项目默认使用中文作为 PR 标题、PR 正文、Review 沟通和维护说明语言。代码标识符、精确日志、外部平台原文和已有英文文档可以保留英文；如上游审查需要英文，可在中文说明之后追加英文摘要，但不要用英文替代中文维护说明。
+
 ## 已知缺口
 
 - 主 userscript 体积仍较大；第一批纯模块已放在 `src/dxm-automation-core/`，后续仍需要继续拆分。

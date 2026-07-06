@@ -30,6 +30,10 @@ Runtime boundary:
 Documentation drift rule:
 - Development work must update relevant docs before completion when code behavior, test surface, safety boundary, or project status changes.
 - The principle-level rule is recorded in AGENT.md under Long-term Hard Rules.
+
+Maintenance language rule:
+- Chinese is the default language for PR titles, PR bodies, review discussion, and maintenance notes.
+- English can remain for code identifiers, exact logs, external platform terms, or bilingual docs, but Chinese is the default human-facing maintenance language.
 ```
 
 ## Latest Update - 2026-07-04
