@@ -257,3 +257,24 @@ Required behavior:
 9. Never commit real passwords, API keys, cookies, sessions, tokens, or private account data.
 10. If a task changes code behavior, update the relevant docs, skills, task log, or development log in a separate small commit when possible.
 
+
+## Codex Task Handoff Requirement
+
+After every completed Codex task, optimization, code change, rule update, validation run, or execution document update, Codex must create or update a task handoff record based on:
+
+`docs/git-workflow/CODEX_TASK_HANDOFF_TEMPLATE.md`
+
+Required handoff content:
+
+1. Task summary.
+2. Exact changes made.
+3. Reason for the change.
+4. Files changed.
+5. Validation performed.
+6. Risk check for secrets, tokens, cookies, sessions, passwords, API keys, and private account data.
+7. Git commit plan.
+8. Push status.
+9. Next step.
+
+This handoff record must be committed as part of the related documentation or task-log update, preferably in a separate small commit from code changes when possible.
+
