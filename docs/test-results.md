@@ -16,7 +16,7 @@ Commands run:
 | Command | Result | Notes |
 |---|---|---|
 | `node tools\aliexpress-evidence-policy.test.js` | PASS | Printed `aliexpress-evidence-policy.test.js passed` |
-| `node tools\dxm-automation-core.test.js` | PASS | Printed `dxm-automation-core.test.js passed` |
+| `node tools\dxm-automation-core.test.js` | PASS | Printed `dxm-automation-core.test.js passed`; includes Amazon displayed price range highest-value regression |
 | `node --check src\dxm-automation-core\text-rules.js` | PASS | Syntax check only |
 | `node --check src\dxm-automation-core\pricing-rules.js` | PASS | Syntax check only |
 | `node --check src\dxm-automation-core\pc-detail-rules.js` | PASS | Syntax check only |
@@ -37,7 +37,7 @@ Commands run:
 ## What This Proves
 
 - The AliExpress evidence policy and selected capture behaviors covered by `tools/aliexpress-evidence-policy.test.js` still pass locally.
-- The extracted userscript core modules for text rules, pricing/dimensions, and PC detail image analysis pass deterministic Node assertions.
+- The extracted userscript core modules for text rules, pricing/dimensions, and PC detail image analysis pass deterministic Node assertions, including the `$8.99 - $12.99` price-range rule that must use `$12.99`.
 - The current main DXM automation userscript parses under Node syntax checking.
 - The current Amazon crawlbox userscript parses under Node syntax checking.
 - All tracked JavaScript/MJS files parse under `node --check`.

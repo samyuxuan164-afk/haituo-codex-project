@@ -36,6 +36,7 @@ assert.strictEqual(/ACME|Amazon|best seller/i.test(description), false);
 const { pricingRules } = require('../src/dxm-automation-core');
 
 assert.strictEqual(pricingRules.calculateSupplyPriceCny(13.97, 7, 1.55), '151.57');
+assert.strictEqual(pricingRules.calculateSupplyPriceCny('$8.99 - $12.99', 7, 1.55), '140.94');
 assert.strictEqual(pricingRules.priceEqualsExpected('151.570', '151.57'), true);
 assert.deepStrictEqual(
   pricingRules.parseDimensionInches('Product Dimensions 4.5 x 3 x 2 inches'),

@@ -22,6 +22,9 @@ Test surface now includes two explicit Node assertion tests:
 - tools/aliexpress-evidence-policy.test.js
 - tools/dxm-automation-core.test.js
 
+Audit follow-up:
+- The extracted pricing helper now has a regression case for Amazon displayed price ranges such as `$8.99 - $12.99`; the highest displayed value is used before applying the USD x 7 x 1.55 goods-value formula.
+
 Runtime boundary:
 - The installed Tampermonkey runtime artifact remains the existing single userscript.
 - DOM automation, Ant dropdown interactions, WebBridge, preflight readback, native save, publishing, and panel UI remain in the userscript adapter.

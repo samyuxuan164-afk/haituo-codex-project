@@ -6,6 +6,7 @@
 - Added the documentation-drift control rule to `AGENT.md` as a long-term hard rule: development tasks must update relevant status, test, README, execution-rule, or development-log documents before completion when behavior or test surface changes. Updated `docs/current-status.md`, `docs/test-plan.md`, `docs/test-results.md`, `README.md`, and `README.zh-CN.md` to reflect the new pure-module test surface and the remaining no-unified-test-runner gap.
 - Replaced the previous SVG architecture overview assets with the approved bilingual proven execution flow PNGs: `docs/assets/architecture-overview-en.png` and `docs/assets/architecture-overview-zh.png`. Updated README, architecture docs, audit notes, test results, and SuperPowers plan references so active docs no longer point at the removed SVG files.
 - Added the project maintenance-language rule: Chinese is the default language for PR titles, PR bodies, review discussion, and maintenance notes. Updated README, Chinese README, architecture docs, current status, AGENT rules, and the GitHub PR template so future PRs default to Chinese while still allowing English code identifiers, exact logs, external platform terms, and bilingual summaries where needed.
+- Local audit found and fixed a first-split pricing helper gap: Amazon displayed price ranges such as `$8.99 - $12.99` now parse to the highest displayed value before applying the USD x 7 x 1.55 goods-value formula. The regression is covered in `tools/dxm-automation-core.test.js`.
 
 ## 2026-07-05
 

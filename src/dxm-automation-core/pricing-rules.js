@@ -2,8 +2,10 @@
 
 function toNumber(value) {
   if (value == null || value === '') return null;
-  const parsed = Number(String(value).replace(/[^\d.]/g, ''));
-  return Number.isFinite(parsed) ? parsed : null;
+  const matches = String(value).replace(/,/g, '').match(/\d+(?:\.\d+)?/g);
+  if (!matches) return null;
+  const numbers = matches.map(Number).filter(Number.isFinite);
+  return numbers.length ? Math.max(...numbers) : null;
 }
 
 function round2(value) {
