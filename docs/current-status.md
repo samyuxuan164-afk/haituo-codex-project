@@ -3051,7 +3051,7 @@ Latest prepared source:
 - Custom attributes are row-deleted or normalized so no value exceeds 70 characters.
 
 Validation status:
-- Syntax check passed with bundled Node: `/Users/sam/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node --check src/dianxiaomi-automation-v1-merged-new.user.js`.
+- Syntax check passed with bundled Node: `<CODEX_RUNTIME_ROOT>/dependencies/node/bin/node --check src/dianxiaomi-automation-v1-merged-new.user.js`.
 - Live Tampermonkey overwrite and single-sample validation are pending.
 - Next validation must use only sample `167487782006885971` first, confirm no page jumping, required fields complete, freight template 111 selected, no >70 custom attribute error, and save-to-wait-publish path can trigger without publish.
 
@@ -3095,7 +3095,7 @@ Optimization prepared:
 - Required-attribute and freight selection now send select acceptance keys after search input.
 - Attribute container scoring penalizes broad parent containers containing multiple required labels.
 - Custom attribute cleanup now locates all rows by `属性名/属性值` placeholders and deletes row-local `icon_close` controls.
-- Syntax check passed with bundled Node: `/Users/sam/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node --check src/dianxiaomi-automation-v1-merged-new.user.js`.
+- Syntax check passed with bundled Node: `<CODEX_RUNTIME_ROOT>/dependencies/node/bin/node --check src/dianxiaomi-automation-v1-merged-new.user.js`.
 - Live Tampermonkey overwrite and v1.1.56 target verification are pending.
 
 Live validation attempt:
