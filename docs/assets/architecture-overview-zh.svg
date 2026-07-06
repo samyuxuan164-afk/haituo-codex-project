@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675" role="img" aria-labelledby="title desc">
+  <title id="title">Haituo Codex Project 中文架构总览</title>
+  <desc id="desc">矢量架构图，展示任务规则、Amazon 证据、本地工具、店小秘自动化、显式 live gate、保存和读回。</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f8fafc"/>
+      <stop offset="100%" stop-color="#eef6ff"/>
+    </linearGradient>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#335c81"/>
+    </marker>
+    <style>
+      .title{font:700 30px "Microsoft YaHei","Segoe UI",Arial,sans-serif;fill:#14213d}
+      .subtitle{font:500 15px "Microsoft YaHei","Segoe UI",Arial,sans-serif;fill:#415a77}
+      .box{fill:#ffffff;stroke:#8ecae6;stroke-width:2;rx:14}
+      .gate{fill:#fff3bf;stroke:#f59f00;stroke-width:2}
+      .stop{fill:#ffe3e3;stroke:#e03131;stroke-width:2;rx:14}
+      .ok{fill:#e6fcf5;stroke:#0ca678;stroke-width:2;rx:14}
+      .label{font:600 16px "Microsoft YaHei","Segoe UI",Arial,sans-serif;fill:#102a43}
+      .small{font:400 12px "Microsoft YaHei","Segoe UI",Arial,sans-serif;fill:#486581}
+      .line{stroke:#335c81;stroke-width:2.2;fill:none;marker-end:url(#arrow)}
+      .dash{stroke:#e03131;stroke-width:2;fill:none;stroke-dasharray:6 5;marker-end:url(#arrow)}
+    </style>
+  </defs>
+  <rect width="1200" height="675" fill="url(#bg)"/>
+  <text x="60" y="55" class="title">Haituo Codex Project</text>
+  <text x="60" y="82" class="subtitle">带安全闸门的店小秘自动化：证据优先，live action 仅在明确授权后执行</text>
+
+  <rect x="60" y="130" width="190" height="82" class="box"/>
+  <text x="88" y="164" class="label">操作者 / Codex</text>
+  <text x="88" y="188" class="small">读取任务边界</text>
+
+  <rect x="300" y="130" width="230" height="82" class="box"/>
+  <text x="330" y="160" class="label">规则与安全闸门</text>
+  <text x="330" y="184" class="small">TASK、AGENT、skills、audit</text>
+
+  <rect x="80" y="300" width="220" height="90" class="box"/>
+  <text x="112" y="334" class="label">Amazon 页面</text>
+  <text x="112" y="358" class="small">候选、图片、价格上下文</text>
+
+  <rect x="360" y="300" width="230" height="90" class="box"/>
+  <text x="390" y="334" class="label">Crawlbox 脚本</text>
+  <text x="390" y="358" class="small">ASIN 去重与批次准备</text>
+
+  <rect x="650" y="300" width="230" height="90" class="box"/>
+  <text x="680" y="334" class="label">本地证据工具</text>
+  <text x="680" y="358" class="small">风险、价格、类目、报告</text>
+
+  <rect x="930" y="300" width="210" height="90" class="box"/>
+  <text x="962" y="334" class="label">配置与存储</text>
+  <text x="962" y="358" class="small">JSON 规则、队列、runs</text>
+
+  <rect x="360" y="485" width="230" height="90" class="box"/>
+  <text x="390" y="518" class="label">店小秘页面</text>
+  <text x="390" y="542" class="small">采集箱、编辑页、待发布</text>
+
+  <rect x="650" y="485" width="230" height="90" class="box"/>
+  <text x="680" y="518" class="label">DXM Automation V1</text>
+  <text x="680" y="542" class="small">只读预检与 dry-run</text>
+
+  <polygon points="1015,476 1115,530 1015,584 915,530" class="gate"/>
+  <text x="970" y="525" class="label">显式</text>
+  <text x="958" y="548" class="label">Live Gate?</text>
+
+  <rect x="930" y="120" width="210" height="82" class="stop"/>
+  <text x="965" y="154" class="label">停止 / 报告</text>
+  <text x="957" y="178" class="small">未授权或存在阻断项</text>
+
+  <rect x="930" y="585" width="210" height="64" class="ok"/>
+  <text x="957" y="615" class="label">保存 + 读回</text>
+  <text x="957" y="637" class="small">仅保存到待发布</text>
+
+  <path d="M250 171 H300" class="line"/>
+  <path d="M415 212 V300" class="line"/>
+  <path d="M300 345 H360" class="line"/>
+  <path d="M590 345 H650" class="line"/>
+  <path d="M880 345 H930" class="line"/>
+  <path d="M765 390 V485" class="line"/>
+  <path d="M590 530 H650" class="line"/>
+  <path d="M880 530 H915" class="line"/>
+  <path d="M1015 476 V202" class="dash"/>
+  <path d="M1035 584 V585" class="line"/>
+  <path d="M530 171 H930" class="dash"/>
+  <text x="930" y="248" class="small">发布和一键发布独立阻断</text>
+</svg>

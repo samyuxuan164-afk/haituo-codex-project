@@ -1,87 +1,95 @@
-﻿# 安装与启用说明
+# Install And Enablement Guide
 
-## 主插件
+## Scope
 
-店小秘自动补全与上架主插件：
+This guide describes the source-visible userscripts in this repository. It does not confirm what is currently installed in any browser. After changing Tampermonkey scripts, fully quit and reopen Chrome when required by the current task instructions, then confirm the page-visible version.
 
-```text
-src/dianxiaomi-automation-v1-merged.user.js
+## Current Source-Visible Scripts
+
+| Script | Version | Source file | Enablement status |
+|---|---:|---|---|
+| DXM Automation V1 - NEW | 2.1.75 | `src/dianxiaomi-automation-v1-merged-new.user.js` | Main current automation script |
+| DXM Amazon Crawlbox V1 | 0.1.50 | `src/dianxiaomi-amazon-crawlbox-v1.user.js` | Current Amazon candidate and collection-box preparation script |
+| save.json Payload Capture V3 | 0.6.3 | `src/dianxiaomi-save-payload-capture-v3.user.js` | Enable when payload evidence capture is required |
+| Interface Detector V2 | 0.3.0 | `src/dianxiaomi-interface-detector-v2.user.js` | Enable when request/FormData/click-path evidence is required |
+| Single Submit Tester | 0.2.5 | `src/dianxiaomi-single-submit-tester.user.js` | Enable only for guarded single-product dry-run/save testing |
+| Tampermonkey Execution Diagnostic | 0.0.1 | `src/dianxiaomi-tm-execution-diagnostic.user.js` | Read-only diagnostic helper |
+
+Historical scripts remain in `src/` for reference. Do not enable old and new variants of the same panel at the same time.
+
+## Recommended Enablement
+
+### Normal documentation or local audit work
+
+No browser scripts need to be enabled. Use local commands only:
+
+```powershell
+node tools\aliexpress-evidence-policy.test.js
+node --check src\dianxiaomi-automation-v1-merged-new.user.js
+node --check src\dianxiaomi-amazon-crawlbox-v1.user.js
 ```
 
-当前主插件版本：`V1.1.14`
+### Read-only browser validation
 
-Tampermonkey 里只启用一个主插件：
+Enable only the scripts required by the current validation:
 
-```text
-DXM Automation V1 - Merged v1.1.14
+1. `DXM Automation V1 - NEW`
+2. Optional: `DXM Amazon Crawlbox V1` for Amazon candidate panel checks
+3. Optional: `Interface Detector V2` or `save.json Payload Capture V3` for evidence capture
+
+Read-only validation must not click collection, claim, edit, save, publish, or one-click publish controls.
+
+### Guarded live validation
+
+Proceed only when `TASK.md` allows the phase and the user explicitly starts live execution. Before starting, read the required files listed in `TASK.md`.
+
+Minimum confirmation checklist:
+
+1. Target store is confirmed.
+2. Business license group is confirmed.
+3. Platform channel is `速卖通海外托管`.
+4. Browser-visible script versions match the intended source versions.
+5. Dianxiaomi native auto-claim state is checked as required by the current task.
+6. Dangerous actions are still blocked: publish, one-click publish, wrong channel claim, stale price usage.
+
+## Manual Tampermonkey Update
+
+1. Open the relevant `src/*.user.js` file.
+2. Copy the full file content.
+3. Open Tampermonkey dashboard.
+4. Replace the corresponding script content.
+5. Save.
+6. Fully quit and reopen Chrome when the current status docs require it.
+7. Refresh the target page.
+8. Confirm the page-visible version before any validation step.
+
+## Version Verification Commands
+
+Use this command to extract source headers:
+
+```powershell
+rg -n "^// @name|^// @version|^// @description" src -g "*.user.js"
 ```
 
-旧版 `1.1.9` / `1.1.10` / `1.1.11` / `1.1.12` / `1.1.13` 必须关闭或删除，避免多个面板和逻辑同时生效。
-
-## Amazon 采集箱入口插件
-
-亚马逊选品采集到店小秘采集箱使用：
+Expected current highlights:
 
 ```text
-src/dianxiaomi-amazon-crawlbox-v1.user.js
+DXM Automation V1 - NEW v2.1.75
+DXM Amazon Crawlbox V1 v0.1.50
+save.json Payload Capture V3 v0.6.3
+Interface Detector V2 v0.3.0
 ```
 
-当前版本：`V0.1.15`
+## Safety Boundary
 
-核心能力：
+This install guide is not an execution authorization. It does not permit:
 
-- 在 Amazon 美国站搜索结果页扫描 ASIN、标题、价格、评分、评论数、运费、发货时间、主图和链接。
-- 支持“快速批量采集当前类目”：从当前搜索页自动抓取后续搜索结果页，按目标数量并发补齐链接池，目标是同品类 10-200 条链接在 2 分钟内完成初筛。
-- 支持“快速采集并进店小秘”：Amazon 当前类目采够目标后自动跳转店小秘链接采集页，自动填入本批链接并开始采集，目标是把 10/20/30 条同品类商品在 2 分钟内送入采集箱。
-- 价格段、评分、评论数、最高运费、发货天数、最大页数、目标数量、同类上限、敏感词都可以在面板里按任务调整，不写死。
-- 默认最高运费为 `0`，即优先采集 FBA / Amazon 包邮 / 免费配送商品。
-- 默认要求人工确认主图、包装、产品本体无 Logo / 商标后，ASIN 才能进入“可采集”状态。
-- 已采集、已认领的 ASIN 会进入本地去重记录，后续扫描时自动排除。
-- 同一个类目词默认最多保留 `20` 条已采集 / 已认领产品，避免相似产品过量。
-- 在店小秘链接采集页可以点击“一键采集+认领”，自动完成填入链接、开始采集、关闭完成弹窗、批量认领、勾选“速卖通海外托管”分组下的店铺、确认认领、打开托管采集箱。
-- “一键采集+认领”支持三种入口：插件已有 Amazon 候选批次、店小秘输入框里已经手动粘贴了 Amazon 链接、或页面已有本批 ASIN 对应的未认领商品时只认领当前批次。
-- 认领渠道写死为“速卖通海外托管”：不论采集什么链接、上架哪个店铺，只能勾选该分组下面的店铺；禁止选择“产品开发”“草稿箱”或其他渠道。
-- 如果“速卖通海外托管”分组下有多个店铺，可在面板“托管店铺名”里填关键词指定；匹配范围仍仅限该分组。
-- 采集弹窗超过 50 秒没有进度更新时，面板会提示刷新检查；刷新后按采集箱结果决定继续、保留未认领商品并补齐缺口，或在完全没有进箱时重新开始。
-- 可以打开“速卖通海外托管”采集箱并确认未认领/已认领数量。
-- 如果打开多个旧版店小秘页面，看到插件版本不是最新版，直接刷新当前页面，不需要反复判断。
-- 不能跨品类直接认领全部未认领商品；只允许按当前批次 ASIN 匹配后认领。
-- 认领结果弹窗出现后会快速关闭，并自动打开托管采集箱。
-- Amazon 页面可以下载 Logo 复核页，一次查看待复核商品主图、ASIN、标题和疑似品牌提示。
-- Amazon 扫描会默认排除标题首词疑似品牌词的商品，减少主图/包装带品牌的产品进入店小秘。
-- 面板支持拖动、收起和调整大小；在店小秘页面默认收起，避免挡住操作按钮。
-
-## V3 抓包插件
-
-接口与 payload 捕获使用：
-
-```text
-src/dianxiaomi-save-payload-capture-v3.user.js
-```
-
-当前作用：
-
-- 捕获店小秘保存、编辑、认领、采集相关接口。
-- 生成后续自动化需要的真实接口证据。
-- 主流程进入真实保存前，必须先用 dry-run 和 run 报告包确认字段完整。
-
-## 标准启用顺序
-
-1. 在 Tampermonkey 中启用 `DXM Automation V1 - Merged v1.1.14`。
-2. 启用 `DXM Amazon Crawlbox V1 V0.1.15`。
-3. 需要验证接口时启用 `DXM Payload Capture V3`。
-4. 刷新 Amazon 或店小秘页面。
-5. 确认页面只出现需要的一个主面板，旧版脚本不要同时启用。
-
-## 当前安全边界
-
-- 未确认前不要真实提交 `op=2`。
-- dry-run 通过后，先下载 run 报告包检查。
-- `op=1` 只用于保存落库验证，不代表真实发布。
-- `op=1` 后必须再次下载 run 报告包，检查 `after-op1-edit.json` 字段是否真的落库。
-- Amazon 采集阶段发现重复产品、Logo 产品、敏感品类、同类超量产品，先剔除，不进入店小秘采集箱。
-
-
-
-
+- Product collection.
+- Claim.
+- Edit-page writes.
+- Save or move to wait-publish.
+- Publish.
+- One-click publish.
+- Claim to `产品开发` or `草稿箱`.
+- Origin fallback from United States to Mainland China.
 

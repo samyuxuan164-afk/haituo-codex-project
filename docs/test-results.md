@@ -1,50 +1,75 @@
-# 测试结果
+# Test Results
 
-## 本地开发验证
+## Latest Local Baseline - 2026-07-06
 
-已完成：
-
-- 接口探测器脚本语法检查通过。
-- 自动执行器脚本语法检查通过。
-- 自动执行器已实现真实 `fetch` 调用逻辑。
-- 自动执行器已实现单步调用和完整流程调用。
-- 自动执行器已实现页面跳转后的断点续跑。
-- 自动执行器已实现已验证接口记录和报告导出。
-
-## 已验证可调用的接口
-
-当前本地环境没有用户店小秘登录态，也没有第一阶段真实导出的接口 JSON，因此不能在本地直接调用店小秘真实业务接口。
-
-执行器中的“已验证可调用接口”不是手工填写，而是在店小秘页面内真实调用成功后自动生成。生成位置：
+Environment:
 
 ```text
-dxm-executor-report-*.json -> verifiedCallableInterfaces
+Node.js: v24.14.1
+Python: 3.13.7
+Branch: codex/docs-audit-readme
+Worktree: isolated local worktree; absolute path intentionally omitted from public docs
 ```
 
-真实页面验证后会自动记录以下接口：
+Commands run:
 
-| 动作 | 标识 | 验证条件 |
-| --- | --- | --- |
-| 自动保存模板 | `template_save` | 返回 2xx 且响应不是登录页 |
-| 自动返回采集箱 | `return_collection` | 成功触发采集箱页面跳转 |
-| 自动刷新采集箱 | `collection_refresh` | 返回 2xx 且响应不是登录页 |
-| 自动启动助手 | `start` | 返回 2xx 且响应不是登录页 |
-| 自动读取任务状态 | `task_status` | 返回 2xx 且响应不是登录页 |
-| 自动结束/暂停任务 | `pause_or_finish` | 返回 2xx 且响应不是登录页 |
+| Command | Result | Notes |
+|---|---|---|
+| `node tools\aliexpress-evidence-policy.test.js` | PASS | Printed `aliexpress-evidence-policy.test.js passed` |
+| `node --check src\dianxiaomi-automation-v1-merged-new.user.js` | PASS | Syntax check only |
+| `node --check src\dianxiaomi-amazon-crawlbox-v1.user.js` | PASS | Syntax check only |
+| `git ls-files "*.js" "*.mjs" | ForEach-Object { node --check $_ }` | PASS | 33 JavaScript/MJS files checked |
+| Python AST parse over `git ls-files "*.py"` | PASS | 11 Python files parsed |
+| JSON parse over `git ls-files "*.json"` | PASS | 117 JSON files parsed |
+| `git diff --check` | PASS | No whitespace errors; Git reported CRLF conversion warnings only |
+| Stale version scan over active docs | PASS | No legacy source-version pattern or stale 3x10 phrase in active entry docs |
+| SVG XML parse | PASS | `docs/assets/architecture-overview-en.svg` and `docs/assets/architecture-overview-zh.svg` parsed |
+| Mermaid source check | PASS | `docs/diagrams/workflow-en.mmd` and `docs/diagrams/workflow-zh.mmd` start with `flowchart LR` and include live-gate nodes |
+| ASCII architecture check | PASS | English and Chinese ASCII maps have no tab characters and lines <= 100 chars |
+| Markdown fence check | PASS | `README.md`, `README.zh-CN.md`, `docs/architecture.md`, and `docs/architecture.zh-CN.md` have balanced code fences |
 
-## 真实调用验证方法
+## What This Proves
 
-1. 登录店小秘。
-2. 安装探测器并完成一次人工流程。
-3. 安装执行器。
-4. 导入探测器记录或粘贴导出的 JSON。
-5. 勾选“允许真实调用”。
-6. 先单步调用每个动作。
-7. 导出执行报告。
-8. 检查 `verifiedCallableInterfaces`。
+- The AliExpress evidence policy and selected capture behaviors covered by `tools/aliexpress-evidence-policy.test.js` still pass locally.
+- The current main DXM automation userscript parses under Node syntax checking.
+- The current Amazon crawlbox userscript parses under Node syntax checking.
+- All tracked JavaScript/MJS files parse under `node --check`.
+- All tracked Python files parse as Python AST.
+- All tracked JSON files parse as JSON.
+- The rewritten active docs are free of known stale source-visible version strings.
+- The bilingual SVG, Mermaid, and ASCII architecture assets are present and pass basic structural checks.
 
-## 当前限制
+## What This Does Not Prove
 
-- 未导入真实接口记录时，执行器不会凭空构造店小秘接口。
-- 真实调用必须在已登录店小秘页面内执行。
-- 如果接口响应为登录页、验证码页或非 2xx 状态，不会标记为已验证。
+- It does not prove browser-installed Tampermonkey versions are current.
+- It does not prove Dianxiaomi page selectors still match live UI.
+- It does not prove save-to-wait-publish works.
+- It does not authorize any collection, claim, edit, save, publish, or one-click publish action.
+- It does not provide coverage for the full 576 KB main userscript.
+- It does not prove GitHub's Mermaid renderer will lay out every diagram identically to local expectations.
+
+## Discovered Test Surface
+
+Explicit test file:
+
+```text
+tools/aliexpress-evidence-policy.test.js
+```
+
+Related pure modules and candidates for future tests:
+
+```text
+tools/aliexpress-evidence-policy.js
+tools/aliexpress-evidence-capture.js
+tools/candidate-manifest.js
+tools/product-risk-filter.js
+tools/exception-queue.js
+```
+
+## Recommended Next Tests
+
+1. Add a manifest with a conservative `test` script that runs the current safe local checks only.
+2. Split pure logic out of the large main userscript so category, price, attribute, and preflight rules can be tested without a browser.
+3. Add fixture tests for product risk filtering and candidate manifest routing.
+4. Add schema validation fixtures for `config/aliexpress-evidence.schema.json` and product-understanding outputs.
+5. Keep browser/live validation as a separate gated procedure.

@@ -1,103 +1,74 @@
-# 测试步骤
+# Test Plan
 
-## 测试目标
+## Current Reality
 
-确认 V1 可以在店小秘页面内捕获关键接口，并将接口自动归类为后续自动执行器需要的候选接口。
+The repository does not currently provide a package manifest or a unified test command. Testing is command-driven and must be split into safe local layers and gated browser/live layers.
 
-## 测试前准备
+Do not treat live Dianxiaomi behavior as an ordinary automated test. Collection, claim, edit, save, publish, and one-click publish can mutate business state and require explicit task authorization.
 
-- Chrome 已安装 Tampermonkey。
-- 已安装并启用 `dianxiaomi-interface-detector.user.js`。
-- 已登录店小秘账号。
-- 准备一个低风险测试批次。
+## Test Layers
 
-## 测试流程
+| Layer | Purpose | Safe locally | Current command examples |
+|---|---|---:|---|
+| Static syntax | Catch parse errors in userscripts/tools | Yes | `node --check <file>` |
+| Pure policy tests | Test deterministic Node modules | Yes | `node tools\aliexpress-evidence-policy.test.js` |
+| JSON/schema validation | Validate config, thresholds, product-understanding outputs | Yes | `python tools\validate-product-understanding.py <fixture>` when fixtures are available |
+| Offline payload analysis | Diff or inspect saved payload bundles | Yes | `python tools\diff-save-payload.py ...` when fixtures are available |
+| Read-only browser preflight | Read page state without mutating Dianxiaomi | Gated | `tools/dxm-live-edit-helper.js readonly` with current task approval |
+| Dry-run payload/report | Build reports without save/publish | Gated | Single-submit or main script dry-run entrypoints |
+| Live validation | Save to wait-publish and read back | Explicitly gated | Only when `TASK.md` and user confirmation allow it |
 
-1. 打开店小秘采集箱一级页面。
-2. 确认右下角出现“店小秘自动化 V1”面板。
-3. 刷新采集箱列表。
-4. 进入一个模板产品编辑页。
-5. 修改或保存模板产品。
-6. 返回采集箱一级页面。
-7. 打开助手设置。
-8. 保存助手设置。
-9. 点击开始。
-10. 等待任务状态变化。
-11. 点击暂停或结束。
-12. 点击面板“导出 JSON”。
+## Minimum Local Baseline
 
-## 验收标准
+Run these before publishing documentation or touching source:
 
-导出的 JSON 中应至少出现以下接口候选中的多项：
-
-- `模板保存接口`
-- `采集箱列表接口`
-- `助手设置接口`
-- `开始接口`
-- `暂停/结束接口`
-- `任务状态接口`
-
-每条记录应包含：
-
-- URL
-- method
-- requestBody
-- status
-- responseText
-- matches
-- page.href
-
-## 失败处理
-
-- 如果面板没有出现，确认 Tampermonkey 脚本已启用，并刷新页面。
-- 如果没有记录，确认页面操作触发了网络请求。
-- 如果分类不准确，先保留 JSON，下一版根据真实 URL 和字段补充精确规则。
-- 如果导出失败，可在浏览器控制台执行：
-
-```javascript
-window.__DXM_INTERFACE_DETECTOR_V1__.getRecords()
+```powershell
+node tools\aliexpress-evidence-policy.test.js
+node --check src\dianxiaomi-automation-v1-merged-new.user.js
+node --check src\dianxiaomi-amazon-crawlbox-v1.user.js
+git diff --check
 ```
 
-## 第二阶段调用测试
+## Broader Static Sweep
 
-安装 `dianxiaomi-auto-executor.user.js` 后执行：
+When changing JavaScript broadly, run syntax checks across tracked JS/MJS files:
 
-1. 打开店小秘页面，确认“店小秘自动执行 V1”面板出现。
-2. 点击“导入探测器”或“粘贴 JSON”。
-3. 确认以下动作显示“有候选”：
-   - 自动保存模板
-   - 自动返回采集箱
-   - 自动刷新采集箱
-   - 自动启动助手
-   - 自动读取任务状态
-   - 自动结束/暂停任务
-4. 勾选“允许真实调用”。
-5. 展开“单步调用”，逐项执行并观察状态码。
-6. 单步调用成功后，点击“执行流程”。
-7. 点击“导出报告”。
+```powershell
+git ls-files "*.js" "*.mjs" | ForEach-Object { node --check $_ }
+```
 
-第二阶段验收标准：
+If this fails on a historical browser-only userscript because the file depends on Tampermonkey globals, record the file and error in `docs/test-results.md` instead of hiding it.
 
-- 报告中 `verifiedCallableInterfaces` 包含真实调用成功的接口。
-- 每个成功接口包含 `url`、`method`、`verifiedAt`、`status`、`durationMs`。
-- 响应为登录页或非 2xx 状态时，不得标记为已验证。
+## Documentation Drift Checks
 
-## V2 save.json 抓取测试
+Before finishing a docs pass, verify active entry docs do not reintroduce known stale versions:
 
-1. 禁用 V1 探测器。
-2. 启用 `dianxiaomi-interface-detector-v2.user.js`。
-3. 刷新店小秘页面，确认右下角出现 `店小秘探测器 V2`。
-4. 清空 V2 记录。
-5. 执行一次助手流程或单个测试产品提交流程。
-6. 导出 `dxm-interface-v2-records-*.json`。
+```powershell
+rg -n "1\.1\.14|1\.1\.43|0\.1\.15" README.md docs\install.md docs\architecture.md docs\test-plan.md docs\test-results.md
+```
 
-V2 验收标准：
+Expected result for current docs: no matches.
 
-- JSON 中出现 `POST /api/smtlocalProduct/save.json`。
-- 该记录包含 `requestBodyKind: "formdata"`。
-- 该记录包含 `requestBodyFields`。
-- `requestBodyFields` 中 `name: "file"` 的字段应包含：
-  - `size`
-  - `type`
-  - `text` 或 `textParse`
-- 如果 `file` 是 JSON blob，`textParse.type` 应为 `json`。
+## Encoding Checks
+
+Historical documents mention Windows terminal mojibake. For high-priority Markdown and skill files, scan for common replacement or mojibake markers:
+
+```powershell
+rg -n "�|Ã|â|鈥|鉁|馃|锔|涓|绗" README.md AGENT.md AGENTS.md TASK.md TODO.md DELIVERABLE.md CHANGELOG.md VERSION_HISTORY.md docs skills -g "*.md" -g "*.json"
+```
+
+Interpretation:
+
+- Hits inside documents that discuss mojibake as a known issue are not file corruption by themselves.
+- Direct replacement-character hits in active docs or skills should be fixed or isolated.
+- Always verify suspicious files in a UTF-8-aware editor before rewriting Chinese content.
+
+## Test Coverage Gaps
+
+Known gaps as of 2026-07-06:
+
+1. Only one explicit test file was discovered: `tools/aliexpress-evidence-policy.test.js`.
+2. No manifest exposes `npm test`, `pnpm test`, `pytest`, or similar.
+3. The largest userscript has limited direct test coverage.
+4. Browser/live validation relies on run reports and explicit gated procedures.
+5. Screenshot cleanup is documented, but evidence retention should be audited after each task.
