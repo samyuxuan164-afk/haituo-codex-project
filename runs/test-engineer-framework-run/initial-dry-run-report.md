@@ -34,9 +34,9 @@ python3 --version
 node tools/dxm-automation-core.test.js
 node tools/aliexpress-evidence-policy.test.js
 python3 tools/build-save-payload-dry-run.py --sample-payload runs/20260622-090805-167487781999454415/20260622-090805-167487781999454415/choiceSave.pretty.json --out runs/test-engineer-framework-run/payload-dry-run
-/Users/sam/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3 tools/build-save-payload-dry-run.py --sample-payload runs/20260622-090805-167487781999454415/20260622-090805-167487781999454415/choiceSave.pretty.json --out runs/test-engineer-framework-run/payload-dry-run
+<codex-bundled-python> tools/build-save-payload-dry-run.py --sample-payload runs/20260622-090805-167487781999454415/20260622-090805-167487781999454415/choiceSave.pretty.json --out runs/test-engineer-framework-run/payload-dry-run
 node -e "const fs=require('fs'); const p='runs/drawer-10-product-understanding/B0D6GHYJZM.report.json'; const out='runs/test-engineer-framework-run/product-understanding-adapted-B0D6GHYJZM.json'; const doc=JSON.parse(fs.readFileSync(p,'utf8')); fs.writeFileSync(out, JSON.stringify(doc.adapted || doc.raw, null, 2)); console.log(out);"
-/Users/sam/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3 tools/validate-product-understanding.py runs/test-engineer-framework-run/product-understanding-adapted-B0D6GHYJZM.json
+<codex-bundled-python> tools/validate-product-understanding.py runs/test-engineer-framework-run/product-understanding-adapted-B0D6GHYJZM.json
 node tools/aliexpress-evidence-preflight-check.js local --asins B0D6GHYJZM,B0D65JFRX4
 rg -n -i "cookie|session|token|password|passwd|api[_-]?key|authorization|bearer|secret" runs/test-engineer-framework-run
 rg -n -i "cookie|session|token|password|passwd|api[_-]?key|authorization|bearer|secret" runs/test-engineer-framework-run -g '!initial-dry-run-report.md'
@@ -65,7 +65,7 @@ TypeError: unsupported operand type(s) for |: 'type' and 'NoneType'
 
 Root cause: `/usr/bin/python3` is Python 3.9.6, while `tools/build-save-payload-dry-run.py` uses Python 3.10+ union type syntax such as `dict | None`.
 
-Resolution in this validation run: reran the same command with Codex bundled Python at `/Users/sam/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3`, and the dry-run passed.
+Resolution in this validation run: reran the same command with the local Codex bundled Python runtime, recorded in commands as `<codex-bundled-python>`, and the dry-run passed.
 
 - Local AliExpress evidence batch status for the two sample ASINs returned `missing` for both `B0D6GHYJZM` and `B0D65JFRX4`. This is not a command failure, but it means these selected sample ASINs do not currently have evidence records in `runs/aliexpress-evidence-store.json`.
 
