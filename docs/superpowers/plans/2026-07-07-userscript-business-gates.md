@@ -23,7 +23,7 @@
 **Files:**
 - Modify: `tools/dxm-automation-core.test.js`
 
-- [ ] **Step 1: Add failing import and assertions**
+- [x] **Step 1: Add failing import and assertions**
 
 Add the following block before the final `process.stdout.write(...)` line:
 
@@ -120,7 +120,7 @@ assert.deepStrictEqual(blockedEditSaveGate.blockers, [
 assert.strictEqual(blockedEditSaveGate.nextAction, 'run_aliexpress_category_verification_before_save');
 ```
 
-- [ ] **Step 2: Run the test and confirm failure**
+- [x] **Step 2: Run the test and confirm failure**
 
 Run:
 
@@ -136,7 +136,7 @@ Expected: fail with `Cannot read properties of undefined` or missing `businessGa
 - Create: `src/dxm-automation-core/business-gates.js`
 - Modify: `src/dxm-automation-core/index.js`
 
-- [ ] **Step 1: Add the pure module**
+- [x] **Step 1: Add the pure module**
 
 Create `src/dxm-automation-core/business-gates.js` with these exports:
 
@@ -276,7 +276,7 @@ module.exports = {
 };
 ```
 
-- [ ] **Step 2: Export the module**
+- [x] **Step 2: Export the module**
 
 Update `src/dxm-automation-core/index.js`:
 
@@ -292,7 +292,7 @@ module.exports = {
 };
 ```
 
-- [ ] **Step 3: Run tests**
+- [x] **Step 3: Run tests**
 
 Run:
 
@@ -307,7 +307,7 @@ Expected: pass.
 **Files:**
 - Modify: `src/dianxiaomi-automation-v1-merged-new.user.js`
 
-- [ ] **Step 1: Locate readonly preflight aggregation**
+- [x] **Step 1: Locate readonly preflight aggregation**
 
 Run:
 
@@ -317,7 +317,7 @@ rg -n "safeToSaveToWaitPublish|blockers|preflightPass|postage template|ships fro
 
 Use the existing function that builds readonly preflight output. Do not change DOM interaction functions or save button click functions.
 
-- [ ] **Step 2: Add adapter-local normalization helpers**
+- [x] **Step 2: Add adapter-local normalization helpers**
 
 Add these helpers near existing preflight helper functions:
 
@@ -350,7 +350,7 @@ function normalizeBusinessGateBlockers(blockers) {
 }
 ```
 
-- [ ] **Step 3: Include normalized blockers in readonly output**
+- [x] **Step 3: Include normalized blockers in readonly output**
 
 Where readonly preflight returns `{ safeToSaveToWaitPublish, preflightPass, blockers, ... }`, add:
 
@@ -386,7 +386,7 @@ function businessGateNextAction(blockers) {
 }
 ```
 
-- [ ] **Step 4: Syntax check**
+- [x] **Step 4: Syntax check**
 
 Run:
 
@@ -404,7 +404,7 @@ Expected: no output and exit code `0`.
 - Modify: `docs/test-results.md`
 - Modify: `DEVELOPMENT_LOG.md`
 
-- [ ] **Step 1: Run full local verification**
+- [x] **Step 1: Run full local verification**
 
 Run:
 
@@ -421,7 +421,7 @@ Expected:
 - `aliexpress-evidence-policy.test.js passed`
 - all syntax checks exit `0`
 
-- [ ] **Step 2: Update docs with this status**
+- [x] **Step 2: Update docs with this status**
 
 Add this concise status to the relevant docs:
 
@@ -429,7 +429,7 @@ Add this concise status to the relevant docs:
 Added `src/dxm-automation-core/business-gates.js` as an offline-tested pure business gate for collection contamination, price readiness, AliExpress category evidence, freight template `111`, Ships From `United States`, and composed edit-save readiness. The main userscript only received a minimal readonly preflight normalization adapter; DOM interactions, native save, publish, and one-click publish behavior were not changed. No live Dianxiaomi business action was executed.
 ```
 
-- [ ] **Step 3: Commit implementation**
+- [x] **Step 3: Commit implementation**
 
 Run:
 
@@ -438,7 +438,7 @@ git add src\dxm-automation-core\business-gates.js src\dxm-automation-core\index.
 git commit -m "feat(core): add userscript business gates"
 ```
 
-- [ ] **Step 4: Commit documentation**
+- [x] **Step 4: Commit documentation**
 
 Run:
 
@@ -453,3 +453,4 @@ git commit -m "docs(core): document userscript business gates"
 - Placeholder scan: no `TBD`, `TODO`, or open-ended test steps remain.
 - Type consistency: public export is `businessGates`, and individual functions use the `evaluate*Gate` naming scheme.
 - Scope control: runtime remains a single userscript; no live browser/Dianxiaomi action is part of this plan.
+- Follow-up boundary: the next layer is to wire readonly preflight, batch gate, and WebBridge reports to this same pure blocker vocabulary rather than adding another status system.

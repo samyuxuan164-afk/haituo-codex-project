@@ -1,4 +1,45 @@
-# Current Status - 2026-07-06
+# Current Status - 2026-07-07
+
+## Latest Source-Level Development - 2026-07-07
+
+```text
+Current phase: Development / source-level userscript business gates
+
+Prepared `src/dxm-automation-core/business-gates.js` as an offline-tested pure business-gate module. It standardizes deterministic blocker decisions for crawlbox contamination, trusted Amazon displayed-price readiness, current-task price formula readiness, AliExpress / learned-rule category evidence, freight template `111`, Ships From `United States`, and composed edit-save readiness.
+
+Modules affected:
+- src/dxm-automation-core/business-gates.js
+- src/dxm-automation-core/index.js
+- src/dxm-automation-core/workflow-diagnostics.js
+- tools/dxm-automation-core.test.js
+
+Main userscript adapter:
+- `src/dianxiaomi-automation-v1-merged-new.user.js` now adds a minimal readonly preflight normalization seam.
+- Readonly preflight output includes `businessGate.allowed`, normalized `businessGate.blockers`, and `businessGate.nextAction`.
+- DOM selection, Ant dropdown handling, WebBridge, native save, final publish, one-click publish, collection, and claim execution behavior were not expanded by this source pass.
+
+Business blocker coverage:
+- collection-box duplicate / non-target / missing / invalid-price contamination.
+- `amazon_displayed_price_missing`.
+- `price_out_of_range_or_zero`.
+- `price_formula_missing_exchange_rate_or_multiplier`.
+- `category_evidence_missing`.
+- `aliexpress_dxm_category_map_missing`.
+- `product_category_not_selected`.
+- `postage_template_not_111`.
+- `ships_from_not_united_states`.
+
+Test surface:
+- `tools/dxm-automation-core.test.js` now covers the business gates together with existing text, pricing, PC detail, and workflow-diagnostics pure modules.
+- Full local verification for this branch is recorded in `docs/test-results.md`.
+
+Runtime boundary:
+- The installed Tampermonkey runtime artifact remains the existing single userscript.
+- No live Dianxiaomi page action, collection, claim, edit, save, move-to-wait-publish, publish, one-click publish, or browser automation was executed for this documentation/source-level gate task.
+
+Next engineering step:
+- Continue the second-layer extraction later by wiring readonly preflight, batch gate, and WebBridge reports to the same pure blocker vocabulary.
+```
 
 ## Latest Source-Level Development - 2026-07-06
 

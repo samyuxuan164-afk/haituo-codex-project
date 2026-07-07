@@ -1,5 +1,10 @@
 # Development Log
 
+## 2026-07-07
+
+- Completed the source-level `business-gates` pass on `codex/userscript-business-gates` without executing any browser or Dianxiaomi business action. Added `src/dxm-automation-core/business-gates.js` as a pure CommonJS gate layer for crawlbox contamination, trusted Amazon displayed-price readiness, task price formula readiness, AliExpress / learned-rule category evidence, freight template `111`, Ships From `United States`, and composed edit-save readiness. The main userscript change is limited to readonly preflight normalization output (`businessGate.allowed`, normalized blockers, and next action); DOM dropdown handling, WebBridge, native save, collection, claim, final publish, and one-click publish behavior were not expanded.
+- Extended `tools/dxm-automation-core.test.js` with offline assertions for the business gate decisions and kept the next extraction target explicit: later wire readonly preflight, batch gate, and WebBridge reports into the same pure blocker vocabulary.
+
 ## 2026-07-06
 
 - Started the next source-level root-cause audit pass for the known 10-product validation blockers without executing any browser or Dianxiaomi business action. Added `src/dxm-automation-core/workflow-diagnostics.js` and expanded `tools/dxm-automation-core.test.js` with an offline reproduction of the 10-target / 16-row collection-box contamination case: duplicate rows classify as `crawlbox_duplicate_rows`, the three zero-price ASINs classify as `price_out_of_range_or_zero`, and only the seven unique price-valid ASINs remain safe claim candidates. The same module normalizes readonly edit preflight blockers into machine causes (`category_evidence_missing`, `product_category_not_selected`, `postage_template_not_111`, `ships_from_not_united_states`), confirming this failure path is a preflight-save gate stop rather than a missing save button.
