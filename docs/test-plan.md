@@ -71,6 +71,15 @@ Known gaps as of 2026-07-06:
 
 1. Two explicit Node assertion tests exist: `tools/aliexpress-evidence-policy.test.js` and `tools/dxm-automation-core.test.js`.
 2. No manifest exposes `npm test`, `pnpm test`, `pytest`, or similar.
-3. The largest userscript still has limited direct test coverage beyond the first extracted pure modules.
+3. The largest userscript still has limited direct test coverage beyond the extracted pure modules for text, pricing, PC detail, and workflow diagnostics.
 4. Browser/live validation relies on run reports and explicit gated procedures.
 5. Screenshot cleanup is documented, but evidence retention should be audited after each task.
+
+## Current Pure Module Coverage
+
+`tools/dxm-automation-core.test.js` currently covers:
+
+1. platform text cleanup, title cleanup, and compliant PC description generation;
+2. task-parameterized price calculation, displayed-price candidate selection, dimensions, and weight parsing;
+3. PC detail image-first generation and current-product image analysis;
+4. offline workflow diagnostics for collection-box duplicate/zero-price contamination and readonly edit preflight root-cause normalization.

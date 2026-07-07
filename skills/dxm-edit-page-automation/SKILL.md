@@ -46,7 +46,7 @@ Amazon 商品 -> 店小秘采集箱 -> 认领 -> 编辑页自动填写 -> 保存
     "multiplier": 0,
     "tiers": [],
     "rounding": "round-2",
-    "rangePolicy": ""
+    "candidatePolicy": "highest_displayed_value"
   },
   "visibleRequiredMarks": [],
   "targetStore": "Halo Home Store"
@@ -66,7 +66,7 @@ Amazon 商品 -> 店小秘采集箱 -> 认领 -> 编辑页自动填写 -> 保存
 9. 变种信息 `销售方式/打包出售` 无红星，默认不勾选、不分析。
 10. `商家仓库存` 默认填写 `15`。
 11. `SKU编码` 填写当前 ASIN。
-12. `货值(CNY)` 按当前任务确认的 Amazon 页面展示价格、汇率、倍率/阶梯倍率、舍入规则和区间价策略计算；缺少当前任务价格参数时不得保存。
+12. `货值(CNY)` 按当前任务确认的 Amazon 页面展示价格、展示价候选策略、汇率、倍率/阶梯倍率和舍入规则计算；Amazon 展示价候选默认取最高有效值，包含当前价、区间价、变体价、划线价/List Price；缺少当前任务价格参数时不得保存。
 13. 运费模板固定真实选择并读回 `111`。
 
 ### Output

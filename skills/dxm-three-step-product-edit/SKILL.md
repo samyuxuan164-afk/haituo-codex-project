@@ -10,7 +10,7 @@ Authoritative exception rules: `docs/exception-rules.md`. This skill must not ex
   - `exchangeRate`
   - `multiplier` or `tiers`
   - `rounding`
-  - `rangePolicy`
+  - `candidatePolicy` / `rangePolicy` override when explicitly configured
 - `productFamily`
 - `targetStore`: `Halo Home Store`
 - `verifiedCategoryRule`:

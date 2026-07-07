@@ -15,10 +15,13 @@ Every task must provide its own price configuration, including:
 - Exchange rate.
 - Multiplier or tiered multiplier strategy.
 - Rounding rule.
-- Displayed-price range policy.
+- Amazon displayed-price candidate policy.
 
 Do not reuse a historical task formula when the current task does not explicitly confirm the formula.
 The numeric example below is only an example of one configured task, not a project default.
+Amazon displayed-price candidates include current buy-box price, displayed ranges, variant prices, and strike/list prices such as `List Price`.
+The default candidate policy is `highest_displayed_value`: pick the highest valid Amazon displayed USD candidate, then apply the current task's formula.
+Tasks may override that candidate policy, but the exchange rate, multiplier/tier strategy, and rounding rule still must come from the current task.
 
 ## Input
 
@@ -31,7 +34,7 @@ The numeric example below is only an example of one configured task, not a proje
     "multiplier": 1.55,
     "tiers": [],
     "rounding": "round-2",
-    "rangePolicy": "highest_displayed_value"
+    "candidatePolicy": "highest_displayed_value"
   },
   "visibleGoodsValueCny": 0,
   "visibleSupplyPriceCny": 0
@@ -43,13 +46,15 @@ The numeric example below is only an example of one configured task, not a proje
 1. Require the current task's trusted Amazon displayed USD price before edit-page save.
 2. Require the current task's price configuration before computing goods value.
 3. If the price configuration is missing, record `price_formula_missing` and skip the product.
-4. If Amazon displays a price range, require the current task's configured range policy before formula calculation; record `price_range_policy_missing` or `price_range_policy_invalid` when it is absent or unsupported.
-5. Compute goods value from current task inputs only, then round according to the task configuration.
-6. Write the computed value to the edit-page `goods value / 货值(CNY)` field.
-7. If `supply price including shipping / 含邮供货价(CNY)` is derived by the page, do not overwrite it unless the page requires a visible correction.
-8. Do not use previously imported Dianxiaomi values when they conflict with the current task formula.
-9. During preflight, compare visible goods value against the computed value.
-10. If the Amazon displayed price is missing, record `amazon_displayed_price_missing` and skip the product.
+4. Select the Amazon displayed USD price from valid Amazon candidates. By default, use `highest_displayed_value`, including the high end of ranges and strike/list prices such as `List Price`.
+5. If the current task explicitly provides a different supported candidate policy, use it; if it provides an unsupported policy, record `price_range_policy_invalid`.
+6. Do not treat the candidate policy as the goods-value formula. It only selects the Amazon USD input price.
+7. Compute goods value from current task inputs only, then round according to the task configuration.
+8. Write the computed value to the edit-page `goods value / 货值(CNY)` field.
+9. If `supply price including shipping / 含邮供货价(CNY)` is derived by the page, do not overwrite it unless the page requires a visible correction.
+10. Do not use previously imported Dianxiaomi values when they conflict with the current task formula.
+11. During preflight, compare visible goods value against the computed value.
+12. If the Amazon displayed price is missing, record `amazon_displayed_price_missing` and skip the product.
 
 ## Output
 

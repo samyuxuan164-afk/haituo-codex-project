@@ -37,16 +37,20 @@ const { pricingRules } = require('../src/dxm-automation-core');
 const { parseDisplayedPrice } = require('./amazon-displayed-price-capture');
 
 assert.strictEqual(pricingRules.calculateSupplyPriceCny(13.97, 6.8, 1.4), '132.99');
-assert.strictEqual(pricingRules.calculateSupplyPriceCny('$8.99 - $12.99', 1, 1), '');
+assert.strictEqual(pricingRules.calculateSupplyPriceCny('$8.99 - $12.99', 1, 1), '12.99');
 assert.strictEqual(
   pricingRules.calculateSupplyPriceCny('$8.99 - $12.99', 1, 1, { rangePolicy: 'highest_displayed_value' }),
   '12.99'
 );
 assert.strictEqual(
+  pricingRules.calculateSupplyPriceCny('Price $19.94 List Price: $20.99', 1, 1),
+  '20.99'
+);
+assert.strictEqual(
   pricingRules.calculateSupplyPriceCny(50, 7, { multiplier: 1.55, tiers: [{ minUsd: 20, multiplier: 1.35 }] }),
   '472.5'
 );
-assert.strictEqual(parseDisplayedPrice('$8.99 - $12.99').reason, 'price_range_policy_missing');
+assert.strictEqual(parseDisplayedPrice('$8.99 - $12.99').amazonDisplayedPriceUsd, 12.99);
 assert.strictEqual(
   parseDisplayedPrice('$8.99 - $12.99', { rangePolicy: 'median_displayed_value' }).reason,
   'price_range_policy_invalid'
@@ -54,6 +58,10 @@ assert.strictEqual(
 assert.strictEqual(
   parseDisplayedPrice('$8.99 - $12.99', { rangePolicy: 'highest_displayed_value' }).amazonDisplayedPriceUsd,
   12.99
+);
+assert.strictEqual(
+  parseDisplayedPrice('Price $19.94 List Price: $20.99').amazonDisplayedPriceUsd,
+  20.99
 );
 assert.strictEqual(pricingRules.priceEqualsExpected('151.570', '151.57'), true);
 assert.deepStrictEqual(
@@ -79,5 +87,72 @@ assert.deepStrictEqual(
   pcDetailRules.analyzePcDetailWebImages(detailHtml, ['https://img.example.com/a.jpg', 'https://img.example.com/b.jpg']),
   { imageCount: 2, currentProductImageCount: 2, leadingImageCount: 2, required: 2 }
 );
+
+const { workflowDiagnostics } = require('../src/dxm-automation-core');
+
+const targetAsins = [
+  'B0F2H4PF7R',
+  'B0DPSVFQFW',
+  'B0FRNMSG2Z',
+  'B0BHMYH8GR',
+  'B0GH7NDP4J',
+  'B0CYT44JRK',
+  'B0DNLYDFCF',
+  'B07T3L3TV1',
+  'B08S7BGF4C',
+  'B0D5H7MZ63',
+];
+const crawlboxRows = [
+  { asin: 'B0F2H4PF7R', priceUsd: '12.99' },
+  { asin: 'B0DPSVFQFW', priceUsd: '9.49' },
+  { asin: 'B0FRNMSG2Z', priceUsd: '16.99' },
+  { asin: 'B0BHMYH8GR', priceUsd: '7.59' },
+  { asin: 'B0GH7NDP4J', priceUsd: '11.99' },
+  { asin: 'B0CYT44JRK', priceUsd: '18.49' },
+  { asin: 'B0DNLYDFCF', priceUsd: '6.99' },
+  { asin: 'B07T3L3TV1', priceUsd: '0.00' },
+  { asin: 'B08S7BGF4C', priceUsd: '0.00' },
+  { asin: 'B0D5H7MZ63', priceUsd: '0.00' },
+  { asin: 'B0F2H4PF7R', priceUsd: '12.99' },
+  { asin: 'B0DPSVFQFW', priceUsd: '9.49' },
+  { asin: 'B0FRNMSG2Z', priceUsd: '16.99' },
+  { asin: 'B07T3L3TV1', priceUsd: '0.00' },
+  { asin: 'B08S7BGF4C', priceUsd: '0.00' },
+  { asin: 'B0D5H7MZ63', priceUsd: '0.00' },
+];
+
+const crawlboxDiagnosis = workflowDiagnostics.analyzeCrawlboxBatch({
+  targetAsins,
+  rows: crawlboxRows,
+  priceRange: { min: 5, max: 20 },
+});
+assert.strictEqual(crawlboxDiagnosis.targetCount, 10);
+assert.strictEqual(crawlboxDiagnosis.rowCount, 16);
+assert.strictEqual(crawlboxDiagnosis.duplicateRowCount, 6);
+assert.deepStrictEqual(crawlboxDiagnosis.invalidPriceAsins, ['B07T3L3TV1', 'B08S7BGF4C', 'B0D5H7MZ63']);
+assert.deepStrictEqual(crawlboxDiagnosis.safeClaimAsins, targetAsins.slice(0, 7));
+assert.deepStrictEqual(crawlboxDiagnosis.rootCauses, ['crawlbox_duplicate_rows', 'price_out_of_range_or_zero']);
+
+const editPreflightDiagnosis = workflowDiagnostics.analyzeEditPreflightReadback({
+  asin: 'B0F2H4PF7R',
+  safeToSaveToWaitPublish: false,
+  preflightPass: false,
+  blockers: [
+    'AliExpress category evidence required: category_evidence_missing',
+    'product category is not selected',
+    'postage template is not 111: --- 请选择运费模板 ---',
+    'ships from is not United States: empty',
+  ],
+});
+assert.strictEqual(editPreflightDiagnosis.stage, 'edit_preflight_blocked');
+assert.strictEqual(editPreflightDiagnosis.saveAllowed, false);
+assert.strictEqual(editPreflightDiagnosis.rootCause, 'category_evidence_missing');
+assert.deepStrictEqual(editPreflightDiagnosis.normalizedBlockers, [
+  'category_evidence_missing',
+  'product_category_not_selected',
+  'postage_template_not_111',
+  'ships_from_not_united_states',
+]);
+assert.strictEqual(editPreflightDiagnosis.nextAction, 'run_aliexpress_category_verification_before_save');
 
 process.stdout.write('dxm-automation-core.test.js passed\n');

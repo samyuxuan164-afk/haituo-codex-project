@@ -12,7 +12,7 @@
     "writesPriceStore": false
   },
   "inputs": {
-    "inputPath": "/Users/sam/Documents/电商上架项目/自动上架/dianxiaomi-automation-v1/runs/validation-100-first-batch-candidates-20260701.json",
+    "inputPath": "<PROJECT_ROOT>/runs/validation-100-first-batch-candidates-20260701.json",
     "jsonSupplied": false,
     "asinList": "",
     "asinFile": "",
@@ -22,21 +22,21 @@
     "expectedOrigin": "United States",
     "expectedFreightTemplate": "111",
     "expectedCategory": "",
-    "priceStorePath": "/Users/sam/Documents/电商上架项目/自动上架/dianxiaomi-automation-v1/runs/amazon-price-store.json",
-    "evidenceStorePath": "/Users/sam/Documents/电商上架项目/自动上架/dianxiaomi-automation-v1/runs/aliexpress-evidence-store.json",
-    "queuePath": "/Users/sam/Documents/电商上架项目/自动上架/dianxiaomi-automation-v1/runs/exception-queue.json",
-    "riskRulesPath": "/Users/sam/Documents/电商上架项目/自动上架/dianxiaomi-automation-v1/config/product-risk-rules.json"
+    "priceStorePath": "<PROJECT_ROOT>/runs/amazon-price-store.json",
+    "evidenceStorePath": "<PROJECT_ROOT>/runs/aliexpress-evidence-store.json",
+    "queuePath": "<PROJECT_ROOT>/runs/exception-queue.json",
+    "riskRulesPath": "<PROJECT_ROOT>/config/product-risk-rules.json"
   },
   "candidateManifest": {
     "schemaVersion": "dxm-candidate-manifest-v1",
     "generatedAt": "2026-07-02T04:03:39.686Z",
     "source": {
-      "inputPath": "/Users/sam/Documents/电商上架项目/自动上架/dianxiaomi-automation-v1/runs/validation-100-first-batch-candidates-20260701.json",
+      "inputPath": "<PROJECT_ROOT>/runs/validation-100-first-batch-candidates-20260701.json",
       "asinFile": "",
-      "priceStorePath": "/Users/sam/Documents/电商上架项目/自动上架/dianxiaomi-automation-v1/runs/amazon-price-store.json",
-      "evidenceStorePath": "/Users/sam/Documents/电商上架项目/自动上架/dianxiaomi-automation-v1/runs/aliexpress-evidence-store.json",
-      "queuePath": "/Users/sam/Documents/电商上架项目/自动上架/dianxiaomi-automation-v1/runs/exception-queue.json",
-      "riskRulesPath": "/Users/sam/Documents/电商上架项目/自动上架/dianxiaomi-automation-v1/config/product-risk-rules.json"
+      "priceStorePath": "<PROJECT_ROOT>/runs/amazon-price-store.json",
+      "evidenceStorePath": "<PROJECT_ROOT>/runs/aliexpress-evidence-store.json",
+      "queuePath": "<PROJECT_ROOT>/runs/exception-queue.json",
+      "riskRulesPath": "<PROJECT_ROOT>/config/product-risk-rules.json"
     },
     "summary": {
       "total": 10,
@@ -1788,7 +1788,7 @@
     },
     "riskScreening": {
       "enabled": true,
-      "rulesPath": "/Users/sam/Documents/电商上架项目/自动上架/dianxiaomi-automation-v1/config/product-risk-rules.json",
+      "rulesPath": "<PROJECT_ROOT>/config/product-risk-rules.json",
       "rows": [
         {
           "asin": "B0CZ7F61XN",
@@ -1977,8 +1977,8 @@
         "B0C1JY1C7F"
       ],
       "count": 10,
-      "dryRunCommand": "node tools/amazon-displayed-price-batch.js capture --asins B0CZ7F61XN,B0DZ14L38Y,B0DXFB86J7,B0DPSJP47V,B0F1DDLKBB,B0CTBQCKL9,B0FH7774VK,B01E2EYG4U,B0GFV4N3K8,B0C1JY1C7F --store '/Users/sam/Documents/电商上架项目/自动上架/dianxiaomi-automation-v1/runs/amazon-price-store.json' --page-wait-ms 10000 --delay-ms 500 --exchange-rate 7 --multiplier 1.55",
-      "writeCommand": "node tools/amazon-displayed-price-batch.js capture --asins B0CZ7F61XN,B0DZ14L38Y,B0DXFB86J7,B0DPSJP47V,B0F1DDLKBB,B0CTBQCKL9,B0FH7774VK,B01E2EYG4U,B0GFV4N3K8,B0C1JY1C7F --store '/Users/sam/Documents/电商上架项目/自动上架/dianxiaomi-automation-v1/runs/amazon-price-store.json' --page-wait-ms 10000 --delay-ms 500 --exchange-rate 7 --multiplier 1.55 --write-prices",
+      "dryRunCommand": "node tools/amazon-displayed-price-batch.js capture --asins B0CZ7F61XN,B0DZ14L38Y,B0DXFB86J7,B0DPSJP47V,B0F1DDLKBB,B0CTBQCKL9,B0FH7774VK,B01E2EYG4U,B0GFV4N3K8,B0C1JY1C7F --store '<PROJECT_ROOT>/runs/amazon-price-store.json' --page-wait-ms 10000 --delay-ms 500 --exchange-rate 7 --multiplier 1.55",
+      "writeCommand": "node tools/amazon-displayed-price-batch.js capture --asins B0CZ7F61XN,B0DZ14L38Y,B0DXFB86J7,B0DPSJP47V,B0F1DDLKBB,B0CTBQCKL9,B0FH7774VK,B01E2EYG4U,B0GFV4N3K8,B0C1JY1C7F --store '<PROJECT_ROOT>/runs/amazon-price-store.json' --page-wait-ms 10000 --delay-ms 500 --exchange-rate 7 --multiplier 1.55 --write-prices",
       "note": "Run dryRunCommand first. Use writeCommand only after the readonly capture result is trusted."
     }
   },
@@ -2518,7 +2518,7 @@
     },
     "riskScreening": {
       "enabled": true,
-      "rulesPath": "/Users/sam/Documents/电商上架项目/自动上架/dianxiaomi-automation-v1/config/product-risk-rules.json",
+      "rulesPath": "<PROJECT_ROOT>/config/product-risk-rules.json",
       "rows": [
         {
           "asin": "B0CZ7F61XN",
@@ -2707,8 +2707,8 @@
         "B0C1JY1C7F"
       ],
       "count": 10,
-      "dryRunCommand": "node tools/amazon-displayed-price-batch.js capture --asins B0CZ7F61XN,B0DZ14L38Y,B0DXFB86J7,B0DPSJP47V,B0F1DDLKBB,B0CTBQCKL9,B0FH7774VK,B01E2EYG4U,B0GFV4N3K8,B0C1JY1C7F --store '/Users/sam/Documents/电商上架项目/自动上架/dianxiaomi-automation-v1/runs/amazon-price-store.json' --page-wait-ms 10000 --delay-ms 500 --exchange-rate 7 --multiplier 1.55",
-      "writeCommand": "node tools/amazon-displayed-price-batch.js capture --asins B0CZ7F61XN,B0DZ14L38Y,B0DXFB86J7,B0DPSJP47V,B0F1DDLKBB,B0CTBQCKL9,B0FH7774VK,B01E2EYG4U,B0GFV4N3K8,B0C1JY1C7F --store '/Users/sam/Documents/电商上架项目/自动上架/dianxiaomi-automation-v1/runs/amazon-price-store.json' --page-wait-ms 10000 --delay-ms 500 --exchange-rate 7 --multiplier 1.55 --write-prices",
+      "dryRunCommand": "node tools/amazon-displayed-price-batch.js capture --asins B0CZ7F61XN,B0DZ14L38Y,B0DXFB86J7,B0DPSJP47V,B0F1DDLKBB,B0CTBQCKL9,B0FH7774VK,B01E2EYG4U,B0GFV4N3K8,B0C1JY1C7F --store '<PROJECT_ROOT>/runs/amazon-price-store.json' --page-wait-ms 10000 --delay-ms 500 --exchange-rate 7 --multiplier 1.55",
+      "writeCommand": "node tools/amazon-displayed-price-batch.js capture --asins B0CZ7F61XN,B0DZ14L38Y,B0DXFB86J7,B0DPSJP47V,B0F1DDLKBB,B0CTBQCKL9,B0FH7774VK,B01E2EYG4U,B0GFV4N3K8,B0C1JY1C7F --store '<PROJECT_ROOT>/runs/amazon-price-store.json' --page-wait-ms 10000 --delay-ms 500 --exchange-rate 7 --multiplier 1.55 --write-prices",
       "note": "Run dryRunCommand first. Use writeCommand only after the readonly capture result is trusted."
     }
   },
@@ -2716,7 +2716,7 @@
     "ok": true,
     "schemaVersion": "dxm-batch-exception-report-v1",
     "generatedAt": "2026-07-02T04:03:39.687Z",
-    "queuePath": "/Users/sam/Documents/电商上架项目/自动上架/dianxiaomi-automation-v1/runs/exception-queue.json",
+    "queuePath": "<PROJECT_ROOT>/runs/exception-queue.json",
     "includeResolved": false,
     "summary": {
       "totalAsins": 10,

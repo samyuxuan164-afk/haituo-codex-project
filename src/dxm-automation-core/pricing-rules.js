@@ -16,7 +16,7 @@ function selectPriceUsd(value, rangePolicy) {
   const numbers = extractNumbers(value);
   if (!numbers.length) return null;
   if (numbers.length === 1) return numbers[0];
-  if (rangePolicy === 'highest_displayed_value') return Math.max(...numbers);
+  if (!rangePolicy || rangePolicy === 'highest_displayed_value') return Math.max(...numbers);
   if (rangePolicy === 'lowest_displayed_value') return Math.min(...numbers);
   return null;
 }
