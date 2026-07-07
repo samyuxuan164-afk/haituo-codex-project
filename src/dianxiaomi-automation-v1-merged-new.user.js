@@ -114,7 +114,28 @@
   }
 
   function getDefaultStock() {
-    return getPanelInputValue('defaultStock', localStorage.getItem(DEFAULT_STOCK_KEY) || '15');
+    return '15';
+  }
+
+  function isExactPostageTemplate111Text(text) {
+    return String(text || '').replace(/\s+/g, ' ').trim() === EDIT_PAGE_RULES.postageTemplateId;
+  }
+
+  function isExactPostageTemplate111OptionText(text, title = '') {
+    const normalizedText = String(text || '').replace(/\s+/g, ' ').trim();
+    const normalizedTitle = String(title || '').replace(/\s+/g, ' ').trim();
+    if (normalizedText) return normalizedText === EDIT_PAGE_RULES.postageTemplateId;
+    return normalizedTitle === EDIT_PAGE_RULES.postageTemplateId;
+  }
+
+  function getCommittedPostageTemplateText(container) {
+    if (!container) return '';
+    const nativeSelect = Array.from(container.querySelectorAll('select')).find(visibleElement);
+    if (nativeSelect && nativeSelect.selectedOptions && nativeSelect.selectedOptions[0]) {
+      return elementText(nativeSelect.selectedOptions[0]);
+    }
+    const info = getAntSelectValueInfo(container);
+    return firstNonEmpty(info.selectedText, info.itemTitle, '');
   }
 
   function getDefaultShopId() {
@@ -3645,7 +3666,7 @@
         const sku = variationsParsed[index];
         const perSkuDefaults = {
           ...skuDefaults,
-          skuCode: variationsParsed.length > 1 && skuDefaults.skuCode ? `${skuDefaults.skuCode}-${index + 1}` : skuDefaults.skuCode,
+          skuCode: skuDefaults.skuCode,
         };
         if (ensureSkuCommercialFields(sku, perSkuDefaults)) {
           changed = true;
@@ -3812,10 +3833,10 @@
     }
     if (payload.__diagnostics && payload.__diagnostics.derived && payload.__diagnostics.derived.valueSources) {
       const sources = payload.__diagnostics.derived.valueSources;
-      warnings.push(`\u4efb\u52a1\u4ef7\u683c\u516c\u5f0f\uff1aAmazon\u539f\u4ef7 \u00d7 ${sources.taskFormula.exchangeRate} \u00d7 ${sources.taskFormula.multiplier}`);
+      warnings.push(`货值算式：Amazon 页面展示价 USD × ${sources.taskFormula.exchangeRate} × ${sources.taskFormula.multiplier}`);
       const priceState = payload.__diagnostics.derived.priceState || {};
       if (!priceState.ok) {
-        risks.push(`SKU 价格缺少可信来源：${priceState.reason || '必须填写当前商品 Amazon 原价 USD 后按任务公式计算'}`);
+        risks.push(`SKU 价格缺少可信来源：${priceState.reason || '必须使用当前商品可信 Amazon 页面展示价 USD 后按任务算式计算'}`);
       }
       if (sources.weight === 'default_missing_amazon_weight') warnings.push('\u91cd\u91cf\u4f7f\u7528\u9ed8\u8ba4 0.1kg\uff1aAmazon \u91cd\u91cf\u7f3a\u5931\u6216\u672a\u6293\u53d6');
       if (sources.dimensions === 'default_or_task_cm') warnings.push('\u5c3a\u5bf8\u4f7f\u7528\u4efb\u52a1/\u9ed8\u8ba4 cm\uff1aAmazon \u5c3a\u5bf8\u7f3a\u5931\u6216\u672a\u6293\u53d6');
@@ -3825,10 +3846,20 @@
       const expectedSupplyPrice = diagnostics.priceState && diagnostics.priceState.ok
         ? diagnostics.priceState.supplyPrice
         : '';
+      const expectedSkuAsin = getPrimaryAsinFromPayload(payload);
       const firstSku = variations[0] || {};
       if (!firstSku.skuCode) warnings.push('SKU \u4e3a\u7a7a\uff0c\u53ef\u80fd\u5f71\u54cd\u8ffd\u8e2a');
-      if (firstSku.skuCode && !/^B0[A-Z0-9]{8}(?:-\d+)?$/i.test(String(firstSku.skuCode))) {
-        warnings.push('SKU \u7f16\u7801\u4e0d\u662f Amazon ASIN \u683c\u5f0f\uff0c\u63d2\u4ef6\u5c06\u6309 ASIN \u89c4\u5219\u8986\u76d6');
+      if (firstSku.skuCode && !/^B0[A-Z0-9]{8}$/i.test(String(firstSku.skuCode))) {
+        risks.push('SKU 编码必须等于当前 Amazon ASIN，不能使用变种文本或 ASIN 后缀');
+      }
+      if (expectedSkuAsin) {
+        const mismatchedSkuCodes = variations.filter((sku) => {
+          const skuCode = firstNonEmpty(sku.skuCode, sku.sku, sku.merchantSku, sku.sku_code);
+          return normalizeCategoryText(skuCode) !== normalizeCategoryText(expectedSkuAsin);
+        }).length;
+        if (mismatchedSkuCodes) {
+          risks.push(`SKU 编码必须固定为当前 ASIN ${expectedSkuAsin}：${mismatchedSkuCodes} 条 SKU 不一致`);
+        }
       }
       if (!firstSku.supplyPrice && !firstSku.gloGoodsValue) risks.push('SKU \u4ef7\u683c\u4e3a\u7a7a');
       if (expectedSupplyPrice) {
@@ -5532,11 +5563,14 @@
     if (isDeadlineExceeded(deadlineAt)) return timeout({ reason: 'postage stage timeout before start' });
     const nativeSelect = Array.from(container.querySelectorAll('select')).find(visibleElement);
     if (nativeSelect) {
-      const option = Array.from(nativeSelect.options || []).find((item) => String(item.value || '').trim() === EDIT_PAGE_RULES.postageTemplateId || String(item.text || '').includes(EDIT_PAGE_RULES.postageTemplateId));
+      const option = Array.from(nativeSelect.options || []).find((item) => {
+        return isExactPostageTemplate111OptionText(item.text || item.label, item.getAttribute && item.getAttribute('title'));
+      });
       if (option) {
         nativeSelect.value = option.value;
         dispatchInputEvents(nativeSelect);
-        return { changed: true, ok: true, value: EDIT_PAGE_RULES.postageTemplateId, selectedText: option.text, mode: 'native-select' };
+        const selectedText = getCommittedPostageTemplateText(container);
+        return { changed: true, ok: isExactPostageTemplate111Text(selectedText), value: EDIT_PAGE_RULES.postageTemplateId, selectedText, mode: 'native-select' };
       }
     }
     const selectors = [
@@ -5554,43 +5588,34 @@
     }
     if (!opener) return { changed: false, ok: false, reason: 'postage selector not found' };
     const getSelectedText = () => {
-      return getSelectedTextInContainer(container);
+      return getCommittedPostageTemplateText(container);
     };
-    const antResult = await selectAntLikeValue(container, [EDIT_PAGE_RULES.postageTemplateId], { maxAttempts: 3, deadlineAt, timeoutStage });
-    if (antResult.ok) return { ...antResult, value: EDIT_PAGE_RULES.postageTemplateId, mode: `postage-${antResult.mode}` };
-    if (antResult.timedOut || isDeadlineExceeded(deadlineAt)) return timeout({ changed: Boolean(antResult.changed), antResult });
+    const antResult = { skipped: true, reason: 'postage template uses exact visible option only' };
     for (let attempt = 0; attempt < 3; attempt += 1) {
       if (isDeadlineExceeded(deadlineAt)) return timeout({ changed: false, attempts: attempt, antResult });
       clearSelectSearchValue(container);
       forceOpenSelectControl(container) || clickElement(opener);
       await sleep(400);
       if (isDeadlineExceeded(deadlineAt)) return timeout({ changed: false, attempts: attempt + 1, antResult });
-      const searchInput = findSelectSearchInputForOpenDropdown(opener);
-      if (searchInput) {
-        setSelectSearchInputValue(searchInput, EDIT_PAGE_RULES.postageTemplateId);
-        dispatchKeyboardEvent(searchInput, 'keydown', EDIT_PAGE_RULES.postageTemplateId);
-        await sleep(500);
-        if (isDeadlineExceeded(deadlineAt)) return timeout({ changed: false, attempts: attempt + 1, antResult });
-      }
-      let option = findExactOptionInActiveDropdown(opener, [EDIT_PAGE_RULES.postageTemplateId]);
+      let option = findExactPostageTemplate111Option(opener);
       if (option) {
         forceSelectOption(option);
         await sleep(500);
         const selectedText = getSelectedText();
-        if (selectedText === EDIT_PAGE_RULES.postageTemplateId || selectedText.includes(EDIT_PAGE_RULES.postageTemplateId)) {
+        if (isExactPostageTemplate111Text(selectedText)) {
           return { changed: true, ok: true, value: EDIT_PAGE_RULES.postageTemplateId, selectedText, attempts: attempt + 1, mode: 'direct-option' };
         }
       }
       await sleep(600);
       if (isDeadlineExceeded(deadlineAt)) return timeout({ changed: false, attempts: attempt + 1, antResult });
-      option = await findExactOptionInActiveDropdownWithListScroll(opener, [EDIT_PAGE_RULES.postageTemplateId], { deadlineAt });
+      option = await findExactPostageTemplate111OptionWithListScroll(opener, { deadlineAt });
       if (isDeadlineExceeded(deadlineAt)) return timeout({ changed: false, attempts: attempt + 1, antResult });
       if (option) {
         forceSelectOption(option);
         await sleep(500);
       }
       const selectedText = getSelectedText();
-      if (selectedText === EDIT_PAGE_RULES.postageTemplateId || selectedText.includes(EDIT_PAGE_RULES.postageTemplateId)) {
+      if (isExactPostageTemplate111Text(selectedText)) {
         return { changed: true, ok: true, value: EDIT_PAGE_RULES.postageTemplateId, selectedText, attempts: attempt + 1 };
       }
     }
@@ -5602,19 +5627,21 @@
     const deadlineAt = getDeadlineAt(options);
     const timeout = (extra = {}) => buildStageTimeoutResult(options.timeoutStage || 'shipping-postage.fast-postage', deadlineAt, extra);
     const container = findPostageTemplateContainer();
-    const selectedBefore = getSelectedTextInContainer(container);
-    if (selectedBefore === EDIT_PAGE_RULES.postageTemplateId || selectedBefore.includes(EDIT_PAGE_RULES.postageTemplateId)) {
+    const selectedBefore = getCommittedPostageTemplateText(container);
+    if (isExactPostageTemplate111Text(selectedBefore)) {
       return { changed: false, ok: true, value: EDIT_PAGE_RULES.postageTemplateId, selectedText: selectedBefore, mode: 'fast-already-selected' };
     }
     if (isDeadlineExceeded(deadlineAt)) return timeout({ changed: false, reason: 'fast postage timeout before start', selectedText: selectedBefore });
     const nativeSelect = Array.from(container.querySelectorAll('select')).find(visibleElement);
     if (nativeSelect) {
-      const option = Array.from(nativeSelect.options || []).find((item) => String(item.value || '').trim() === EDIT_PAGE_RULES.postageTemplateId || String(item.text || '').includes(EDIT_PAGE_RULES.postageTemplateId));
+      const option = Array.from(nativeSelect.options || []).find((item) => {
+        return isExactPostageTemplate111OptionText(item.text || item.label, item.getAttribute && item.getAttribute('title'));
+      });
       if (option) {
         nativeSelect.value = option.value;
         dispatchInputEvents(nativeSelect);
-        const selectedText = getSelectedTextInContainer(container);
-        return { changed: true, ok: selectedText.includes(EDIT_PAGE_RULES.postageTemplateId), value: EDIT_PAGE_RULES.postageTemplateId, selectedText, mode: 'fast-native-select' };
+        const selectedText = getCommittedPostageTemplateText(container);
+        return { changed: true, ok: isExactPostageTemplate111Text(selectedText), value: EDIT_PAGE_RULES.postageTemplateId, selectedText, mode: 'fast-native-select' };
       }
     }
     const opener = Array.from(container.querySelectorAll('.ant-select-selector,.ant-select-selection,.ant-select,input[role="combobox"],input[type="search"],input[type="text"]'))
@@ -5623,32 +5650,25 @@
     const openResult = openPostageTemplateDropdownByArrow(container);
     if (!openResult.ok) clickElement(opener);
     await sleep(250);
-    if (isDeadlineExceeded(deadlineAt)) return timeout({ changed: false, reason: 'fast postage timeout after open', selectedText: getSelectedTextInContainer(container) });
+    if (isDeadlineExceeded(deadlineAt)) return timeout({ changed: false, reason: 'fast postage timeout after open', selectedText: getCommittedPostageTemplateText(container) });
     const dropdownOpener = (openResult && openResult.opener) || opener;
-    let option = findExactOptionInActiveDropdown(dropdownOpener, [EDIT_PAGE_RULES.postageTemplateId]);
+    let option = findExactPostageTemplate111Option(dropdownOpener);
+    if (!option) option = await findExactPostageTemplate111OptionWithListScroll(dropdownOpener, { deadlineAt });
     if (!option) {
-      const searchInput = findSelectSearchInputForOpenDropdown(dropdownOpener);
-      if (searchInput) {
-        setSelectSearchInputValue(searchInput, EDIT_PAGE_RULES.postageTemplateId);
-        await sleep(250);
-        option = findExactOptionInActiveDropdown(dropdownOpener, [EDIT_PAGE_RULES.postageTemplateId]);
-      }
-    }
-    if (!option) {
-      const selectedText = getSelectedTextInContainer(container);
+      const selectedText = getCommittedPostageTemplateText(container);
       return { changed: false, ok: false, reason: 'postage option 111 not visible in fast path', selectedText, mode: 'fast-option-not-visible', openResult };
     }
     forceSelectOption(option);
     await sleep(350);
-    const selectedText = getSelectedTextInContainer(container);
+    const selectedText = getCommittedPostageTemplateText(container);
     return {
       changed: true,
-      ok: selectedText === EDIT_PAGE_RULES.postageTemplateId || selectedText.includes(EDIT_PAGE_RULES.postageTemplateId),
+      ok: isExactPostageTemplate111Text(selectedText),
       value: EDIT_PAGE_RULES.postageTemplateId,
       selectedText,
       mode: 'fast-visible-option',
       openResult,
-      reason: selectedText.includes(EDIT_PAGE_RULES.postageTemplateId) ? '' : 'fast postage did not read back 111',
+      reason: isExactPostageTemplate111Text(selectedText) ? '' : 'fast postage did not read back exact 111',
     };
   }
 
@@ -7190,6 +7210,40 @@
         holder.dispatchEvent(new Event('scroll', { bubbles: true }));
         await sleep(120);
         option = findExactOptionInActiveDropdown(opener, values);
+        if (option) return option;
+      }
+    }
+    return null;
+  }
+
+  function findExactPostageTemplate111Option(opener) {
+    const roots = getActiveSelectDropdowns(opener);
+    for (const root of roots) {
+      const options = Array.from(root.querySelectorAll('.ant-select-item-option,.ant-select-dropdown-menu-item,.select2-results__option,[role="option"],li'))
+        .filter(visibleElement);
+      for (const option of options) {
+        const rawText = String(getCurrentDropdownOptionText(option) || elementText(option) || '').replace(/\s+/g, ' ').trim();
+        const title = String(option.getAttribute('title') || '').replace(/\s+/g, ' ').trim();
+        if (isExactPostageTemplate111OptionText(rawText, title)) return option;
+      }
+    }
+    return null;
+  }
+
+  async function findExactPostageTemplate111OptionWithListScroll(opener, options = {}) {
+    const deadlineAt = getDeadlineAt(options);
+    let option = findExactPostageTemplate111Option(opener);
+    if (option) return option;
+    const holders = getActiveSelectScrollContainers(opener);
+    for (const holder of holders) {
+      const maxScroll = Math.max(0, holder.scrollHeight - holder.clientHeight);
+      const step = Math.max(160, Math.floor(holder.clientHeight * 0.9) || 180);
+      for (let top = 0; top <= maxScroll + step; top += step) {
+        if (isDeadlineExceeded(deadlineAt)) return null;
+        holder.scrollTop = Math.min(top, maxScroll);
+        holder.dispatchEvent(new Event('scroll', { bubbles: true }));
+        await sleep(120);
+        option = findExactPostageTemplate111Option(opener);
         if (option) return option;
       }
     }
@@ -9152,10 +9206,10 @@
 
   function verifyEditTemplateSelections() {
     const postageContainer = findPostageTemplateContainer() || document.body;
-    const postageSelectedText = getSelectedTextInContainer(postageContainer);
+    const postageSelectedText = getCommittedPostageTemplateText(postageContainer);
     const category = getProductCategorySelectedText();
     return {
-      postage111: postageSelectedText === EDIT_PAGE_RULES.postageTemplateId || postageSelectedText.includes(EDIT_PAGE_RULES.postageTemplateId),
+      postage111: isExactPostageTemplate111Text(postageSelectedText),
       postageSelectedText,
       categorySelected: !isBlankSelectionText(category.selectedText),
       categorySelectedText: category.selectedText,
@@ -9532,6 +9586,10 @@
     if (/product category is not selected|category is not selected|\u4ea7\u54c1\u5206\u7c7b.*(\u672a|\u7a7a)/i.test(raw)) return 'product_category_not_selected';
     if (/postage template is not 111|freight template is not 111|\u8fd0\u8d39.*111/i.test(raw)) return 'postage_template_not_111';
     if (/ships? from is not united states|\u53d1\u8d27\u5730.*(united states|\u7f8e\u56fd)/i.test(raw)) return 'ships_from_not_united_states';
+    if (/sku_code_not_amazon_asin|sku.*amazon asin|sku.*asin|sku\s*\u7f16\u7801.*asin|\u5f53\u524d\s*asin/i.test(raw)) return 'sku_code_not_amazon_asin';
+    if (/merchant_stock_not_15|merchant stock.*15|stock.*15|\u5546\u5bb6.*\u5e93\u5b58.*15|\u5e93\u5b58.*15/i.test(raw)) return 'merchant_stock_not_15';
+    if (/amazon_asin_missing|current amazon asin.*missing|\u5f53\u524d.*asin.*(\u7f3a\u5931|\u4e3a\u7a7a)/i.test(raw)) return 'amazon_asin_missing';
+    if (/variation_rows_missing|variation row.*missing|\u53d8\u79cd.*(\u884c|\u4fe1\u606f).*(\u7f3a\u5931|\u4e3a\u7a7a)/i.test(raw)) return 'variation_rows_missing';
     if (/amazon_displayed_price_missing|amazon_original_price_missing|price.*missing/.test(text)) return 'amazon_displayed_price_missing';
     if (/price_formula_missing_exchange_rate_or_multiplier/.test(text)) return 'price_formula_missing_exchange_rate_or_multiplier';
     if (/required attributes incomplete|product attribute|\u8bf7\u9009\u62e9\u4ea7\u54c1\u5c5e\u6027/.test(text)) return 'required_attributes_incomplete';
@@ -9557,6 +9615,10 @@
     if (blockers.includes('price_formula_missing_exchange_rate_or_multiplier')) return 'provide_task_exchange_rate_and_multiplier';
     if (blockers.includes('postage_template_not_111')) return 'select_real_postage_template_111_before_save';
     if (blockers.includes('ships_from_not_united_states')) return 'select_real_ships_from_united_states_before_save';
+    if (blockers.includes('sku_code_not_amazon_asin')) return 'set_variation_sku_code_to_current_amazon_asin';
+    if (blockers.includes('merchant_stock_not_15')) return 'set_merchant_stock_to_fixed_15';
+    if (blockers.includes('amazon_asin_missing')) return 'recover_current_amazon_asin_before_edit_save';
+    if (blockers.includes('variation_rows_missing')) return 'recover_or_create_variation_row_before_edit_save';
     if (blockers.includes('product_category_not_selected')) return 'select_verified_dxm_category_before_save';
     return 'manual_edit_preflight_review';
   }
@@ -11204,10 +11266,9 @@
 
     addColumnCheck('logisticValue', map.logisticValue, numericOrZero, defaults.logisticValue);
     addColumnCheck('stock', map.stock, (value) => String(value || '').trim() === String(defaults.stock || '').trim(), defaults.stock);
-    addColumnCheck('skuCode', map.skuCode, (value, rowIndex) => {
-      const expectedSku = rows.length > 1 ? `${defaults.skuCode}-${rowIndex + 1}` : defaults.skuCode;
-      return normalizeCategoryText(value) === normalizeCategoryText(expectedSku);
-    }, rows.length > 1 ? `${defaults.skuCode}-N` : defaults.skuCode);
+    addColumnCheck('skuCode', map.skuCode, (value) => {
+      return normalizeCategoryText(value) === normalizeCategoryText(defaults.skuCode);
+    }, defaults.skuCode);
     addColumnCheck('weight', map.weight, positiveNumber, defaults.weight);
 
     if (map.size != null) {
@@ -11448,7 +11509,7 @@
       if (map.logisticValue != null) count += setInputValue(getCellInput(row, map.logisticValue), defaults.logisticValue) ? 1 : 0;
       if (map.stock != null) count += setInputValue(getCellInput(row, map.stock), defaults.stock) ? 1 : 0;
       if (map.skuCode != null) {
-        const skuValue = rows.length > 1 ? `${defaults.skuCode}-${rowIndex + 1}` : defaults.skuCode;
+        const skuValue = defaults.skuCode;
         count += setInputValue(getCellInput(row, map.skuCode), skuValue) ? 1 : 0;
       }
       if (map.weight != null) count += setInputValue(getCellInput(row, map.weight), defaults.weight) ? 1 : 0;
@@ -11893,14 +11954,14 @@
         <input type="text" data-field="defaultPostageId" placeholder="\u9ed8\u8ba4\u7269\u6d41\u6a21\u677f postageId" value="${getDefaultPostageId()}">
         <input type="text" data-field="taskExchangeRate" placeholder="\u4efb\u52a1\u6c47\u7387\uff0c\u4f8b\u5982 7" value="${getTaskExchangeRate()}">
         <input type="text" data-field="taskPriceMultiplier" placeholder="\u4efb\u52a1\u500d\u7387\uff0c\u4f8b\u5982 5-20 \u586b 1.55" value="${getTaskPriceMultiplier()}">
-        <input type="text" data-field="defaultSourcePrice" placeholder="\u4e9a\u9a6c\u900a\u539f\u4ef7 USD\uff1b\u4f9b\u8d27\u4ef7\u6309\u516c\u5f0f\u81ea\u52a8\u7b97" value="${getDefaultSourcePrice()}">
-        <input type="text" data-field="defaultSupplyPrice" placeholder="\u5df2\u7981\u7528\uff1a\u4f9b\u8d27\u4ef7\u53ea\u80fd\u7531 Amazon \u539f\u4ef7\u00d7\u4efb\u52a1\u516c\u5f0f\u751f\u6210" value="" disabled>
+        <input type="text" data-field="defaultSourcePrice" placeholder="Amazon 页面展示价 USD；货值按任务算式自动算" value="${getDefaultSourcePrice()}">
+        <input type="text" data-field="defaultSupplyPrice" placeholder="已禁用：货值只由 Amazon 页面展示价 USD × 任务算式生成" value="" disabled>
         <input type="text" data-field="defaultWeight" placeholder="\u9ed8\u8ba4\u91cd\u91cf kg" value="${getDefaultWeightKg()}">
         <div class="dxm-mini-grid">
           <input type="text" data-field="defaultLengthIn" placeholder="\u957f inch" value="${getDefaultLengthIn()}">
           <input type="text" data-field="defaultWidthIn" placeholder="\u5bbd inch" value="${getDefaultWidthIn()}">
           <input type="text" data-field="defaultHeightIn" placeholder="\u9ad8 inch" value="${getDefaultHeightIn()}">
-          <input type="text" data-field="defaultStock" placeholder="\u4efb\u52a1\u5e93\u5b58" value="${getDefaultStock()}">
+          <input type="text" data-field="defaultStock" placeholder="\u56fa\u5b9a\u5e93\u5b58 15" value="${getDefaultStock()}" disabled>
         </div>
         <div class="dxm-mini-grid">
           <input type="text" data-field="defaultLength" placeholder="\u957f cm" value="${getDefaultLength()}">
@@ -11956,7 +12017,7 @@
       if (weight) localStorage.setItem(DEFAULT_WEIGHT_KEY, weight.value.trim());
       if (sourcePrice) localStorage.setItem(DEFAULT_SOURCE_PRICE_KEY, sourcePrice.value.trim());
       if (supplyPrice) localStorage.setItem(DEFAULT_SUPPLY_PRICE_KEY, supplyPrice.value.trim());
-      if (stock) localStorage.setItem(DEFAULT_STOCK_KEY, stock.value.trim());
+      if (stock) localStorage.setItem(DEFAULT_STOCK_KEY, '15');
       if (taskExchangeRate) localStorage.setItem(TASK_EXCHANGE_RATE_KEY, taskExchangeRate.value.trim());
       if (taskPriceMultiplier) localStorage.setItem(TASK_PRICE_MULTIPLIER_KEY, taskPriceMultiplier.value.trim());
       if (lengthIn) localStorage.setItem(DEFAULT_LENGTH_IN_KEY, lengthIn.value.trim());

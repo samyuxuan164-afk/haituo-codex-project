@@ -11,7 +11,17 @@ const VERIFIED_CATEGORY_STATUSES = new Set([
 ]);
 
 function compactText(value) {
-  return String(value || '').replace(/\s+/g, ' ').trim();
+  return String(value == null ? '' : value).replace(/\s+/g, ' ').trim();
+}
+
+function firstPresentValue(...values) {
+  return values.find((value) => compactText(value) !== '');
+}
+
+function normalizeStockValue(value) {
+  const text = compactText(value);
+  if (/^\d+(?:\.\d+)?$/.test(text)) return String(Number(text));
+  return text;
 }
 
 function uniqueInOrder(values) {
@@ -34,6 +44,10 @@ function nextActionForBlockers(blockers, fallback = 'manual_gate_review') {
   if (blockers.includes('price_formula_missing_exchange_rate_or_multiplier')) return 'provide_task_exchange_rate_and_multiplier';
   if (blockers.includes('postage_template_not_111')) return 'select_real_postage_template_111_before_save';
   if (blockers.includes('ships_from_not_united_states')) return 'select_real_ships_from_united_states_before_save';
+  if (blockers.includes('sku_code_not_amazon_asin')) return 'set_variation_sku_code_to_current_amazon_asin';
+  if (blockers.includes('merchant_stock_not_15')) return 'set_merchant_stock_to_fixed_15';
+  if (blockers.includes('amazon_asin_missing')) return 'recover_current_amazon_asin_before_edit_save';
+  if (blockers.includes('variation_rows_missing')) return 'recover_or_create_variation_row_before_edit_save';
   if (blockers.includes('product_category_not_selected')) return 'select_verified_dxm_category_before_save';
   return fallback || 'manual_gate_review';
 }
@@ -116,10 +130,43 @@ function evaluateCategoryEvidenceGate(input = {}) {
 
 function evaluateTemplateGate(input = {}) {
   const selectedText = compactText(input.selectedText || input.postageText || input.freightTemplate || input.postageId);
-  const ok = selectedText === '111' || /\b111\b/.test(selectedText);
+  const ok = selectedText === '111';
   return decision(ok ? [] : ['postage_template_not_111'], 'freight_template_gate_passed', {
     selectedText,
     expectedTemplate: '111',
+  });
+}
+
+function normalizeAsin(value) {
+  const match = String(value || '').toUpperCase().match(/\bB0[A-Z0-9]{8}\b/);
+  return match ? match[0] : '';
+}
+
+function evaluateVariationIdentityGate(input = {}) {
+  const asin = normalizeAsin(input.asin || input.expectedAsin);
+  const expectedStock = normalizeStockValue(firstPresentValue(input.expectedStock, '15'));
+  const rows = Array.isArray(input.rows) ? input.rows : [];
+  const blockers = [];
+  const normalizedRows = rows.map((row, index) => {
+    const skuCode = compactText(row && firstPresentValue(row.skuCode, row.sku, row.merchantSku, row.sku_code));
+    const stock = normalizeStockValue(row && firstPresentValue(row.stock, row.sellableQuantity, row.inventory, row.skuStock, row.skuStockNum));
+    return {
+      rowIndex: index,
+      skuCode,
+      stock,
+      skuOk: Boolean(asin && skuCode.toUpperCase() === asin),
+      stockOk: stock === expectedStock,
+    };
+  });
+  if (!asin) blockers.push('amazon_asin_missing');
+  if (!rows.length) blockers.push('variation_rows_missing');
+  if (normalizedRows.some((row) => !row.skuOk)) blockers.push('sku_code_not_amazon_asin');
+  if (normalizedRows.some((row) => !row.stockOk)) blockers.push('merchant_stock_not_15');
+  return decision(blockers, 'variation_identity_gate_passed', {
+    asin,
+    expectedSkuCode: asin,
+    expectedStock,
+    rows: normalizedRows,
   });
 }
 
@@ -135,7 +182,7 @@ function evaluateShipsFromGate(input = {}) {
 }
 
 function evaluateEditSaveGate(input = {}) {
-  const gates = [input.categoryEvidence, input.price, input.freight, input.shipsFrom].filter(Boolean);
+  const gates = [input.categoryEvidence, input.price, input.freight, input.shipsFrom, input.variationIdentity].filter(Boolean);
   const gateBlockers = gates.flatMap((gate) => (Array.isArray(gate.blockers) ? gate.blockers : []));
   const normalizedPreflight = uniqueInOrder((input.preflightBlockers || []).map(normalizePreflightBlocker).filter(Boolean));
   return decision([...gateBlockers, ...normalizedPreflight], 'save_to_wait_publish_only_after_final_visible_confirmation', {
@@ -149,6 +196,7 @@ module.exports = {
   evaluatePriceGate,
   evaluateCategoryEvidenceGate,
   evaluateTemplateGate,
+  evaluateVariationIdentityGate,
   evaluateShipsFromGate,
   evaluateEditSaveGate,
   nextActionForBlockers,

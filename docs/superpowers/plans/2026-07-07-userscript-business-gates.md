@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Add a pure business-gate layer that standardizes collection contamination, price, category evidence, freight template, and Ships From save blockers before DOM side effects execute.
+**Goal:** Add a pure business-gate layer that standardizes collection contamination, price, category evidence, exact freight template `111`, Ships From, fixed merchant stock `15`, and SKU=current-ASIN save blockers before DOM side effects execute.
 
 **Architecture:** Add `src/dxm-automation-core/business-gates.js` as a CommonJS pure module and export it from `src/dxm-automation-core/index.js`. Extend `tools/dxm-automation-core.test.js` with offline assertions, then make a minimal userscript adapter change to reuse the same normalized preflight blocker vocabulary in readonly/save preflight output. No live Dianxiaomi action is part of this plan.
 
@@ -238,7 +238,7 @@ function evaluateCategoryEvidenceGate(input = {}) {
 
 function evaluateTemplateGate(input = {}) {
   const selectedText = compactText(input.selectedText || input.postageText || input.freightTemplate || input.postageId);
-  const ok = selectedText === '111' || /\b111\b/.test(selectedText);
+  const ok = selectedText === '111';
   return decision(ok ? [] : ['postage_template_not_111'], 'freight_template_gate_passed', {
     selectedText,
     expectedTemplate: '111',
@@ -426,7 +426,7 @@ Expected:
 Add this concise status to the relevant docs:
 
 ```text
-Added `src/dxm-automation-core/business-gates.js` as an offline-tested pure business gate for collection contamination, price readiness, AliExpress category evidence, freight template `111`, Ships From `United States`, and composed edit-save readiness. The main userscript only received a minimal readonly preflight normalization adapter; DOM interactions, native save, publish, and one-click publish behavior were not changed. No live Dianxiaomi business action was executed.
+Added `src/dxm-automation-core/business-gates.js` as an offline-tested pure business gate for collection contamination, price readiness, AliExpress category evidence, exact freight template `111`, Ships From `United States`, fixed merchant stock `15`, SKU=current-ASIN identity, and composed edit-save readiness. The main userscript only received a minimal readonly preflight normalization adapter; DOM interactions, native save, publish, and one-click publish behavior were not changed. No live Dianxiaomi business action was executed.
 ```
 
 - [x] **Step 3: Commit implementation**
@@ -454,4 +454,4 @@ git commit -m "docs(core): document userscript business gates"
 - Type consistency: public export is `businessGates`, and individual functions use the `evaluate*Gate` naming scheme.
 - Scope control: runtime remains a single userscript; no live browser/Dianxiaomi action is part of this plan.
 - Follow-up boundary: the next layer is to wire readonly preflight, batch gate, and WebBridge reports to this same pure blocker vocabulary rather than adding another status system.
-- PR audit hardening: uncovered tier formulas, safe-adjacent approval without a DXM candidate category, and Origin/Ships From field confusion are covered with regression assertions and fixed in the pure gate module.
+- PR audit hardening: tiered multiplier config that does not cover the current page price, `copy 111` freight rejection, fixed SKU/stock identity, safe-adjacent approval without a DXM candidate category, and Origin/Ships From field confusion are covered with regression assertions and fixed in the pure gate module.

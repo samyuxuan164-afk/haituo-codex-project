@@ -82,13 +82,15 @@ Authoritative exception rules: `docs/exception-rules.md`. If a field-filling det
 9. Variation info:
    - leave `计件单位` as is when already filled;
    - do not check `销售方式/打包出售`;
-   - fill `商家仓库存` as `15`;
-   - fill `SKU编码` as the current ASIN;
+   - fill `商家仓库存` as fixed `15`; if Amazon is out of stock or unavailable, skip before collection instead of editing stock;
+   - fill every `SKU编码` row as the current Amazon ASIN, without color/size text or `ASIN-1` suffixes;
    - fill weight and dimensions from collected data or project defaults;
    - fill goods value from `skills/price-processing/SKILL.md`.
 10. Freight:
-   - select `运费模板 = 111` through the real dropdown;
-   - confirm visible readback is `111` before save.
+   - select the real dropdown option `运费模板 = 111`;
+   - do not type `111` into the search/input box as completion;
+   - reject `copy 111` / `copy111` options;
+   - confirm committed readback is exactly `111` before save.
 11. If Function / Feature / Use has no exact option, choose `Other/其他`; do not spend batch time over-analyzing these fields, but still choose a real dropdown option.
    - If an exact/safe option is visible, try it first, for example `无BPA塑料(Bpa-free plastic)` for acrylic/plastic qtip holders.
    - If that exact/safe option does not commit quickly but `Other/其他` is visible, use `Other/其他` rather than blocking the product.

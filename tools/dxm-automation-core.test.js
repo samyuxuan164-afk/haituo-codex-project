@@ -2,6 +2,8 @@
 'use strict';
 
 const assert = require('assert');
+const fs = require('fs');
+const path = require('path');
 const { textRules } = require('../src/dxm-automation-core');
 
 assert.strictEqual(
@@ -42,6 +44,7 @@ assert.strictEqual(
   pricingRules.calculateSupplyPriceCny('$8.99 - $12.99', 1, 1, { rangePolicy: 'highest_displayed_value' }),
   '12.99'
 );
+assert.strictEqual(pricingRules.calculateSupplyPriceCny('$5.00 - $20.00', 7, 1.55), '217');
 assert.strictEqual(
   pricingRules.calculateSupplyPriceCny('Price $19.94 List Price: $20.99', 1, 1),
   '20.99'
@@ -224,6 +227,18 @@ const readyPriceGate = businessGates.evaluatePriceGate({
 assert.strictEqual(readyPriceGate.allowed, true);
 assert.strictEqual(readyPriceGate.normalized.expectedCnyPrice, '140.94');
 
+const rangePriceGate = businessGates.evaluatePriceGate({
+  asin: 'B0RANGEPRICE',
+  status: 'trusted',
+  trusted: true,
+  sourcePriceUsd: '$5.00 - $20.00',
+  exchangeRate: 7,
+  multiplier: 1.55,
+  priceRange: { min: 5, max: 20 },
+});
+assert.strictEqual(rangePriceGate.allowed, true);
+assert.strictEqual(rangePriceGate.normalized.expectedCnyPrice, '217');
+
 const uncoveredTierPriceGate = businessGates.evaluatePriceGate({
   asin: 'B0F2H4PF7R',
   status: 'trusted',
@@ -241,7 +256,27 @@ assert.deepStrictEqual(
   businessGates.evaluateTemplateGate({ selectedText: '--- 请选择运费模板 ---' }).blockers,
   ['postage_template_not_111']
 );
+assert.strictEqual(businessGates.evaluateTemplateGate({ selectedText: 'copy 111' }).allowed, false);
 assert.strictEqual(businessGates.evaluateTemplateGate({ selectedText: '111' }).allowed, true);
+
+const variationIdentityGate = businessGates.evaluateVariationIdentityGate({
+  asin: 'B0F2H4PF7R',
+  rows: [
+    { skuCode: 'B0F2H4PF7R', stock: '15' },
+    { skuCode: 'B0F2H4PF7R', sellableQuantity: '15.0' },
+  ],
+});
+assert.strictEqual(variationIdentityGate.allowed, true);
+
+const variationIdentityMismatchGate = businessGates.evaluateVariationIdentityGate({
+  asin: 'B0F2H4PF7R',
+  rows: [
+    { skuCode: 'Light Grey-5 inch', stock: '30' },
+    { skuCode: 'B0F2H4PF7R-1', sellableQuantity: 15 },
+  ],
+});
+assert.strictEqual(variationIdentityMismatchGate.allowed, false);
+assert.deepStrictEqual(variationIdentityMismatchGate.blockers, ['sku_code_not_amazon_asin', 'merchant_stock_not_15']);
 
 assert.strictEqual(businessGates.evaluateShipsFromGate({ selectedText: '中国大陆(Mainland China)' }).allowed, false);
 assert.deepStrictEqual(
@@ -256,10 +291,17 @@ const editSaveGate = businessGates.evaluateEditSaveGate({
   price: readyPriceGate,
   freight: businessGates.evaluateTemplateGate({ selectedText: '111' }),
   shipsFrom: businessGates.evaluateShipsFromGate({ selectedText: 'United States' }),
+  variationIdentity: variationIdentityGate,
   preflightBlockers: [],
 });
 assert.strictEqual(editSaveGate.allowed, true);
 assert.strictEqual(editSaveGate.nextAction, 'save_to_wait_publish_only_after_final_visible_confirmation');
+
+const activeUserscriptSource = fs.readFileSync(path.join(__dirname, '../src/dianxiaomi-automation-v1-merged-new.user.js'), 'utf8');
+assert(activeUserscriptSource.includes("return 'sku_code_not_amazon_asin'"));
+assert(activeUserscriptSource.includes("return 'merchant_stock_not_15'"));
+assert(activeUserscriptSource.includes('isExactPostageTemplate111OptionText'));
+assert.strictEqual(activeUserscriptSource.includes("String(item.value || '').trim() === EDIT_PAGE_RULES.postageTemplateId"), false);
 
 const blockedEditSaveGate = businessGates.evaluateEditSaveGate({
   categoryEvidence: categoryMissingGate,

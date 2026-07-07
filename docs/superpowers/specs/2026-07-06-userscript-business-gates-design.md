@@ -6,7 +6,7 @@ Scope: `src/dianxiaomi-automation-v1-merged-new.user.js`, `src/dxm-automation-co
 
 ## Problem
 
-The main Dianxiaomi userscript still mixes deterministic business decisions with DOM side effects. This makes collection contamination, price filtering, AliExpress category evidence, freight template, and Ships From failures difficult to diagnose before a page action is attempted.
+The main Dianxiaomi userscript still mixes deterministic business decisions with DOM side effects. This makes collection contamination, price filtering, AliExpress category evidence, freight template, Ships From, SKU, and stock failures difficult to diagnose before a page action is attempted.
 
 ## Goal
 
@@ -27,8 +27,9 @@ The first implementation covers:
 - crawlbox contamination and safe claim subset decisions;
 - trusted Amazon displayed-price and current task formula readiness;
 - AliExpress / learned-rule category evidence readiness;
-- freight template `111` readback;
+- exact freight template `111` readback;
 - Ships From / Origin United States readback;
+- fixed merchant stock `15` and SKU=current-ASIN readback;
 - edit-save readiness composition.
 
 The main userscript should make the smallest safe adapter change: after its existing readonly/save preflight collects visible risks, normalize those risks through the same blocker vocabulary before deciding whether save is allowed. DOM dropdown handling, category modal clicks, WebBridge, native save, and publish controls stay unchanged.
@@ -59,7 +60,7 @@ The main userscript should make the smallest safe adapter change: after its exis
 `businessGates.evaluateTemplateGate(input)`:
 
 - Input: freight/postage readback text.
-- Output: allows only selected template `111`.
+- Output: allows only committed selected template `111`; `copy 111` or typed input text does not pass.
 
 `businessGates.evaluateShipsFromGate(input)`:
 
@@ -68,7 +69,7 @@ The main userscript should make the smallest safe adapter change: after its exis
 
 `businessGates.evaluateEditSaveGate(input)`:
 
-- Input: category, price, freight, Ships From, and existing preflight blockers.
+- Input: category, price, freight, Ships From, SKU/stock identity, and existing preflight blockers.
 - Output: one final save decision with normalized blocker order and next action.
 
 ## Testing
@@ -78,8 +79,9 @@ Extend `tools/dxm-automation-core.test.js` with offline assertions for the five 
 - 10 target ASINs with 16 crawlbox rows returns duplicate-row contamination and only the price-valid safe subset.
 - Missing Amazon displayed price blocks before edit/save.
 - Missing AliExpress evidence blocks category selection/save.
-- Freight template placeholder blocks until readback is exactly `111`.
+- Freight template placeholder, typed `111`, and `copy 111` block until committed readback is exactly `111`.
 - Ships From blocks empty, Mainland China, and non-US values; United States equivalents pass.
+- SKU/stock blocks until every variation row uses the current Amazon ASIN and merchant stock `15`.
 - Composed edit-save decision allows save only when all gates pass and no normalized preflight blockers remain.
 
 ## Safety Boundary

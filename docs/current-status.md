@@ -5,7 +5,7 @@
 ```text
 Current phase: Development / source-level userscript business gates
 
-Prepared `src/dxm-automation-core/business-gates.js` as an offline-tested pure business-gate module. It standardizes deterministic blocker decisions for crawlbox contamination, trusted Amazon displayed-price readiness, current-task price formula readiness, AliExpress / learned-rule category evidence, freight template `111`, Ships From `United States`, and composed edit-save readiness.
+Prepared `src/dxm-automation-core/business-gates.js` as an offline-tested pure business-gate module. It standardizes deterministic blocker decisions for crawlbox contamination, trusted Amazon displayed-price readiness, current-task goods-value calculation readiness, AliExpress / learned-rule category evidence, freight template `111`, Ships From `United States`, and composed edit-save readiness.
 
 Modules affected:
 - src/dxm-automation-core/business-gates.js
@@ -28,9 +28,13 @@ Business blocker coverage:
 - `product_category_not_selected`.
 - `postage_template_not_111`.
 - `ships_from_not_united_states`.
+- `sku_code_not_amazon_asin`.
+- `merchant_stock_not_15`.
 
 Audit hardening:
-- Tiered price formulas must cover the current Amazon USD price and compute a non-empty CNY value before the price gate can pass.
+- Price gate readiness means the trusted Amazon displayed USD price can be converted by the current task inputs into the edit-page goods value `货值(CNY)`; tiered multiplier configuration must cover the current page price before the gate can pass.
+- Variation identity gate requires every SKU row to use the current Amazon ASIN and merchant stock `15`; out-of-stock Amazon products are skipped before collection, not edited with a different stock.
+- Freight template gate now only accepts committed readback exactly `111`; `copy 111` options and typed input text do not pass.
 - `safeAdjacentAllowed` is only a marker for a real safe-adjacent DXM candidate category; it cannot replace the DXM category mapping itself.
 - Product `Origin` is not accepted as variation `Ships From`; the Ships From gate requires explicit Ships From / label readback.
 
@@ -1544,7 +1548,7 @@ Code-execution hardening step 3.14:
 
 Code-execution hardening step 3.15:
 - Added generic current-batch execution gate: `tools/dxm-batch-execution-gate.js`.
-- `plan` runs local-only gates: AliExpress evidence status + Amazon trusted price/formula status + per-ASIN next action.
+- `plan` runs local-only gates: AliExpress evidence status + Amazon trusted displayed-price / current-task goods-value status + per-ASIN next action.
 - `check` can additionally run readonly browser evidence sync, readonly edit-page preflight, readonly wait-to-publish readback, and optional exception-queue writes.
 - Default behavior is dry-run; exception queue writes require explicit `--write-exceptions`.
 - The gate does not collect, claim, edit fields, save, move products, publish, one-click publish, delete, order, cart, chat, or submit forms.

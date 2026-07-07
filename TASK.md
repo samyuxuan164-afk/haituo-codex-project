@@ -59,8 +59,9 @@ Exclude candidates before collection when any of these are present:
 1. Brand / Logo / trademark risk in title, main image, packaging, or product body.
 2. Food, medical, children, electric/battery, infringement, or other high-risk category.
 3. Missing Amazon displayed price.
-4. Unclear main image.
-5. Over-complex variations.
+4. Amazon page shows out of stock, unavailable, or not currently sellable.
+5. Unclear main image.
+6. Over-complex variations.
 
 ## Required List Fields
 

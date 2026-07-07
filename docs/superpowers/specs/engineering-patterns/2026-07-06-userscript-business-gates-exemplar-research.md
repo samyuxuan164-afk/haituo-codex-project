@@ -46,7 +46,7 @@ It normalizes product records, applies configured rules, and returns exactly thr
 
 ### Q2: How does our context differ?
 
-This userscript gate needs more than risk screening: it must cover crawlbox contamination, price formula readiness, category evidence, freight template, and Ships From. The status model still fits.
+This userscript gate needs more than risk screening: it must cover crawlbox contamination, current-task goods-value calculation readiness, category evidence, freight template, and Ships From. The status model still fits.
 
 ### Q3: What should we adapt vs skip?
 
