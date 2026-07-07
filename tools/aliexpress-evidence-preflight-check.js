@@ -19,6 +19,7 @@ const {
   summarize,
   syncToBrowser,
 } = require('./aliexpress-evidence-browser-cache');
+const { businessGates } = require('../src/dxm-automation-core');
 
 const DEFAULT_ENDPOINT = 'http://127.0.0.1:10086/command';
 const DEFAULT_SESSION = 'dxm-aliexpress-evidence-preflight-check';
@@ -178,14 +179,15 @@ async function readReadonlyPreflight(args) {
       ok: parsed.source === 'function' || parsed.source === 'dom-node',
       readonly: true,
       ...parsed,
-      analysis: analyzePreflight(parsed.preflight),
+      analysis: analyzePreflight(parsed.preflight, parsed),
     };
   } catch (parseError) {
     return { ok: false, stage: 'parse', status: 'readonly_preflight_parse_failed', error: String(parseError), raw: response.data || null };
   }
 }
 
-function analyzePreflight(preflight) {
+function analyzePreflight(preflight, report = {}) {
+  const gate = businessGates.evaluateReadonlyPreflightReport({ ...report, preflight });
   if (!preflight || typeof preflight !== 'object') {
     return {
       status: 'missing',
@@ -193,20 +195,24 @@ function analyzePreflight(preflight) {
       evidenceStoreOk: false,
       categoryEvidenceOk: false,
       safeToSaveToWaitPublish: false,
-      blockers: ['readonly preflight payload missing'],
+      blockers: gate.blockers,
+      nextAction: gate.nextAction,
+      businessGate: gate,
     };
   }
   const categoryEvidence = preflight.categoryEvidence || {};
-  const blockers = Array.isArray(preflight.blockers) ? preflight.blockers : [];
   return {
-    status: preflight.safeToSaveToWaitPublish ? 'ready_for_wait_publish_save' : 'blocked',
+    status: gate.allowed ? 'ready_for_wait_publish_save' : 'blocked',
     currentAsin: preflight.asin || preflight.currentAsin || '',
     evidenceStoreOk: Boolean(preflight.evidenceStore && preflight.evidenceStore.ok),
     categoryEvidenceOk: Boolean(categoryEvidence.ok || categoryEvidence.verified),
     categoryEvidenceReason: categoryEvidence.reason || '',
     preflightPass: Boolean(preflight.preflightPass),
-    safeToSaveToWaitPublish: Boolean(preflight.safeToSaveToWaitPublish),
-    blockers,
+    safeToSaveToWaitPublish: Boolean(gate.allowed),
+    blockers: gate.blockers,
+    nextAction: gate.nextAction,
+    environmentStatus: gate.environmentStatus,
+    businessGate: gate,
   };
 }
 

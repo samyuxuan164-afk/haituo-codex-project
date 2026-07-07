@@ -1,16 +1,93 @@
-# Current Status - 2026-07-06
+# Current Status - 2026-07-07
+
+## Latest Source-Level Development - 2026-07-07 Unified Blocker Reports
+
+```text
+Current phase: Development / source-level unified blocker reporting
+
+Prepared the second-layer blocker split on branch `codex/userscript-unified-blockers`, based on PR #6 `codex/userscript-business-gates`.
+
+What changed:
+- `src/dxm-automation-core/business-gates.js` now exposes pure report normalizers for readonly preflight and WebBridge reports.
+- The shared normalized shape is `allowed`, `blockers`, `warnings`, `nextAction`, `environmentStatus`, and `normalized`.
+- `environmentStatus` separates page rendering evidence from read/control channel failures:
+  - `pageRendered`
+  - `bridgeReachable`
+  - `structuredReadOk`
+  - `fallbackRecommended`
+- WebBridge timeouts/read failures with rendered-page evidence are recorded as `webbridge_call_failed` / `webbridge_read_failed` or readonly unavailable states, not as `page_not_rendered`.
+- `tools/dxm-batch-execution-gate.js` now merges edit readonly preflight through the same pure readonly normalizer.
+- `tools/aliexpress-evidence-preflight-check.js` now returns the shared `businessGate` analysis while preserving legacy fields.
+- `src/dianxiaomi-amazon-crawlbox-v1.user.js` now includes a thin `businessGate` field in the readonly WebBridge preflight JSON export.
+
+New regression coverage:
+- readonly preflight `businessGate.blockers` and raw blocker text normalize to the same machine blockers.
+- readonly/WebBridge call failure can report `pageRendered=true` when URL/title/readyState prove the page is rendered.
+- WebBridge blocked collection reports map `auto_claim_enabled` and `collector_input_missing` to shared blocker/nextAction semantics.
+- batch preflight merge no longer emits only ad hoc `edit_preflight_unavailable`; it carries `readonly_preflight_unavailable` plus environment status.
+
+Runtime boundary:
+- No live Dianxiaomi page action, collection, claim, edit, save, move-to-wait-publish, publish, one-click publish, Amazon browser capture, AliExpress browser capture, or Computer Use / screenshot fallback was executed for this source-level task.
+```
+
+## Latest Source-Level Development - 2026-07-07
+
+```text
+Current phase: Development / source-level userscript business gates
+
+Prepared `src/dxm-automation-core/business-gates.js` as an offline-tested pure business-gate module. It standardizes deterministic blocker decisions for crawlbox contamination, trusted Amazon displayed-price readiness, current-task price formula readiness, AliExpress / learned-rule category evidence, freight template `111`, Ships From `United States`, and composed edit-save readiness.
+
+Modules affected:
+- src/dxm-automation-core/business-gates.js
+- src/dxm-automation-core/index.js
+- src/dxm-automation-core/workflow-diagnostics.js
+- tools/dxm-automation-core.test.js
+
+Main userscript adapter:
+- `src/dianxiaomi-automation-v1-merged-new.user.js` now adds a minimal readonly preflight normalization seam.
+- Readonly preflight output includes `businessGate.allowed`, normalized `businessGate.blockers`, and `businessGate.nextAction`.
+- DOM selection, Ant dropdown handling, WebBridge, native save, final publish, one-click publish, collection, and claim execution behavior were not expanded by this source pass.
+
+Business blocker coverage:
+- collection-box duplicate / non-target / missing / invalid-price contamination.
+- `amazon_displayed_price_missing`.
+- `price_out_of_range_or_zero`.
+- `price_formula_missing_exchange_rate_or_multiplier`.
+- `category_evidence_missing`.
+- `aliexpress_dxm_category_map_missing`.
+- `product_category_not_selected`.
+- `postage_template_not_111`.
+- `ships_from_not_united_states`.
+
+Audit hardening:
+- Tiered price formulas must cover the current Amazon USD price and compute a non-empty CNY value before the price gate can pass.
+- `safeAdjacentAllowed` is only a marker for a real safe-adjacent DXM candidate category; it cannot replace the DXM category mapping itself.
+- Product `Origin` is not accepted as variation `Ships From`; the Ships From gate requires explicit Ships From / label readback.
+
+Test surface:
+- `tools/dxm-automation-core.test.js` now covers the business gates together with existing text, pricing, PC detail, and workflow-diagnostics pure modules.
+- Full local verification for this branch is recorded in `docs/test-results.md`.
+
+Runtime boundary:
+- The installed Tampermonkey runtime artifact remains the existing single userscript.
+- No live Dianxiaomi page action, collection, claim, edit, save, move-to-wait-publish, publish, one-click publish, or browser automation was executed for this documentation/source-level gate task.
+
+Next engineering step:
+- Continue the second-layer extraction later by wiring readonly preflight, batch gate, and WebBridge reports to the same pure blocker vocabulary.
+```
 
 ## Latest Source-Level Development - 2026-07-06
 
 ```text
-Current phase: Development / source-level userscript pure-module extraction
+Current phase: Development / source-level userscript pure-module extraction and root-cause diagnostics
 
-Prepared source-level pure modules under src/dxm-automation-core for text rules, pricing/dimension rules, and PC detail image-first rules. Added tools/dxm-automation-core.test.js as the second explicit Node assertion test. No live Dianxiaomi page action, collection, claim, edit, save, publish, or one-click publish was executed.
+Prepared source-level pure modules under src/dxm-automation-core for text rules, pricing/dimension rules, PC detail image-first rules, and workflow root-cause diagnostics. Added tools/dxm-automation-core.test.js as the second explicit Node assertion test. No live Dianxiaomi page action, collection, claim, edit, save, publish, or one-click publish was executed.
 
 Modules added:
 - src/dxm-automation-core/text-rules.js
 - src/dxm-automation-core/pricing-rules.js
 - src/dxm-automation-core/pc-detail-rules.js
+- src/dxm-automation-core/workflow-diagnostics.js
 - src/dxm-automation-core/index.js
 
 Documentation assets updated:
@@ -24,8 +101,12 @@ Test surface now includes two explicit Node assertion tests:
 
 Audit follow-up:
 - The extracted pricing helper now has regression coverage for task-parameterized price calculation. It can parse Amazon displayed price ranges such as `$8.99 - $12.99`, but range handling, high-price tiers, and the final goods-value formula must come from the current task configuration, not a global constant.
-- `tools/amazon-displayed-price-capture.js` and `tools/amazon-displayed-price-batch.js` now require explicit current-task range policy for displayed price ranges through `--range-policy` or `TASK_PRICE_RANGE_POLICY`.
-- `skills/price-processing/SKILL.md` now follows the same principle: every task must provide its own exchange rate, multiplier or tiered multiplier strategy, rounding rule, and displayed-price range policy.
+- Amazon displayed-price candidates include current buy-box price, displayed ranges, variant prices, and strike/list prices such as `List Price`.
+- `tools/amazon-displayed-price-capture.js`, `tools/amazon-displayed-price-batch.js`, and the extracted pricing helper now default to `highest_displayed_value`, for example `$8.99 - $12.99` -> `$12.99` and `Price $19.94 List Price: $20.99` -> `$20.99`.
+- `--range-policy` / `TASK_PRICE_RANGE_POLICY` remain override inputs, but the goods-value formula itself is still task configuration: every task must provide its own exchange rate, multiplier or tiered multiplier strategy, and rounding rule.
+- `skills/price-processing/SKILL.md` now follows the same principle: select the Amazon USD displayed-price candidate first, then apply the current task formula; do not reuse `x 7 x 1.55` as a global rule.
+- The root-cause diagnostics helper now has an offline regression for the known 10-target / 16-row collection-box contamination case: duplicate rows are classified as `crawlbox_duplicate_rows`, the three zero-price ASINs are classified as `price_out_of_range_or_zero`, and only the seven unique price-valid ASINs are considered safe claim candidates.
+- The same helper normalizes readonly edit preflight blockers into machine root causes such as `category_evidence_missing`, `product_category_not_selected`, `postage_template_not_111`, and `ships_from_not_united_states`, confirming that the first edit page was blocked by the save preflight gate rather than by a missing save button.
 
 Runtime boundary:
 - The installed Tampermonkey runtime artifact remains the existing single userscript.
@@ -1239,15 +1320,15 @@ Current blocker:
 - Per price rule, Dianxiaomi visible old goods values cannot be used. Each product needs trusted Amazon displayed price USD before save.
 
 Price-source terminology update:
-- Current business rule uses Amazon page displayed price, not Amazon original/list price.
-- Open the Amazon product page and use the price displayed at that time.
-- If Amazon displays a price range, apply the current task's configured range policy; the current 100-category task uses `highest_displayed_value`, for example `$8.99 - $12.99` -> `$12.99`.
+- Current business rule uses Amazon page displayed price candidates, not stale Dianxiaomi imported prices or cached `originalPrice` fields.
+- Open the Amazon product page and use the price displayed at that time. Valid candidates include current buy-box price, displayed ranges, variant prices, and strike/list prices such as `List Price`.
+- By default, apply `highest_displayed_value` to valid displayed-price candidates; for example `$8.99 - $12.99` -> `$12.99`, and `Price $19.94 List Price: $20.99` -> `$20.99`.
 - Price-store field compatibility is now implemented: `amazonDisplayedPriceUsd` is preferred, legacy `amazonOriginalPriceUsd` remains accepted, and summaries output both fields.
 - CSV import accepts displayed-price headers and legacy original-price headers.
 
 Amazon displayed-price capture step 3:
 - Added readonly capture tool: `tools/amazon-displayed-price-capture.js`.
-- `parse-text` supports single displayed price, `From $x.xx`, and ranges; ranges require the current task range policy.
+- `parse-text` supports single displayed price, `From $x.xx`, ranges, and List Price / strike-price evidence; candidate selection defaults to highest valid displayed value unless the current task explicitly overrides it.
 - `capture` opens an Amazon product page through WebBridge and reads the displayed price area.
 - Writes to the price store only with explicit `--write`.
 - Live readonly verification on `B0D65JFRX4` succeeded. The Amazon price area included `$9.99` and list price `$11.99`; per the current displayed-price rule the captured value was `11.99`.
@@ -1548,7 +1629,7 @@ Confirmed Validation parameters:
 - Goal: edit/save to wait-to-publish only; no publish and no one-click publish.
 - Source: Amazon search; new collection and claim are allowed after live start confirmation.
 - Sample: 100 products, one per category, Amazon displayed price USD 5-20.
-- Price: the current 100-category task uses Amazon displayed price USD x 7 x 1.55 with range policy `highest_displayed_value`; this is task configuration, not a global formula.
+- Price: the current 100-category task uses Amazon displayed price USD x 7 x 1.55 after default highest valid displayed-price candidate selection; valid candidates include current price, ranges, variants, and List Price / strike prices. This is task configuration, not a global formula.
 - Category: AliExpress evidence required; safe adjacent DXM category allowed.
 - Risk exclusions: brand/logo, food, medical, children, electric/battery, infringement high risk, missing displayed price, unclear main image, and over-complex variations.
 - Execution gate: pre-judgment routing first; only `auto_ready` products proceed.
@@ -1558,7 +1639,7 @@ Rule library deposited:
 - Required Ant/select dropdowns: search inputs are filters only; real option click + selected-label readback is required. Function / Use / Feature read recommended options first, clear `暂无数据` search filters, avoid Enter/Tab on dynamic dropdowns, retry numeric/internal-ID readback with click-only commit, and allow `Other/其他` as a legal fallback unless it is clearly wrong.
 - Category: AliExpress/similar-product/verified DXM evidence is required; exact DXM leaf text is not mandatory when a safe adjacent category has the same use/form and no obvious mismatch. DOM click failure on a visible category result can be recovered with real coordinate double-click plus main-form readback.
 - Native save: script preflight does not equal native pass. Native `请选择产品属性` requires exact field repair. Checkbox/radio groups must use real checked-state readback. Use / Feature / Plastic Type / Theme / Product application scenarios are documented as native-exposed blockers.
-- Price: goods value can only come from current-task Amazon displayed price USD, task exchange rate, multiplier or tiered multiplier, rounding rule, and range policy. Old DXM prices, cached prices, minPrice/maxPrice, non-Amazon UI scans, and manual CNY overrides are forbidden. Visible/SKU price mismatch blocks save and abnormal prices need pre-publish review.
+- Price: goods value can only come from current-task Amazon displayed price USD, task exchange rate, multiplier or tiered multiplier, rounding rule, and displayed-price candidate policy. Old DXM prices, cached prices, minPrice/maxPrice, non-Amazon UI scans, and manual CNY overrides are forbidden. Visible/SKU price mismatch blocks save and abnormal prices need pre-publish review.
 - WebBridge/tab-control: evaluate hangs, navigation/closed targets, stale tab matches, screenshot/DOM timeouts, and stale dropdown overlays are environment control exceptions, not business failures. Save navigation to offline is a success path; use direct edit URLs and offline/draft authoritative readback.
 
 Files updated:
@@ -3049,7 +3130,7 @@ Latest prepared source:
 - Custom attributes are row-deleted or normalized so no value exceeds 70 characters.
 
 Validation status:
-- Syntax check passed with bundled Node: `/Users/sam/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node --check src/dianxiaomi-automation-v1-merged-new.user.js`.
+- Syntax check passed with bundled Node: `<CODEX_RUNTIME_ROOT>/dependencies/node/bin/node --check src/dianxiaomi-automation-v1-merged-new.user.js`.
 - Live Tampermonkey overwrite and single-sample validation are pending.
 - Next validation must use only sample `167487782006885971` first, confirm no page jumping, required fields complete, freight template 111 selected, no >70 custom attribute error, and save-to-wait-publish path can trigger without publish.
 
@@ -3093,7 +3174,7 @@ Optimization prepared:
 - Required-attribute and freight selection now send select acceptance keys after search input.
 - Attribute container scoring penalizes broad parent containers containing multiple required labels.
 - Custom attribute cleanup now locates all rows by `属性名/属性值` placeholders and deletes row-local `icon_close` controls.
-- Syntax check passed with bundled Node: `/Users/sam/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node --check src/dianxiaomi-automation-v1-merged-new.user.js`.
+- Syntax check passed with bundled Node: `<CODEX_RUNTIME_ROOT>/dependencies/node/bin/node --check src/dianxiaomi-automation-v1-merged-new.user.js`.
 - Live Tampermonkey overwrite and v1.1.56 target verification are pending.
 
 Live validation attempt:

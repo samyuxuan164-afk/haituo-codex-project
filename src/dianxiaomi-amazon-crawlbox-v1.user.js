@@ -1844,6 +1844,21 @@
       .filter((item) => DANGEROUS_DXM_ACTION_TEXTS.includes(item.text));
   }
 
+  function normalizeDxmWebBridgeBlocker(reason) {
+    const text = normalizeText(reason);
+    if (!text) return '';
+    if (text.indexOf('dangerous_action_blocked') === 0) return 'dangerous_action_blocked';
+    return text;
+  }
+
+  function getDxmWebBridgeNextAction(blockers) {
+    if (blockers.includes('auto_claim_enabled')) return 'disable_native_auto_claim_before_collection';
+    if (blockers.includes('collector_input_missing')) return 'open_dxm_collection_page_and_restore_collector_input';
+    if (blockers.includes('not_dxm_data_acquisition_page')) return 'open_dxm_data_acquisition_page_before_collection';
+    if (blockers.includes('dangerous_action_blocked')) return 'use_safe_collection_or_claim_entry_only';
+    return blockers.length ? 'recover_browser_control_then_retry_readonly' : 'webbridge_preflight_passed';
+  }
+
   function getDxmWebBridgePreflight(targetButtonText = '') {
     const input = getDxmCollectorInput();
     const autoClaim = findDxmAutoClaimCheckbox();
@@ -1865,6 +1880,7 @@
     }
 
     const blocked = blockReasons.length > 0;
+    const normalizedBlockers = Array.from(new Set(blockReasons.map(normalizeDxmWebBridgeBlocker).filter(Boolean)));
     return {
       source: 'webbridge_dom_preflight',
       url: location.href,
@@ -1900,6 +1916,11 @@
       blockReasons,
       blocked,
       allowed: !blocked,
+      businessGate: {
+        allowed: !blocked,
+        blockers: normalizedBlockers,
+        nextAction: getDxmWebBridgeNextAction(normalizedBlockers),
+      },
       risks: blockReasons,
       okForCollection: !blocked,
       updatedAt: nowIso(),

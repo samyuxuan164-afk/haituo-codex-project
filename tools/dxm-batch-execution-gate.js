@@ -33,6 +33,7 @@ const {
   DEFAULT_RULES_PATH: DEFAULT_RISK_RULES_PATH,
   screenRecords: screenProductRiskRecords,
 } = require('./product-risk-filter');
+const { businessGates } = require('../src/dxm-automation-core');
 
 const DEFAULT_ENDPOINT = 'http://127.0.0.1:10086/command';
 const DEFAULT_SESSION = 'dxm-batch-execution-gate';
@@ -370,6 +371,7 @@ function evidenceReason(row) {
 }
 
 function nextActionForBlockers(blockers) {
+  if (blockers.some((reason) => /^readonly_preflight_|^webbridge_/.test(reason))) return businessGates.nextActionForBlockers(blockers);
   if (blockers.some((reason) => /risk|logo|brand|food|medical|children|battery|electric|weapon|hazardous|adult|fragile|apparel/.test(reason))) return 'skip_or_manual_risk_review_before_collection';
   if (blockers.includes('aliexpress_verification_required')) return 'resolve_aliexpress_verification_then_resume_detail_capture';
   if (blockers.includes('dxm_category_validation_required')) return 'run_dxm_readonly_category_validation';
@@ -397,9 +399,13 @@ function summarizeRows(rows) {
 function mergePreflight(localGate, preflightReport) {
   const preflight = preflightReport && preflightReport.preflight ? preflightReport.preflight : null;
   const analysis = preflightReport && preflightReport.analysis ? preflightReport.analysis : null;
-  const currentAsin = analysis ? normalizeOptionalAsin(analysis.currentAsin) : '';
+  const reportGate = businessGates.evaluateReadonlyPreflightReport(preflightReport || {});
+  const currentAsin = analysis
+    ? normalizeOptionalAsin(analysis.currentAsin)
+    : normalizeOptionalAsin(reportGate.normalized && reportGate.normalized.asin);
   const rows = localGate.rows.map((row) => {
     if (!preflightReport || !preflightReport.ok || !analysis) {
+      const blockers = Array.from(new Set([...row.blockers, ...reportGate.blockers]));
       return {
         ...row,
         editPreflight: {
@@ -407,9 +413,11 @@ function mergePreflight(localGate, preflightReport) {
           currentAsin,
           safeToSaveToWaitPublish: false,
           preflightPass: false,
-          blockers: ['edit_preflight_unavailable'],
+          blockers: reportGate.blockers,
+          nextAction: reportGate.nextAction,
+          environmentStatus: reportGate.environmentStatus,
         },
-        blockers: Array.from(new Set([...row.blockers, 'edit_preflight_unavailable'])),
+        blockers,
       };
     }
     if (!currentAsin) {
@@ -438,19 +446,23 @@ function mergePreflight(localGate, preflightReport) {
         blockers: Array.from(new Set([...row.blockers, 'edit_preflight_current_asin_mismatch'])),
       };
     }
-    const preflightBlockers = analysis && Array.isArray(analysis.blockers) ? analysis.blockers : [];
-    const blockers = analysis && analysis.safeToSaveToWaitPublish ? row.blockers : [...row.blockers, ...preflightBlockers];
-    if (!analysis || !analysis.safeToSaveToWaitPublish) {
-      blockers.push(preflightBlockers.length ? 'edit_preflight_blocked' : 'edit_preflight_not_safe_to_save');
+    const preflightBlockers = reportGate.blockers.length
+      ? reportGate.blockers
+      : (analysis && Array.isArray(analysis.blockers) ? analysis.blockers : []);
+    const blockers = reportGate.allowed ? row.blockers : [...row.blockers, ...preflightBlockers];
+    if ((!analysis || !analysis.safeToSaveToWaitPublish) && !preflightBlockers.length) {
+      blockers.push('edit_preflight_not_safe_to_save');
     }
     return {
       ...row,
       editPreflight: {
         matchedCurrentPage: Boolean(currentAsin && row.asin === currentAsin),
         currentAsin,
-        safeToSaveToWaitPublish: Boolean(analysis && analysis.safeToSaveToWaitPublish),
+        safeToSaveToWaitPublish: Boolean(reportGate.allowed),
         preflightPass: Boolean(analysis && analysis.preflightPass),
         blockers: preflightBlockers,
+        nextAction: reportGate.nextAction,
+        environmentStatus: reportGate.environmentStatus,
       },
       blockers: Array.from(new Set(blockers)),
     };
