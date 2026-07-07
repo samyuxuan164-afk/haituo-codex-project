@@ -182,6 +182,14 @@ const categoryVerifiedGate = businessGates.evaluateCategoryEvidenceGate({
 assert.strictEqual(categoryVerifiedGate.allowed, true);
 assert.deepStrictEqual(categoryVerifiedGate.blockers, []);
 
+const safeAdjacentWithoutDxmGate = businessGates.evaluateCategoryEvidenceGate({
+  status: 'conditional_verified',
+  confidenceTier: 'low_confidence',
+  safeAdjacentAllowed: true,
+});
+assert.strictEqual(safeAdjacentWithoutDxmGate.allowed, false);
+assert.deepStrictEqual(safeAdjacentWithoutDxmGate.blockers, ['aliexpress_dxm_category_map_missing']);
+
 const missingPriceGate = businessGates.evaluatePriceGate({
   asin: 'B0F2H4PF7R',
   status: 'missing',
@@ -215,6 +223,18 @@ const readyPriceGate = businessGates.evaluatePriceGate({
 });
 assert.strictEqual(readyPriceGate.allowed, true);
 assert.strictEqual(readyPriceGate.normalized.expectedCnyPrice, '140.94');
+
+const uncoveredTierPriceGate = businessGates.evaluatePriceGate({
+  asin: 'B0F2H4PF7R',
+  status: 'trusted',
+  trusted: true,
+  sourcePriceUsd: 12.99,
+  exchangeRate: 7,
+  multiplier: { tiers: [{ minUsd: 20, multiplier: 1.35 }] },
+});
+assert.strictEqual(uncoveredTierPriceGate.allowed, false);
+assert.deepStrictEqual(uncoveredTierPriceGate.blockers, ['price_formula_missing_exchange_rate_or_multiplier']);
+assert.strictEqual(uncoveredTierPriceGate.normalized.expectedCnyPrice, '');
 
 assert.strictEqual(businessGates.evaluateTemplateGate({ selectedText: '--- 请选择运费模板 ---' }).allowed, false);
 assert.deepStrictEqual(

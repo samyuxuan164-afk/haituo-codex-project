@@ -83,8 +83,14 @@ function evaluatePriceGate(input = {}) {
   const blockers = [];
   if (!input.trusted || !sourcePrice) blockers.push('amazon_displayed_price_missing');
   if (sourcePrice && ((min != null && sourcePrice < min) || (max != null && sourcePrice > max))) blockers.push('price_out_of_range_or_zero');
-  if (sourcePrice && !hasFormulaInput(input)) blockers.push('price_formula_missing_exchange_rate_or_multiplier');
-  const expectedCnyPrice = blockers.length ? '' : calculateSupplyPriceCny(sourcePrice, input.exchangeRate, input.multiplier);
+  const formulaInputReady = sourcePrice && hasFormulaInput(input);
+  if (sourcePrice && !formulaInputReady) blockers.push('price_formula_missing_exchange_rate_or_multiplier');
+  let expectedCnyPrice = '';
+  if (formulaInputReady) {
+    expectedCnyPrice = calculateSupplyPriceCny(sourcePrice, input.exchangeRate, input.multiplier);
+    if (!expectedCnyPrice) blockers.push('price_formula_missing_exchange_rate_or_multiplier');
+  }
+  if (blockers.length) expectedCnyPrice = '';
   return decision(blockers, 'price_gate_passed', {
     asin: compactText(input.asin),
     sourcePriceUsd: sourcePrice || null,
@@ -97,16 +103,15 @@ function evaluateCategoryEvidenceGate(input = {}) {
   const status = compactText(input.status || input.aliexpressEvidenceStatus);
   const dxmCandidateCategory = compactText(input.dxmCandidateCategory || input.dxmVisibleCategoryPath || input.dxmVisibleCategory);
   const blockers = [];
-  if (!VERIFIED_CATEGORY_STATUSES.has(status)) blockers.push('category_evidence_missing');
-  if (VERIFIED_CATEGORY_STATUSES.has(status) && !dxmCandidateCategory && !input.safeAdjacentAllowed) {
-    blockers.push('aliexpress_dxm_category_map_missing');
-  }
+  const evidenceVerified = VERIFIED_CATEGORY_STATUSES.has(status);
+  if (!evidenceVerified) blockers.push('category_evidence_missing');
+  if (evidenceVerified && !dxmCandidateCategory) blockers.push('aliexpress_dxm_category_map_missing');
   return decision(blockers, 'category_evidence_gate_passed', {
     status,
     confidenceTier: compactText(input.confidenceTier),
     dxmCandidateCategory,
     safeAdjacentAllowed: Boolean(input.safeAdjacentAllowed),
-  }, input.safeAdjacentAllowed ? ['safe_adjacent_dxm_category_selected'] : []);
+  }, evidenceVerified && dxmCandidateCategory && input.safeAdjacentAllowed ? ['safe_adjacent_dxm_category_selected'] : []);
 }
 
 function evaluateTemplateGate(input = {}) {
