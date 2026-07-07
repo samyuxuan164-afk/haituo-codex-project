@@ -76,7 +76,7 @@ function parseArgs(argv) {
     file: '',
     minPrice: '',
     maxPrice: '',
-    rangePolicy: process.env.TASK_PRICE_RANGE_POLICY || '',
+    rangePolicy: process.env.TASK_PRICE_RANGE_POLICY || 'highest_displayed_value',
     write: false,
     writeExceptions: false,
   };
@@ -144,8 +144,9 @@ function usage() {
     },
     priceRule: [
       'Use the price displayed on the Amazon product page at capture time.',
-      'If the displayed price is a range, the current task must provide --range-policy or TASK_PRICE_RANGE_POLICY.',
-      'Supported range policies: highest_displayed_value, lowest_displayed_value.',
+      'Displayed price candidates include the buy-box price, displayed ranges, variant prices, and strike/list prices.',
+      'Default displayed-price candidate policy is highest_displayed_value; use --range-policy or TASK_PRICE_RANGE_POLICY only to override it.',
+      'Supported override policies: highest_displayed_value, lowest_displayed_value.',
     ],
     safety: [
       'Readonly browser navigation/evaluation only.',
@@ -167,7 +168,7 @@ function selectRangeValue(values, rangePolicy) {
 
 function parseDisplayedPrice(text, options = {}) {
   const sourceText = compactText(text);
-  const rangePolicy = compactText(options.rangePolicy || '');
+  const rangePolicy = compactText(options.rangePolicy || 'highest_displayed_value');
   const candidates = [];
   const nonPriceContext = (index, raw) => {
     const start = Math.max(0, index - 14);
@@ -257,16 +258,6 @@ function parseDisplayedPrice(text, options = {}) {
   });
   const rangeCandidates = usable.filter((item) => item.type === 'range');
   const supportedRangePolicies = ['highest_displayed_value', 'lowest_displayed_value'];
-  if (rangeCandidates.length && !rangePolicy) {
-    return {
-      ok: false,
-      amazonDisplayedPriceUsd: null,
-      reason: 'price_range_policy_missing',
-      candidates: usable,
-      rule: 'range_policy_missing',
-      sourceText: sourceText.slice(0, 1200),
-    };
-  }
   if (rangeCandidates.length && !supportedRangePolicies.includes(rangePolicy)) {
     return {
       ok: false,

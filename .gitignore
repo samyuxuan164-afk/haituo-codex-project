@@ -101,6 +101,7 @@ screen-*.png
 # local agent / workspace
 .agents/
 .codex/
+.worktrees/
 codex-workspace-backup/
 _migration/
 

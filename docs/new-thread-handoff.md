@@ -6,7 +6,7 @@ Date: 2026-06-29
 
 Path:
 
-`/Users/sam/Documents/电商上架项目/自动上架/dianxiaomi-automation-v1`
+`<PROJECT_ROOT>`
 
 Current phase:
 

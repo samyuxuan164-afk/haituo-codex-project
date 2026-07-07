@@ -2,7 +2,7 @@
   {
     "asin": "B0CDNP8FCL",
     "returncode": 0,
-    "out": "/Users/sam/Documents/电商上架项目/自动上架/dianxiaomi-automation-v1/runs/drawer-10-product-understanding/B0CDNP8FCL.report.json",
+    "out": "<PROJECT_ROOT>/runs/drawer-10-product-understanding/B0CDNP8FCL.report.json",
     "ok": true,
     "productType": "DrawerOrganizer",
     "category": "Drawer Organizers",
@@ -13,7 +13,7 @@
   {
     "asin": "B0FRMQQKTH",
     "returncode": 0,
-    "out": "/Users/sam/Documents/电商上架项目/自动上架/dianxiaomi-automation-v1/runs/drawer-10-product-understanding/B0FRMQQKTH.report.json",
+    "out": "<PROJECT_ROOT>/runs/drawer-10-product-understanding/B0FRMQQKTH.report.json",
     "ok": true,
     "productType": "DrawerOrganizer",
     "category": "Drawer Organizers",
@@ -24,7 +24,7 @@
   {
     "asin": "B0DQSDQYL6",
     "returncode": 0,
-    "out": "/Users/sam/Documents/电商上架项目/自动上架/dianxiaomi-automation-v1/runs/drawer-10-product-understanding/B0DQSDQYL6.report.json",
+    "out": "<PROJECT_ROOT>/runs/drawer-10-product-understanding/B0DQSDQYL6.report.json",
     "ok": true,
     "productType": "Drawer Organizer",
     "category": "Drawer Organizers",
@@ -35,7 +35,7 @@
   {
     "asin": "B0D6GHYJZM",
     "returncode": 0,
-    "out": "/Users/sam/Documents/电商上架项目/自动上架/dianxiaomi-automation-v1/runs/drawer-10-product-understanding/B0D6GHYJZM.report.json",
+    "out": "<PROJECT_ROOT>/runs/drawer-10-product-understanding/B0D6GHYJZM.report.json",
     "ok": true,
     "productType": "DrawerOrganizer",
     "category": "Drawer Organizers",
@@ -46,7 +46,7 @@
   {
     "asin": "B0FDRDMNT8",
     "returncode": 0,
-    "out": "/Users/sam/Documents/电商上架项目/自动上架/dianxiaomi-automation-v1/runs/drawer-10-product-understanding/B0FDRDMNT8.report.json",
+    "out": "<PROJECT_ROOT>/runs/drawer-10-product-understanding/B0FDRDMNT8.report.json",
     "ok": true,
     "productType": "Drawer Organizer",
     "category": "Drawer Organizers",
@@ -57,7 +57,7 @@
   {
     "asin": "B0DXZ5SWDR",
     "returncode": 0,
-    "out": "/Users/sam/Documents/电商上架项目/自动上架/dianxiaomi-automation-v1/runs/drawer-10-product-understanding/B0DXZ5SWDR.report.json",
+    "out": "<PROJECT_ROOT>/runs/drawer-10-product-understanding/B0DXZ5SWDR.report.json",
     "ok": true,
     "productType": "DrawerOrganizer",
     "category": "Drawer Organizers",
@@ -68,7 +68,7 @@
   {
     "asin": "B0F1N93ZTB",
     "returncode": 0,
-    "out": "/Users/sam/Documents/电商上架项目/自动上架/dianxiaomi-automation-v1/runs/drawer-10-product-understanding/B0F1N93ZTB.report.json",
+    "out": "<PROJECT_ROOT>/runs/drawer-10-product-understanding/B0F1N93ZTB.report.json",
     "ok": true,
     "productType": "Drawer Organizer",
     "category": "Drawer Organizers",
@@ -79,7 +79,7 @@
   {
     "asin": "B08XFMNXDT",
     "returncode": 0,
-    "out": "/Users/sam/Documents/电商上架项目/自动上架/dianxiaomi-automation-v1/runs/drawer-10-product-understanding/B08XFMNXDT.report.json",
+    "out": "<PROJECT_ROOT>/runs/drawer-10-product-understanding/B08XFMNXDT.report.json",
     "ok": true,
     "productType": "Drawer Organizer",
     "category": "Drawer Organizers",
@@ -90,7 +90,7 @@
   {
     "asin": "B0G3NMVGSJ",
     "returncode": 0,
-    "out": "/Users/sam/Documents/电商上架项目/自动上架/dianxiaomi-automation-v1/runs/drawer-10-product-understanding/B0G3NMVGSJ.report.json",
+    "out": "<PROJECT_ROOT>/runs/drawer-10-product-understanding/B0G3NMVGSJ.report.json",
     "ok": true,
     "productType": "Drawer Organizer",
     "category": "Drawer Organizers",
@@ -101,7 +101,7 @@
   {
     "asin": "B0DM27MBZN",
     "returncode": 0,
-    "out": "/Users/sam/Documents/电商上架项目/自动上架/dianxiaomi-automation-v1/runs/drawer-10-product-understanding/B0DM27MBZN.report.json",
+    "out": "<PROJECT_ROOT>/runs/drawer-10-product-understanding/B0DM27MBZN.report.json",
     "ok": true,
     "productType": "DrawerOrganizerSet",
     "category": "Drawer Organizers",

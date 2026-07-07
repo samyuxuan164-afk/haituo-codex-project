@@ -27,7 +27,7 @@
 | 是否允许认领 | 允许 |
 | 价格范围 | Amazon 页面展示价格 USD 5-20 |
 | 数量 / 类目 | 100 条，每类目 1 条 |
-| 当前任务价格参数 | 当前 100 品类任务暂按 `Amazon 页面展示价格 USD x 7 x 1.55`，区间价策略为 `highest_displayed_value`；这只是本任务参数，不是长期公式 |
+| 当前任务价格参数 | 当前 100 品类任务暂按 `Amazon 页面展示价格 USD x 7 x 1.55`；Amazon 展示价候选默认取最高有效值（当前价、区间价、变体价、划线价/List Price）；这只是本任务参数，不是长期公式 |
 | 类目要求 | 需要 AliExpress 类目证据；允许安全相邻类目 |
 | 风控排除 | 品牌/logo、食品、医疗、儿童、带电、侵权高风险、无页面展示价格、无清晰主图、变体过复杂 |
 | 执行规则 | 先做预判分流，只对 `auto_ready` 产品执行 |
@@ -52,7 +52,7 @@
 |---|---|---|---|
 | `businessLicenseGroup` | 已确认 | A1 | 如页面读回不一致，停止采集/认领，记录 `license_group_mismatch` |
 | `targetStore` | 已确认 | Halo Home Store，且必须属于 `速卖通海外托管` 分组 | 如页面读回不一致，停止认领，记录 `target_store_mismatch` / `store_uncertain` |
-| 当前任务价格参数 | 已确认 | 本次 100 品类任务暂按 `Amazon 页面展示价格 USD x 7 x 1.55`，适用于 Amazon 页面展示价格 USD 5-20 的 100 条产品；区间价策略为 `highest_displayed_value`。这不是长期公式，高价或后续任务如有新倍率、阶梯倍率、舍入规则或区间策略，以当前任务配置为准 | 保存前价格不一致时停止，记录 `price_formula_mismatch` |
+| 当前任务价格参数 | 已确认 | 本次 100 品类任务暂按 `Amazon 页面展示价格 USD x 7 x 1.55`，适用于 Amazon 页面展示价格 USD 5-20 的 100 条产品；Amazon 展示价候选默认取最高有效值，包含区间价、变体价、划线价/List Price。这不是长期公式，高价或后续任务如有新倍率、阶梯倍率、舍入规则或候选策略，以当前任务配置为准 | 保存前价格不一致时停止，记录 `price_formula_mismatch` |
 | Amazon 页面展示价格 USD 来源 | 已确认为打开 Amazon 商品页时页面展示的价格 | 当前 100 产品清单中每个 ASIN 必须记录可信 Amazon 页面展示价格 USD | 缺失商品不得保存，记录 `amazon_displayed_price_missing` |
 | 是否允许保存到待发布但不发布 | 已确认 | 允许保存到待发布；禁止发布 / 一键发布 | 出现发布入口或确认框立即停止 |
 | 100 产品清单来源 | 已确认为 Amazon 搜索 | 先形成候选清单和预判分流结果，再进入采集 | 未形成 `auto_ready` 清单时不得采集 |
@@ -69,7 +69,7 @@
 | 字段 | 必填 | 示例 / 允许值 | 用途 |
 |---|---:|---|---|
 | `ASIN` | 是 | `B08PB79YXV` | SKU、去重、读回匹配 |
-| `Amazon 页面展示价格 USD` | 是 | `6.66` | 唯一价格来源；区间价按当前任务 `rangePolicy` 处理 |
+| `Amazon 页面展示价格 USD` | 是 | `6.66` | 唯一价格来源；默认取最高有效 Amazon 展示价候选，可被当前任务显式策略覆盖 |
 | `商品标题` | 是 | Amazon 标题或清洗前标题 | 商品理解、品牌/Logo 风险、类目证据 |
 | `店铺` | 是 | 目标店铺名 | 认领目标确认 |
 | `采集状态` | 是 | `not_started` / `collected` / `failed` / `skipped` | 阶段跟踪 |
@@ -129,7 +129,7 @@ tools/candidate-manifest.js
 | 1 | 用户明确授权开始真实 100 品类 100 产品压测 | 待确认启动 |
 | 2 | `businessLicenseGroup` 已确认 | YES: A1 |
 | 3 | `targetStore` 已确认且属于 `速卖通海外托管` | YES: Halo Home Store |
-| 4 | 当前任务价格参数已确认 | YES: 本次 100 品类任务暂按 `Amazon 页面展示价格 USD x 7 x 1.55`，区间价策略为 `highest_displayed_value`；非长期公式 |
+| 4 | 当前任务价格参数已确认 | YES: 本次 100 品类任务暂按 `Amazon 页面展示价格 USD x 7 x 1.55`，Amazon 展示价候选默认取最高有效值；非长期公式 |
 | 5 | 每个 ASIN 都有可信 Amazon 页面展示价格 USD |  |
 | 6 | 用户确认允许保存到待发布，但不允许发布 | YES |
 | 7 | 100 产品清单来源已确认 | YES: Amazon 搜索 |

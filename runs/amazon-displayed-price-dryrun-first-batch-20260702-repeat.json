@@ -2,8 +2,8 @@
   "ok": true,
   "dryRun": true,
   "exceptionDryRun": true,
-  "storePath": "/Users/sam/Documents/电商上架项目/自动上架/dianxiaomi-automation-v1/runs/amazon-price-store.json",
-  "queuePath": "/Users/sam/Documents/电商上架项目/自动上架/dianxiaomi-automation-v1/runs/exception-queue.json",
+  "storePath": "<PROJECT_ROOT>/runs/amazon-price-store.json",
+  "queuePath": "<PROJECT_ROOT>/runs/exception-queue.json",
   "batch": {
     "totalInput": 10,
     "selected": 10,
