@@ -454,3 +454,4 @@ git commit -m "docs(core): document userscript business gates"
 - Type consistency: public export is `businessGates`, and individual functions use the `evaluate*Gate` naming scheme.
 - Scope control: runtime remains a single userscript; no live browser/Dianxiaomi action is part of this plan.
 - Follow-up boundary: the next layer is to wire readonly preflight, batch gate, and WebBridge reports to this same pure blocker vocabulary rather than adding another status system.
+- PR audit hardening: uncovered tier formulas, safe-adjacent approval without a DXM candidate category, and Origin/Ships From field confusion are covered with regression assertions and fixed in the pure gate module.

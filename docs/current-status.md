@@ -29,6 +29,11 @@ Business blocker coverage:
 - `postage_template_not_111`.
 - `ships_from_not_united_states`.
 
+Audit hardening:
+- Tiered price formulas must cover the current Amazon USD price and compute a non-empty CNY value before the price gate can pass.
+- `safeAdjacentAllowed` is only a marker for a real safe-adjacent DXM candidate category; it cannot replace the DXM category mapping itself.
+- Product `Origin` is not accepted as variation `Ships From`; the Ships From gate requires explicit Ships From / label readback.
+
 Test surface:
 - `tools/dxm-automation-core.test.js` now covers the business gates together with existing text, pricing, PC detail, and workflow-diagnostics pure modules.
 - Full local verification for this branch is recorded in `docs/test-results.md`.

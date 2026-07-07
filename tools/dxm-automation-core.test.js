@@ -249,6 +249,7 @@ assert.deepStrictEqual(
   ['ships_from_not_united_states']
 );
 assert.strictEqual(businessGates.evaluateShipsFromGate({ selectedText: '美国(United States)' }).allowed, true);
+assert.strictEqual(businessGates.evaluateShipsFromGate({ origin: 'United States' }).allowed, false);
 
 const editSaveGate = businessGates.evaluateEditSaveGate({
   categoryEvidence: categoryVerifiedGate,

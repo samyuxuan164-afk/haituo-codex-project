@@ -85,4 +85,4 @@ Known gaps as of 2026-07-07:
 2. task-parameterized price calculation, displayed-price candidate selection, dimensions, and weight parsing;
 3. PC detail image-first generation and current-product image analysis;
 4. offline workflow diagnostics for collection-box duplicate/zero-price contamination and readonly edit preflight root-cause normalization.
-5. business-gate decisions for crawlbox claim readiness, trusted price/formula readiness, AliExpress category evidence, freight template `111`, Ships From `United States`, and composed edit-save readiness.
+5. business-gate decisions for crawlbox claim readiness, trusted price/formula readiness, AliExpress category evidence, freight template `111`, Ships From `United States`, and composed edit-save readiness, including audit regressions for uncovered tier formulas, safe-adjacent category without a DXM candidate, and Origin not counting as Ships From.

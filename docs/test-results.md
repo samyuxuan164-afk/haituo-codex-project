@@ -16,7 +16,7 @@ Commands run:
 | Command | Result | Notes |
 |---|---|---|
 | `node tools\aliexpress-evidence-policy.test.js` | PASS | Printed `aliexpress-evidence-policy.test.js passed` |
-| `node tools\dxm-automation-core.test.js` | PASS | Printed `dxm-automation-core.test.js passed`; includes parameterized price calculation, default highest displayed-price candidate handling, List Price / strike-price coverage, explicit override validation, tiered multiplier coverage, collection-box contamination diagnostics, edit preflight root-cause normalization, and business-gate decisions |
+| `node tools\dxm-automation-core.test.js` | PASS | Printed `dxm-automation-core.test.js passed`; includes parameterized price calculation, default highest displayed-price candidate handling, List Price / strike-price coverage, explicit override validation, tiered multiplier coverage, collection-box contamination diagnostics, edit preflight root-cause normalization, business-gate decisions, and audit regressions for uncovered tiers, missing DXM category mapping, and Origin/Ships From separation |
 | `node tools\amazon-displayed-price-capture.js parse-text --text 'Price $19.94 List Price: $20.99'` | PASS | Parsed `amazonDisplayedPriceUsd: 20.99` |
 | `node tools\amazon-displayed-price-capture.js parse-text --text '$8.99 - $12.99'` | PASS | Parsed `amazonDisplayedPriceUsd: 12.99` with `range_highest_displayed_value` |
 | `node --check src\dxm-automation-core\text-rules.js` | PASS | Syntax check only |
@@ -42,7 +42,7 @@ Commands run:
 ## What This Proves
 
 - The AliExpress evidence policy and selected capture behaviors covered by `tools/aliexpress-evidence-policy.test.js` still pass locally.
-- The extracted userscript core modules for text rules, pricing/dimensions, PC detail image analysis, workflow diagnostics, and business gates pass deterministic Node assertions, including task-supplied price parameters, default `$8.99 - $12.99` highest-candidate handling, `List Price` strike-price handling, explicit invalid-policy validation, tiered multiplier behavior, the known 10-target / 16-row collection contamination sample, readonly edit preflight blocker normalization, and composed edit-save gate decisions.
+- The extracted userscript core modules for text rules, pricing/dimensions, PC detail image analysis, workflow diagnostics, and business gates pass deterministic Node assertions, including task-supplied price parameters, default `$8.99 - $12.99` highest-candidate handling, `List Price` strike-price handling, explicit invalid-policy validation, tiered multiplier behavior, the known 10-target / 16-row collection contamination sample, readonly edit preflight blocker normalization, composed edit-save gate decisions, and audit regressions for uncovered tier formulas, safe-adjacent category without a DXM candidate, and Origin not counting as Ships From.
 - The Amazon displayed-price capture parser selects the highest valid displayed-price candidate by default, including `List Price` / strike-price examples such as `$19.94` current price with `$20.99` List Price.
 - The current main DXM automation userscript parses under Node syntax checking.
 - The current Amazon crawlbox userscript parses under Node syntax checking.

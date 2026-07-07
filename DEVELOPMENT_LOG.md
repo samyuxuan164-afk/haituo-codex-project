@@ -4,6 +4,7 @@
 
 - Completed the source-level `business-gates` pass on `codex/userscript-business-gates` without executing any browser or Dianxiaomi business action. Added `src/dxm-automation-core/business-gates.js` as a pure CommonJS gate layer for crawlbox contamination, trusted Amazon displayed-price readiness, task price formula readiness, AliExpress / learned-rule category evidence, freight template `111`, Ships From `United States`, and composed edit-save readiness. The main userscript change is limited to readonly preflight normalization output (`businessGate.allowed`, normalized blockers, and next action); DOM dropdown handling, WebBridge, native save, collection, claim, final publish, and one-click publish behavior were not expanded.
 - Extended `tools/dxm-automation-core.test.js` with offline assertions for the business gate decisions and kept the next extraction target explicit: later wire readonly preflight, batch gate, and WebBridge reports into the same pure blocker vocabulary.
+- Local audit tightened three business-gate edge cases before PR: tiered price formulas must actually compute a CNY value for the current price, safe-adjacent category approval still requires a real DXM candidate category, and product `Origin` cannot satisfy the variation `Ships From` gate. Each edge is covered by a deterministic assertion in `tools/dxm-automation-core.test.js`.
 
 ## 2026-07-06
 

@@ -124,7 +124,7 @@ function evaluateTemplateGate(input = {}) {
 }
 
 function evaluateShipsFromGate(input = {}) {
-  const selectedText = compactText(input.selectedText || input.shipFrom || input.origin || input.label);
+  const selectedText = compactText(input.selectedText || input.shipFrom || input.shipsFrom || input.label);
   const normalized = selectedText.toLowerCase();
   const hasUnitedStates = /\bunited states\b|us\(origin\)|\u7f8e\u56fd|\busa\b/.test(normalized);
   const hasForbiddenFallback = /mainland china|\u4e2d\u56fd\u5927\u9646/.test(normalized);
