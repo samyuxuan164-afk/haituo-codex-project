@@ -75,7 +75,7 @@ Known gaps as of 2026-07-07:
 3. The largest userscript still has limited direct test coverage beyond the extracted pure modules for text, pricing, PC detail, workflow diagnostics, and business gates.
 4. Browser/live validation relies on run reports and explicit gated procedures.
 5. Screenshot cleanup is documented, but evidence retention should be audited after each task.
-6. Readonly preflight, batch gate, and WebBridge reports are not yet fully unified behind the same pure blocker module; this is the next extraction layer.
+6. Readonly preflight, batch gate, and WebBridge reports now have source-level pure normalization coverage in `business-gates.js`; browser/live validation of installed Tampermonkey behavior remains gated and separate.
 
 ## Current Pure Module Coverage
 
@@ -86,3 +86,4 @@ Known gaps as of 2026-07-07:
 3. PC detail image-first generation and current-product image analysis;
 4. offline workflow diagnostics for collection-box duplicate/zero-price contamination and readonly edit preflight root-cause normalization.
 5. business-gate decisions for crawlbox claim readiness, trusted price/formula readiness, AliExpress category evidence, freight template `111`, Ships From `United States`, and composed edit-save readiness, including audit regressions for uncovered tier formulas, safe-adjacent category without a DXM candidate, and Origin not counting as Ships From.
+6. unified report blocker normalization for readonly preflight, batch preflight merge, and WebBridge reports, including the distinction between rendered pages and WebBridge/Computer Use/screenshot fallback states.

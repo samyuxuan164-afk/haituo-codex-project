@@ -1,5 +1,35 @@
 # Current Status - 2026-07-07
 
+## Latest Source-Level Development - 2026-07-07 Unified Blocker Reports
+
+```text
+Current phase: Development / source-level unified blocker reporting
+
+Prepared the second-layer blocker split on branch `codex/userscript-unified-blockers`, based on PR #6 `codex/userscript-business-gates`.
+
+What changed:
+- `src/dxm-automation-core/business-gates.js` now exposes pure report normalizers for readonly preflight and WebBridge reports.
+- The shared normalized shape is `allowed`, `blockers`, `warnings`, `nextAction`, `environmentStatus`, and `normalized`.
+- `environmentStatus` separates page rendering evidence from read/control channel failures:
+  - `pageRendered`
+  - `bridgeReachable`
+  - `structuredReadOk`
+  - `fallbackRecommended`
+- WebBridge timeouts/read failures with rendered-page evidence are recorded as `webbridge_call_failed` / `webbridge_read_failed` or readonly unavailable states, not as `page_not_rendered`.
+- `tools/dxm-batch-execution-gate.js` now merges edit readonly preflight through the same pure readonly normalizer.
+- `tools/aliexpress-evidence-preflight-check.js` now returns the shared `businessGate` analysis while preserving legacy fields.
+- `src/dianxiaomi-amazon-crawlbox-v1.user.js` now includes a thin `businessGate` field in the readonly WebBridge preflight JSON export.
+
+New regression coverage:
+- readonly preflight `businessGate.blockers` and raw blocker text normalize to the same machine blockers.
+- readonly/WebBridge call failure can report `pageRendered=true` when URL/title/readyState prove the page is rendered.
+- WebBridge blocked collection reports map `auto_claim_enabled` and `collector_input_missing` to shared blocker/nextAction semantics.
+- batch preflight merge no longer emits only ad hoc `edit_preflight_unavailable`; it carries `readonly_preflight_unavailable` plus environment status.
+
+Runtime boundary:
+- No live Dianxiaomi page action, collection, claim, edit, save, move-to-wait-publish, publish, one-click publish, Amazon browser capture, AliExpress browser capture, or Computer Use / screenshot fallback was executed for this source-level task.
+```
+
 ## Latest Source-Level Development - 2026-07-07
 
 ```text

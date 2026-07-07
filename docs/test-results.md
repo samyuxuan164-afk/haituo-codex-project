@@ -1,5 +1,50 @@
 # Test Results
 
+## Latest Local Baseline - 2026-07-07 Unified Blocker Reports
+
+Environment:
+
+```text
+Node.js: v24.14.1
+Branch: codex/userscript-unified-blockers
+Worktree: isolated local worktree; absolute path intentionally omitted from public docs
+```
+
+Commands run:
+
+| Command | Result | Notes |
+|---|---|---|
+| `node --version` | PASS | Printed `v24.14.1` |
+| `node tools\aliexpress-evidence-policy.test.js` | PASS | Printed `aliexpress-evidence-policy.test.js passed` |
+| `node tools\dxm-automation-core.test.js` | PASS | Includes new readonly preflight, batch preflight merge, and WebBridge unified blocker regressions |
+| `node tools\amazon-displayed-price-capture.js parse-text --text 'Price $19.94 List Price: $20.99'` | PASS | Parsed `amazonDisplayedPriceUsd: 20.99` |
+| `node tools\amazon-displayed-price-capture.js parse-text --text '$8.99 - $12.99'` | PASS | Parsed `amazonDisplayedPriceUsd: 12.99` |
+| Targeted `node --check` set | PASS | Checked extracted core modules, main userscript, crawlbox userscript, batch gate, preflight tool, and test file |
+| `node --check src\dxm-automation-core\business-gates.js` | PASS | Syntax check only |
+| `node --check tools\dxm-batch-execution-gate.js` | PASS | Syntax check only |
+| `node --check tools\aliexpress-evidence-preflight-check.js` | PASS | Syntax check only |
+| `node --check src\dianxiaomi-amazon-crawlbox-v1.user.js` | PASS | Syntax check only |
+| PowerShell recursive JS/MJS `node --check` sweep | PASS | Printed `js syntax sweep passed` |
+| Python AST parse over `git ls-files "*.py"` | PASS | 11 Python files parsed |
+| JSON parse over `git ls-files "*.json"` | PASS | 117 JSON files parsed |
+| `git diff --check` | PASS | No whitespace errors; Git reported CRLF conversion warnings only |
+| Stale source-version scan over active docs | PASS | No `1.1.14` or `0.1.15` matches |
+| Stale explicit-test wording scan | PASS | No stale "one explicit test" wording matches |
+| `node tools\cleanup-task-screenshots.js plan` | PASS | Dry-run found 145 images, 6 referenced, 139 cleanup candidates; no deletion attempted |
+
+What this proves:
+
+- The new pure report normalizers produce stable `allowed`, `blockers`, `warnings`, `nextAction`, and `environmentStatus` output.
+- A WebBridge timeout with rendered-page evidence is not classified as `page_not_rendered`.
+- Batch gate edit preflight merge now carries `readonly_preflight_unavailable` and environment status instead of only local ad hoc blocker text.
+- Crawlbox WebBridge preflight JSON now includes a thin `businessGate` field with shared blocker names and next action.
+
+What this does not prove:
+
+- It does not prove browser-installed Tampermonkey scripts are current.
+- It does not prove live Dianxiaomi, AliExpress, Amazon, WebBridge, Computer Use, or screenshot fallback behavior.
+- It does not authorize collection, claim, edit, save, move-to-wait-publish, publish, or one-click publish.
+
 ## Latest Local Baseline - 2026-07-07
 
 Environment:

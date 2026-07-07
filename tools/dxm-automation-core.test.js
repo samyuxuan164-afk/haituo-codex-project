@@ -277,4 +277,107 @@ assert.deepStrictEqual(blockedEditSaveGate.blockers, [
 ]);
 assert.strictEqual(blockedEditSaveGate.nextAction, 'run_aliexpress_category_verification_before_save');
 
+const readonlyBusinessGateReport = businessGates.evaluateReadonlyPreflightReport({
+  ok: true,
+  source: 'function',
+  href: 'https://www.dianxiaomi.com/web/smtlocalProduct/edit?id=167',
+  title: 'Dianxiaomi edit page',
+  readyState: 'complete',
+  preflight: {
+    asin: 'B0F2H4PF7R',
+    safeToSaveToWaitPublish: false,
+    businessGate: {
+      blockers: ['category_evidence_missing', 'postage_template_not_111'],
+    },
+  },
+});
+assert.strictEqual(readonlyBusinessGateReport.allowed, false);
+assert.deepStrictEqual(readonlyBusinessGateReport.blockers, ['category_evidence_missing', 'postage_template_not_111']);
+assert.strictEqual(readonlyBusinessGateReport.nextAction, 'run_aliexpress_category_verification_before_save');
+assert.strictEqual(readonlyBusinessGateReport.environmentStatus.pageRendered, true);
+assert.strictEqual(readonlyBusinessGateReport.environmentStatus.structuredReadOk, true);
+
+const readonlyRawBlockerReport = businessGates.evaluateReadonlyPreflightReport({
+  ok: true,
+  source: 'dom-node',
+  href: 'https://www.dianxiaomi.com/web/smtlocalProduct/edit?id=167',
+  readyState: 'interactive',
+  preflight: {
+    asin: 'B0F2H4PF7R',
+    safeToSaveToWaitPublish: false,
+    blockers: [
+      'AliExpress category evidence required: category_evidence_missing',
+      'postage template is not 111: empty',
+    ],
+  },
+});
+assert.deepStrictEqual(readonlyRawBlockerReport.blockers, ['category_evidence_missing', 'postage_template_not_111']);
+assert.strictEqual(readonlyRawBlockerReport.environmentStatus.pageRendered, true);
+
+const readonlyUnavailableReport = businessGates.evaluateReadonlyPreflightReport({
+  ok: false,
+  stage: 'evaluate',
+  status: 'webbridge_timeout',
+  href: 'https://www.dianxiaomi.com/web/smtlocalProduct/edit?id=167',
+  title: 'Dianxiaomi edit page',
+  readyState: 'complete',
+});
+assert.strictEqual(readonlyUnavailableReport.allowed, false);
+assert.deepStrictEqual(readonlyUnavailableReport.blockers, ['readonly_preflight_unavailable']);
+assert.strictEqual(readonlyUnavailableReport.environmentStatus.pageRendered, true);
+assert.strictEqual(readonlyUnavailableReport.environmentStatus.bridgeReachable, false);
+assert.strictEqual(readonlyUnavailableReport.environmentStatus.fallbackRecommended, 'computer_use');
+
+const webBridgeBlockedReport = businessGates.evaluateWebBridgeReport({
+  ok: true,
+  href: 'https://www.dianxiaomi.com/web/productCrawl/dataAcquisition',
+  readyState: 'complete',
+  preflight: {
+    allowed: false,
+    blockReason: ['auto_claim_enabled', 'collector_input_missing'],
+    warnings: ['dangerous_dxm_controls_visible'],
+    isDataAcquisitionPage: true,
+  },
+});
+assert.strictEqual(webBridgeBlockedReport.allowed, false);
+assert.deepStrictEqual(webBridgeBlockedReport.blockers, ['auto_claim_enabled', 'collector_input_missing']);
+assert.deepStrictEqual(webBridgeBlockedReport.warnings, ['dangerous_dxm_controls_visible']);
+assert.strictEqual(webBridgeBlockedReport.nextAction, 'disable_native_auto_claim_before_collection');
+
+const webBridgeCallFailedReport = businessGates.evaluateWebBridgeReport({
+  ok: false,
+  status: 'webbridge_timeout',
+  href: 'https://www.dianxiaomi.com/web/productCrawl/dataAcquisition',
+  title: 'Dianxiaomi data acquisition',
+  readyState: 'complete',
+});
+assert.strictEqual(webBridgeCallFailedReport.allowed, false);
+assert.deepStrictEqual(webBridgeCallFailedReport.blockers, ['webbridge_call_failed']);
+assert.strictEqual(webBridgeCallFailedReport.environmentStatus.pageRendered, true);
+assert.strictEqual(webBridgeCallFailedReport.environmentStatus.fallbackRecommended, 'computer_use');
+assert.strictEqual(webBridgeCallFailedReport.blockers.includes('page_not_rendered'), false);
+
+const { mergePreflight } = require('./dxm-batch-execution-gate');
+const mergedUnavailablePreflightGate = mergePreflight({
+  ok: true,
+  rows: [{
+    asin: 'B0F2H4PF7R',
+    localReady: true,
+    readyForEditPreflight: true,
+    blockers: [],
+    nextAction: 'open_edit_page_and_run_readonly_preflight',
+  }],
+  summary: { total: 1, ready: 1, blocked: 0, byBlocker: {} },
+}, {
+  ok: false,
+  stage: 'evaluate',
+  status: 'webbridge_timeout',
+  href: 'https://www.dianxiaomi.com/web/smtlocalProduct/edit?id=167',
+  title: 'Dianxiaomi edit page',
+  readyState: 'complete',
+});
+assert.deepStrictEqual(mergedUnavailablePreflightGate.rows[0].blockers, ['readonly_preflight_unavailable']);
+assert.strictEqual(mergedUnavailablePreflightGate.rows[0].nextAction, 'open_correct_edit_page_and_rerun_readonly_preflight');
+assert.strictEqual(mergedUnavailablePreflightGate.rows[0].editPreflight.environmentStatus.pageRendered, true);
+
 process.stdout.write('dxm-automation-core.test.js passed\n');
